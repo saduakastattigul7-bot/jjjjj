@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<title>Стенд макеті</title>
+<style>
+  @page { size: 1200mm 800mm; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200mm; height: 800mm; background: #fff; }
+  body { font-family: "Liberation Serif", "Times New Roman", serif; color: #1d1d1d; font-size: 27pt; line-height: 1.35; }
+  .stand { display: flex; width: 1200mm; height: 800mm; }
+  .panel { height: 800mm; padding: 18mm 16mm; border: 1.5mm solid #7a5a2b; }
+  .side { width: 300mm; background: #fff8e6; }
+  .center { width: 600mm; background: #fffdf7; border-left: none; border-right: none; }
+  h2 { font-size: 36pt; color: #7a2e1d; margin: 0 0 4mm; border-bottom: 1mm solid #e8b64c; padding-bottom: 2mm; }
+  .block { margin-bottom: 20mm; }
+  ul, ol { padding-left: 9mm; }
+  li { margin-bottom: 5mm; }
+  .ph { background: #fff200; }
+  .top { display: flex; align-items: center; gap: 10mm; margin-bottom: 10mm; }
+  .code { width: 140mm; height: 70mm; flex: none; border: 1.2mm dashed #555; display: flex; align-items: center; justify-content: center;
+          font-size: 18pt; color: #666; text-align: center; }
+  h1 { font-size: 72pt; line-height: 1.05; color: #7a2e1d; }
+  .sub { font-size: 36pt; color: #7a5a2b; margin-top: 3mm; }
+  .q { background: #e9f3fb; border-radius: 6mm; padding: 7mm 9mm; margin-bottom: 9mm; font-size: 30pt; }
+  .q b { color: #1f4e79; }
+  .row { display: flex; gap: 10mm; }
+  .img { flex: 1; height: 270mm; border: 1.2mm dashed #888; background: #f2f2f2; display: flex; align-items: center; justify-content: center;
+         text-align: center; font-size: 26pt; color: #555; padding: 8mm; }
+  .img img { max-width: 100%; max-height: 100%; }
+  .result { margin-top: 10mm; background: #eaf6e0; border-radius: 6mm; padding: 8mm 10mm; }
+  .big { display: flex; justify-content: space-around; text-align: center; margin-top: 4mm; }
+  .big div { font-size: 24pt; }
+  .big span { display: block; font-size: 64pt; font-weight: bold; color: #2e6b1f; }
+  .qr { width: 90mm; height: 90mm; border: 1.2mm dashed #555; display: flex; align-items: center; justify-content: center; text-align: center;
+        font-size: 18pt; color: #666; margin-top: 4mm; }
+  .src { font-size: 21pt; }
+</style>
+</head>
+<body>
+<div class="stand">
+  <!-- LEFT: relevance, goal, tasks, methods -->
+  <section class="panel side">
+    <div class="block">
+      <h2>Неге бұл тақырып?</h2>
+      <ul>
+        <li>Көп бала «Ер Төстікті» кітаптан емес, тек мультфильмнен біледі.</li>
+        <li>Жарнаманы біз күн сайын көреміз – оның күшін кітап оқуға пайдалануға болады!</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h2>Мақсаты</h2>
+      <p>«Ер Төстік» ертегісіне жарнама жасап, оның сыныптастарымның ертегіні оқуға деген ықыласына әсерін тексеру.</p>
+    </div>
+    <div class="block">
+      <h2>Міндеттері</h2>
+      <ol>
+        <li>Жақсы жарнаманың құпиясын білу.</li>
+        <li>Сауалнама жүргізу.</li>
+        <li>Ертегіден қызықты тұстарды іріктеу.</li>
+        <li>Плакат, слоган, бейнеролик жасау.</li>
+        <li>Жарнамаға дейін және кейін салыстыру.</li>
+      </ol>
+    </div>
+    <div class="block">
+      <h2>Әдістері</h2>
+      <ul>
+        <li>дереккөздерді оқу</li>
+        <li>сауалнама (аты-жөнсіз)</li>
+        <li>шығармашылық талдау</li>
+        <li>жарнама жасау (модельдеу)</li>
+        <li>екі плакатты салыстыру</li>
+        <li>«дейін – кейін» тәжірибесі</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h2>Сауалнама нәтижесі</h2>
+      <div class="img" style="height:150mm">ОСЫ ЖЕРГЕ<br>1-диаграмманы жапсыр<br>(Derekter.xlsx)</div>
+    </div>
+  </section>
+
+  <!-- CENTER: code field, title, research question, main result -->
+  <section class="panel center">
+    <div class="top">
+      <div class="code">Тіркеу коды<br>(шифр)<br>7 × 14 см</div>
+      <div>
+        <h1>ҚАЗАҚ ЕРТЕГІСІНІҢ ЖАРНАМАСЫ</h1>
+        <div class="sub">(«Ер Төстік» ертегісі мысалында)</div>
+      </div>
+    </div>
+    <div class="q"><b>Зерттеу сұрағы:</b> жақсы жасалған жарнама 5-сынып оқушыларын қазақ ертегісін оқуға қызықтыра ала ма?</div>
+    <div class="q" style="background:#fdf1e3"><b style="color:#7a2e1d">Болжам:</b> егер жарнама ертегінің құпияларын көрсетіп, сұрақ қойса, ертегіні оқығысы келетіндер көбейеді.</div>
+    <div class="row">
+      <div class="img">ОСЫ ЖЕРГЕ<br>өз қолыңмен салған<br>Б плакатының<br>фотосуретін жапсыр<br>(немесе плакаттың өзін)</div>
+      <div class="img"><img src="figs/aida.png" alt="AIDA сызбасы"></div>
+    </div>
+    <div class="result">
+      <h2 style="border:none">Негізгі нәтиже</h2>
+      <div class="big">
+        <div><span class="ph">__ → __</span>«Оқығым келеді»<br>орташа балы (дейін → кейін)</div>
+        <div><span class="ph">__ / __</span>Б плакатын / А плакатын<br>таңдағандар</div>
+        <div><span class="ph">__</span>бір аптада ертегіні<br>оқығандар</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: conclusions, practical value, sources, QR -->
+  <section class="panel side">
+    <div class="block">
+      <h2>Қорытынды</h2>
+      <ul>
+        <li>Жақсы жарнаманың 4 қадамы бар: назар аудар – қызықтыр – қалау тудыр – шақыр.</li>
+        <li>Балалар кітапты суреті мен досының кеңесіне қарап таңдайды <span class="ph">[__%]</span>.</li>
+        <li>Болжам <span class="ph">[расталды]</span>: жарнама ертегіге қызығушылықты арттырады.</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h2>Практикалық маңызы</h2>
+      <p>Плакатты мектеп кітапханасы «Кітап апталығында» пайдалана алады. Осы тәсілмен басқа ертегілерге де жарнама жасауға болады.</p>
+    </div>
+    <div class="block src">
+      <h2>Дереккөздер</h2>
+      <ol>
+        <li>Пропп В.Я. Морфология сказки. – М., 1969.</li>
+        <li>Потанин Г.Н. Очерки Северо-Западной Монголии. Вып. IV. – СПб., 1883.</li>
+        <li>Қазақ әдебиеті: 5-сыныпқа арналған оқулық.</li>
+        <li>«Жарнама туралы» ҚР Заңы, 2003.</li>
+        <li>Огилви Д. Огилви о рекламе. – М., 2007.</li>
+      </ol>
+    </div>
+    <div class="block">
+      <h2>Толығырақ</h2>
+      <div class="qr">QR-код:<br>жұмыстың толық<br>нұсқасы және<br>бейнеролик</div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
