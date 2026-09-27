@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8">
+<style>
+body{margin:0;font-family:"Nunito","DejaVu Sans",sans-serif;background:#fff;color:#1D2846}
+#fig{width:900px;padding:20px 24px 16px}
+svg text{font-family:inherit}
+</style>
+<div id="fig"><svg id="s" width="852" height="380" viewBox="0 0 852 380"></svg></div>
+<script>
+// Ойын сөздігіндегі (70 сөз) қазақ тіліне тән әріптердің саны – ойын кодынан есептелген
+const d=[["қ",19],["і",17],["ү",8],["ғ",6],["ә",5],["ұ",5],["ө",4],["ң",3],["һ",0]];
+const s=document.getElementById("s"),W=852,H=380,L=56,B=320,T=50,max=20,bw=56,gap=(W-L-20-bw*d.length)/(d.length-1);
+let h="";
+for(let v=0;v<=max;v+=5){const y=B-(B-T)*v/max;h+=`<line x1="${L}" x2="${W-10}" y1="${y}" y2="${y}" stroke="#DCE4EA" stroke-width="1"/><text x="${L-10}" y="${y+5}" font-size="15" text-anchor="end" fill="#56627E">${v}</text>`;}
+d.forEach(([l,v],i)=>{const x=L+10+i*(bw+gap),y=B-(B-T)*v/max,hh=B-y;
+ if(v>0) h+=`<path d="M${x},${B} V${y+4} q0,-4 4,-4 h${bw-8} q4,0 4,4 V${B} Z" fill="#B8286F"/>`;
+ h+=`<text x="${x+bw/2}" y="${y-8}" font-size="18" font-weight="700" text-anchor="middle" fill="#1D2846">${v}</text>`;
+ h+=`<text x="${x+bw/2}" y="${B+30}" font-size="26" font-weight="700" text-anchor="middle" fill="#1D2846">${l}</text>`;});
+h+=`<line x1="${L}" x2="${W-10}" y1="${B}" y2="${B}" stroke="#56627E" stroke-width="1.5"/>`;
+h+=`<text x="${L-40}" y="18" font-size="14" fill="#56627E">кездесу саны</text>`;
+s.innerHTML=h;
+</script>

@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8">
+<style>
+body{margin:0;font-family:"Nunito","DejaVu Sans",sans-serif;background:#fff}
+#fig{width:960px;padding:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px 34px;position:relative}
+.b{border:2.5px solid #2C3A6B;border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.3;color:#1D2846;background:#F6FAFB;position:relative}
+.b b{display:block;font-size:19px;margin-bottom:4px}
+.b.a{background:#D3EEF4;border-color:#00809E}
+.b.t{background:#FFF1CF;border-color:#C98A00}
+.b.r{background:#FBE3EF;border-color:#B8286F}
+.b:not(.last)::after{content:"→";position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-size:26px;color:#2C3A6B}
+.row2 .b::after{content:none}
+.lab{grid-column:1/-1;font-size:15px;color:#56627E;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-top:6px}
+</style>
+<div id="fig">
+<div class="lab">Ойын жолы</div>
+<div class="b a"><b>1. Басты бет</b>Ойыншы коды, 4 бөлім: Ойнау, Сөздік, Тест, Нәтижелер</div>
+<div class="b a"><b>2. Тақырып</b>7 тақырып: жануарлар, отбасы, мектеп, тағамдар, түстер, сандар, табиғат</div>
+<div class="b a"><b>3. Лабиринт</b>Сурет бойынша сөздің әріптерін ретімен жинау. 5 сөз, лабиринт 5×5-тен 7×7-ге дейін үлкейеді</div>
+<div class="b a last"><b>4. Сөз карточкасы</b>Сөз, аудармасы, жұлдыздар (1–3), қате саны мен уақыт</div>
+<div class="lab">Зерттеу жолы</div>
+<div class="b t"><b>Бастапқы тест</b>12 сұрақ, ойынға дейін</div>
+<div class="b a"><b>1–2 апта ойын</b>Әр ойыншы өз кодымен ойнайды</div>
+<div class="b t"><b>Қорытынды тест</b>Сол 12 сұрақ, ойыннан кейін</div>
+<div class="b r last"><b>Нәтижелер</b>Тест балын салыстыру, қай әріпте қате көп екенін көру, CSV файлы</div>
+</div>
