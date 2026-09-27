@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Сөздер лабиринті</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&family=Unbounded:wght@600;800&display=swap">
+<style>
+:root{
+  --ground:#EEF3EF; --paper:#FFFFFF; --ink:#1B2440; --muted:#56607A;
+  --wall:#2A3A7C; --floor:#F8FAF7; --trail:#D5E4F3;
+  --gold:#F2B632; --gold-ink:#5A3E00; --gate:#15948F; --gate-soft:#D3EFEC;
+  --good:#2F8F46; --good-soft:#DDF2E1; --bad:#C9463D; --bad-soft:#FBE3E0;
+  --line:#D4DCE4; --shadow:0 2px 0 rgba(27,36,64,.12);
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#121829; --paper:#1B2338; --ink:#EEF1FA; --muted:#A5AECB;
+    --wall:#8EA2FF; --floor:#18203A; --trail:#26335A;
+    --gold:#F6C453; --gold-ink:#3A2800; --gate:#35C2BB; --gate-soft:#123F42;
+    --good:#5BC274; --good-soft:#173A22; --bad:#F07A70; --bad-soft:#48201D;
+    --line:#2E3854; --shadow:0 2px 0 rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#121829; --paper:#1B2338; --ink:#EEF1FA; --muted:#A5AECB;
+  --wall:#8EA2FF; --floor:#18203A; --trail:#26335A;
+  --gold:#F6C453; --gold-ink:#3A2800; --gate:#35C2BB; --gate-soft:#123F42;
+  --good:#5BC274; --good-soft:#173A22; --bad:#F07A70; --bad-soft:#48201D;
+  --line:#2E3854; --shadow:0 2px 0 rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;padding-inline:16px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--gate);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 32px}
+.screen{display:flex;flex-direction:column;gap:20px}
+.btn{border:2px solid var(--ink);background:var(--paper);border-radius:14px;padding:12px 18px;font-weight:800;box-shadow:0 3px 0 var(--ink);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.btn.primary{background:var(--gold);color:var(--gold-ink);border-color:var(--gold-ink);box-shadow:0 3px 0 var(--gold-ink)}
+.btn.teal{background:var(--gate);color:#fff;border-color:var(--ink)}
+.btn.small{padding:7px 12px;font-size:15px;border-radius:10px}
+.btn.ghost{background:transparent;box-shadow:none;border-color:var(--line)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:18px}
+.muted{color:var(--muted)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* ornament band: қошқар мүйіз motif drawn with CSS masks is heavy; use an SVG pattern */
+.orn{height:22px;background-repeat:repeat-x;background-size:44px 22px;opacity:.9}
+
+/* HOME */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+.hero h1{font-size:clamp(34px,6vw,62px);font-weight:800;letter-spacing:-.01em}
+.hero h1 .l{display:inline-block;background:var(--gold);color:var(--gold-ink);border-radius:10px;padding:0 .12em;margin-right:.04em;transform:rotate(-3deg)}
+.hero p{max-width:34em;margin:10px 0 0}
+#heroMaze{width:100%;max-width:380px;aspect-ratio:1;justify-self:center;display:block}
+.codebox{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.codebox label{display:flex;flex-direction:column;gap:6px;font-weight:800}
+.codebox input{font:inherit;font-weight:800;font-size:20px;padding:10px 14px;border-radius:12px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);width:170px;text-transform:uppercase}
+.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.menu .btn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px 16px}
+.menu .btn small{font-weight:600;color:inherit;opacity:.8;font-size:14px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;counter-reset:s}
+.steps div{counter-increment:s;background:var(--paper);border:2px dashed var(--line);border-radius:14px;padding:12px 14px;font-size:15px}
+.steps div::before{content:counter(s);display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--wall);color:var(--paper);font-weight:800;margin-right:8px;font-size:14px}
+
+/* LEVELS */
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.lvl{display:flex;flex-direction:column;gap:8px;text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:18px;padding:16px;box-shadow:0 4px 0 var(--ink)}
+.lvl .n{font-family:var(--display);font-size:28px;color:var(--wall)}
+.lvl h3{font-size:16px}
+.lvl .t{font-size:14px;color:var(--muted)}
+.stars{letter-spacing:2px;color:var(--gold);font-size:20px;-webkit-text-stroke:.6px var(--gold-ink)}
+.stars .off{color:var(--line);-webkit-text-stroke:0}
+
+/* GAME */
+.gbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.gbar h2{font-size:clamp(18px,3vw,24px);flex:1;min-width:180px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+.game{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.board{background:var(--paper);border:3px solid var(--wall);border-radius:20px;padding:10px;touch-action:none}
+#maze{display:block;width:100%;height:auto;max-width:100%;margin:0 auto}
+.side{display:flex;flex-direction:column;gap:14px}
+.bag{display:flex;gap:6px;flex-wrap:wrap}
+.slot{width:40px;height:46px;border-radius:10px;border:2px dashed var(--line);display:grid;place-items:center;font-family:var(--display);font-size:20px;font-weight:800}
+.slot.got{background:var(--gold);border:2px solid var(--gold-ink);color:var(--gold-ink);animation:pop .35s}
+@keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.rule{font-size:15px;background:var(--gate-soft);border:2px solid var(--gate);border-radius:14px;padding:12px 14px}
+.rule b{display:block;margin-bottom:4px}
+.pad{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(2,58px);gap:8px;justify-content:center}
+.pad button{border:2px solid var(--ink);background:var(--paper);border-radius:14px;font-size:24px;font-weight:800;box-shadow:0 3px 0 var(--ink)}
+.pad button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.pad .u{grid-column:2}
+.pad .l{grid-column:1;grid-row:2}.pad .d{grid-column:2;grid-row:2}.pad .r{grid-column:3;grid-row:2}
+.legend{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:14px;align-items:center}
+.legend i{width:22px;height:22px;border-radius:6px;display:inline-block}
+
+/* MODAL */
+.veil{position:fixed;inset:0;background:rgba(10,14,30,.55);display:grid;place-items:center;padding:16px;z-index:10}
+.modal{background:var(--paper);border:3px solid var(--ink);border-radius:22px;max-width:620px;width:100%;padding:22px;box-shadow:0 8px 0 var(--ink);display:flex;flex-direction:column;gap:14px;max-height:calc(100% - 20px);overflow:auto}
+.modal h3{font-size:clamp(19px,3.2vw,24px)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{border:2px solid var(--ink);background:var(--floor);border-radius:14px;padding:14px;font-size:19px;font-weight:800;text-align:left;box-shadow:0 3px 0 var(--ink);display:flex;gap:10px;align-items:center}
+.opt .k{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:8px;background:var(--wall);color:var(--paper);font-size:14px}
+.opt.ok{background:var(--good-soft);border-color:var(--good);box-shadow:0 3px 0 var(--good)}
+.opt.no{background:var(--bad-soft);border-color:var(--bad);box-shadow:none;opacity:.8;animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb{border-radius:12px;padding:10px 14px;font-weight:700}
+.fb.good{background:var(--good-soft);color:var(--ink);border:2px solid var(--good)}
+.fb.bad{background:var(--bad-soft);color:var(--ink);border:2px solid var(--bad)}
+.tiles{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;min-height:56px}
+.tile{width:48px;height:54px;border-radius:12px;border:2px solid var(--gold-ink);background:var(--gold);color:var(--gold-ink);font-family:var(--display);font-size:22px;font-weight:800;box-shadow:0 3px 0 var(--gold-ink)}
+.tile.empty{background:transparent;border:2px dashed var(--line);box-shadow:none}
+.big-stars{font-size:48px;text-align:center}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--gate);transition:width .3s}
+
+/* STATS */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:14px;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+canvas.chart{width:100%;height:auto;display:block}
+textarea{width:100%;min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:13px;border-radius:12px;border:2px solid var(--line);background:var(--floor);color:var(--ink);padding:10px}
+.glossary{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.glossary .card h3{font-size:20px;letter-spacing:.06em}
+.lock{opacity:.5}
+.faces{display:flex;gap:10px;flex-wrap:wrap}
+.faces button{flex:1;min-width:110px}
+.faces button.sel{background:var(--gate);color:#fff}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:800;z-index:20}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr}
+  #heroMaze{max-width:260px}
+  .menu,.steps,.kpis{grid-template-columns:1fr 1fr}
+  .game{grid-template-columns:1fr}
+  .side .pad{order:-2}
+  .grid2{grid-template-columns:1fr}
+}
+@media (max-width:460px){
+  .opts{grid-template-columns:1fr}
+  .menu,.steps{grid-template-columns:1fr}
+  .pad{grid-template-columns:repeat(3,58px);grid-template-rows:repeat(2,52px)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="modalRoot"></div>
+
+<script>
+/* =====================================================================
+   «Сөздер лабиринті» — 3-сыныпқа арналған қазақ тілі ойыны.
+   Ойын идеясы, деңгейлер тақырыбы, сөздер мен сұрақтар — жоба авторыныкі.
+   Бағдарлама коды Claude Code (ЖИ) көмегімен жазылды (ЖИ декларациясын қараңыз).
+   ===================================================================== */
+
+// ---------- 1. ДЕҢГЕЙЛЕР МЕН СҰРАҚТАР ----------
+// Әр сұрақта a[0] — дұрыс жауап. Экранда жауаптар араластырылады.
+const LEVELS = [
+ { id:1, title:"Дыбыстар әлемі", topic:"Дауысты және дауыссыз дыбыстар",
+   word:"КІТАП", meaning:"Беттері бар, ішінде әңгіме мен білім бар. Оны оқимыз.",
+   size:7, gates:3,
+   rule:"Дауысты дыбыстар: а, ә, е, о, ө, ұ, ү, ы, і. Жуан дауыстылар: а, о, ұ, ы. Жіңішке дауыстылар: ә, е, ө, ү, і. Дауыссыздар: қатаң (п, т, к, қ, с, ш), ұяң (б, в, г, ғ, д, ж, з), үнді (м, н, ң, л, р, й, у).",
+   q:[
+    {q:"Қай әріп дауысты дыбысты білдіреді?", a:["А","Б","Қ","Н"]},
+    {q:"Қай сөз тек жуан дауыстылардан тұрады?", a:["бала","күн","мектеп","әже"]},
+    {q:"Қай сөз жіңішке айтылады?", a:["гүл","қала","торғай","бұлт"]},
+    {q:"Қай әріп қазақ тіліне тән дыбысты білдіреді?", a:["Ң","Н","Т","Л"]},
+    {q:"«Сәбіз» сөзінде неше дауысты дыбыс бар?", a:["2","1","3","4"], h:"Дауыстыларды санайық: с-Ә-б-І-з."},
+    {q:"«Мектеп» сөзінде неше дыбыс бар?", a:["6","5","7","4"], h:"Әр дыбысты бөлек айтып көр: м-е-к-т-е-п."},
+    {q:"Қатаң дауыссызды тап.", a:["П","Б","Д","М"]},
+    {q:"Ұяң дауыссызды тап.", a:["З","С","Т","Р"]},
+    {q:"Үнді дауыссызды тап.", a:["М","К","Б","З"]},
+    {q:"Жетіспейтін әріпті тап: Т _ ңіз", a:["е","а","ы","о"], h:"Сөз жіңішке айтылады: теңіз."},
+    {q:"Жетіспейтін әріпті тап: Қ _ ла", a:["а","е","ә","і"], h:"Сөз жуан айтылады: қала."},
+    {q:"Қай сөз жіңішке дауыстыдан басталады?", a:["үй","ана","орман","ұя"]},
+    {q:"Қай сөзде «ң» әрпі бар?", a:["қоңыз","қозы","қонақ","құлын"]},
+    {q:"«Ұ» мен «Ү» әріптері қандай дыбысты білдіреді?", a:["дауысты","дауыссыз","қатаң","ұяң"]},
+   ]},
+ { id:2, title:"Буын баспалдағы", topic:"Буын және тасымал",
+   word:"МЕКТЕП", meaning:"Балалар күн сайын барып, білім алатын орын.",
+   size:8, gates:3,
+   rule:"Сөзде неше дауысты дыбыс болса, сонша буын болады. Бір буынды сөз тасымалданбайды. Бір әріп жолдың соңында жалғыз қалмайды және келесі жолға жалғыз көшпейді.",
+   q:[
+    {q:"«Балапан» сөзінде неше буын бар?", a:["3","2","4","1"], h:"ба-ла-пан"},
+    {q:"«Мектеп» сөзін буынға дұрыс бөл.", a:["мек-теп","ме-ктеп","мект-еп","м-ектеп"]},
+    {q:"«Қарлығаш» сөзі буынға қалай бөлінеді?", a:["қар-лы-ғаш","қа-рлы-ғаш","қарл-ы-ғаш","қар-лығ-аш"]},
+    {q:"Бір буынды сөзді тап.", a:["күн","қала","алма","терезе"]},
+    {q:"Үш буынды сөзді тап.", a:["қарындаш","дос","бала","оқушылар"], h:"қа-рын-даш"},
+    {q:"Қай сөзді жолдан жолға тасымалдауға болмайды?", a:["нан","дала","кітап","бақша"]},
+    {q:"Қай сөз дұрыс тасымалданған?", a:["дәп-тер","дә-птер","дәпт-ер","д-әптер"]},
+    {q:"Буын саны сөздегі неменің санына тең?", a:["дауысты дыбыстардың","дауыссыз дыбыстардың","барлық әріптердің","сөйлемдердің"]},
+    {q:"«Ата» сөзін тасымалдауға бола ма?", a:["Жоқ, бір әріп жалғыз қалмайды","Иә: а-та","Иә: ат-а","Кез келген жерден болады"]},
+    {q:"«Көбелек» сөзінде неше буын бар?", a:["3","2","4","5"], h:"кө-бе-лек"},
+    {q:"Екі буынды сөзді тап.", a:["мысық","ит","балапан","қаз"]},
+    {q:"«Алма» сөзін буынға бөл.", a:["ал-ма","а-лма","алм-а","а-л-ма"]},
+   ]},
+ { id:3, title:"Мағына бағы", topic:"Синоним, антоним, мақал",
+   word:"ДОСТЫҚ", meaning:"Достардың бір-біріне деген адал, жылы қарым-қатынасы.",
+   size:9, gates:4,
+   rule:"Синоним — мағынасы жақын сөздер (тез – жылдам). Антоним — мағынасы қарама-қарсы сөздер (үлкен – кіші).",
+   q:[
+    {q:"«Үлкен» сөзінің антонимін тап.", a:["кіші","зор","биік","ұзын"]},
+    {q:"«Жылы» сөзінің антонимін тап.", a:["суық","жаңа","ашық","жұмсақ"]},
+    {q:"«Әдемі» сөзінің синонимін тап.", a:["сұлу","ұсқынсыз","кішкентай","жылдам"]},
+    {q:"«Жылдам» сөзінің синонимін тап.", a:["тез","баяу","ақырын","ауыр"]},
+    {q:"«Күндіз» сөзінің антонимін тап.", a:["түнде","таңертең","бүгін","ертең"]},
+    {q:"Мағынасы қарама-қарсы сөздер жұбын тап.", a:["ащы – тәтті","ақ – аппақ","үй – баспана","дос – жолдас"]},
+    {q:"Мағынасы жақын сөздер жұбын тап.", a:["дос – жолдас","ақ – қара","ыстық – суық","кіру – шығу"]},
+    {q:"Қай сөйлемде «көз» сөзі бұлақтың шығатын жері деген мағынада тұр?", a:["Бұлақтың көзі ашылды.","Баланың көзі қара.","Көзіңді жұм.","Көзілдірік тақ."], h:"«Көз» — көп мағыналы сөз."},
+    {q:"«Ақылды» сөзінің антонимін тап.", a:["ақылсыз","дана","зерек","білімді"]},
+    {q:"«Айту» сөзінің синонимін тап.", a:["сөйлеу","тыңдау","үндемеу","ұйықтау"]},
+    {q:"«Кең» сөзінің антонимін тап.", a:["тар","ұзын","биік","жаңа"]},
+    {q:"Мақалды толықтыр: «Өнер алды — …»", a:["қызыл тіл","жақсы сөз","ақыл-ой","ақ қағаз"]},
+    {q:"Мақалды толықтыр: «Оқу — білім …, білім — өмір шырағы»", a:["бұлағы","көлі","кілті","жолы"]},
+   ]},
+ { id:4, title:"Сөз шеберханасы", topic:"Түбір, қосымша, көптік жалғау",
+   word:"ЕҢБЕК", meaning:"Адамның пайдалы жұмысы. «Еңбек етсең ерінбей, тояды қарның тіленбей» (Абай).",
+   size:10, gates:4,
+   rule:"Түбір — сөздің негізгі бөлігі, қосымша түбірге жалғанады. Көптік жалғау: дауыстыдан және р, й, у-дан кейін -лар/-лер; л, м, н, ң, ж, з-дан кейін -дар/-дер; қатаң дыбыстан кейін -тар/-тер.",
+   q:[
+    {q:"«Кітаптар» сөзінің түбірін тап.", a:["кітап","кітаптар","тар","кіт"]},
+    {q:"«Бала» сөзіне қай көптік жалғауы жалғанады?", a:["-лар","-лер","-дар","-тар"]},
+    {q:"«Мектеп» сөзінің көпше түрін тап.", a:["мектептер","мектептар","мектеплер","мектепдер"]},
+    {q:"«Гүл» сөзінің көпше түрін тап.", a:["гүлдер","гүлдар","гүллер","гүлтер"]},
+    {q:"«Қала» сөзінің көпше түрін тап.", a:["қалалар","қалалер","қаладар","қалатар"]},
+    {q:"«Қыз» сөзінің көпше түрін тап.", a:["қыздар","қызлар","қызтар","қыздер"]},
+    {q:"«Үй» сөзінің көпше түрін тап.", a:["үйлер","үйдер","үйтер","үйлар"]},
+    {q:"«Ат» сөзінің көпше түрін тап.", a:["аттар","атлар","атдар","аттер"]},
+    {q:"Қосымшасы бар сөзді тап.", a:["балалар","бала","үй","күн"]},
+    {q:"«Достық» сөзіндегі қосымшаны тап.", a:["-тық","дос","-ық","-с"]},
+    {q:"«Балықшы» сөзінің түбірін тап.", a:["балық","балықшы","-шы","бал"]},
+    {q:"«Қарлығаштар» сөзіндегі көптік жалғауын тап.", a:["-тар","-ғаш","-ар","қарлығаш"]},
+    {q:"Түбір сөзді тап.", a:["тау","таулар","таулы","тауда"]},
+   ]},
+ { id:5, title:"Сөз таптары қаласы", topic:"Зат есім, сын есім, сан есім, етістік",
+   word:"ОТАНЫМ", meaning:"Туып-өскен жерім, елім. Отан — отбасынан басталады.",
+   size:11, gates:5,
+   rule:"Зат есім — кім? не? Сын есім — қандай? қай? Сан есім — қанша? нешінші? Етістік — не істеді? не қылды? қайтті? Жалқы есім бас әріппен жазылады.",
+   q:[
+    {q:"«Жүгірді» — қай сөз табы?", a:["етістік","зат есім","сын есім","сан есім"]},
+    {q:"«Қызыл» — қай сөз табы?", a:["сын есім","зат есім","етістік","сан есім"]},
+    {q:"«Мысық» — қай сөз табы?", a:["зат есім","сын есім","етістік","сан есім"]},
+    {q:"«Бес» — қай сөз табы?", a:["сан есім","зат есім","сын есім","етістік"]},
+    {q:"«Кім?» деген сұраққа жауап беретін сөзді тап.", a:["мұғалім","кітап","жазды","әдемі"]},
+    {q:"«Не?» деген сұраққа жауап беретін сөзді тап.", a:["қалам","оқушы","ойнады","үлкен"]},
+    {q:"«Қандай?» деген сұраққа жауап беретін сөзді тап.", a:["биік","тау","барды","екі"]},
+    {q:"«Не істеді?» деген сұраққа жауап беретін сөзді тап.", a:["жазды","дәптер","жасыл","он"]},
+    {q:"«Қанша?» деген сұраққа жауап беретін сөзді тап.", a:["он","орман","ойнады","ақ"]},
+    {q:"Сөйлемдегі етістікті тап: «Айгүл кітап оқыды.»", a:["оқыды","Айгүл","кітап"]},
+    {q:"Сөйлемдегі сын есімді тап: «Ақ қар жауды.»", a:["ақ","қар","жауды"]},
+    {q:"Бас әріппен жазылатын жалқы есімді тап.", a:["Алматы","қала","өзен","тау"]},
+    {q:"Сөйлемнің соңына қандай белгі қойылады: «Сен қайда барасың»", a:["?",".","!",","]},
+   ]},
+];
+
+// Ойынға дейінгі және кейінгі тексеру тесті (ойын сұрақтарынан бөлек, бірдей тақырыптар)
+const TEST = [
+  {q:"Қай әріп дауысты дыбысты білдіреді?", a:["О","Р","Ш","К"], lv:1},
+  {q:"Қатаң дауыссызды тап.", a:["С","Ж","Л","Ғ"], lv:1},
+  {q:"«Кітапхана» сөзінде неше буын бар?", a:["4","3","5","2"], lv:2},
+  {q:"Қай сөз буынға дұрыс бөлінген?", a:["қа-лам","қал-ам","қ-алам","қала-м"], lv:2},
+  {q:"«Ыстық» сөзінің антонимін тап.", a:["суық","жылы","күшті","жарық"], lv:3},
+  {q:"«Көңілді» сөзінің синонимін тап.", a:["қуанышты","мұңды","ашулы","ұялшақ"], lv:3},
+  {q:"«Қой» сөзінің көпше түрін тап.", a:["қойлар","қойдар","қойтар","қойлер"], lv:4},
+  {q:"«Мұғалімдер» сөзінің түбірін тап.", a:["мұғалім","мұғалімдер","-дер","мұға"], lv:4},
+  {q:"«Әдемі» — қай сөз табы?", a:["сын есім","зат есім","етістік","сан есім"], lv:5},
+  {q:"«Ойнады» сөзі қандай сұраққа жауап береді?", a:["не істеді?","кім?","қандай?","қанша?"], lv:5},
+];
+const SURVEY = [
+  "Ойын саған ұнады ма?",
+  "Ойын арқылы жаңа нәрсе үйрендің бе?",
+  "Қазақ тілі тапсырмаларын осылай тағы орындағың келе ме?",
+];
+const SURVEY_ANS = ["Иә","Аздап","Жоқ"];
+
+// ---------- 2. САҚТАУ (осы құрылғыдағы браузерде ғана) ----------
+const KEY = "sozder-labirinti-v1";
+function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && s.v===1) return s; }catch(e){} return {v:1, player:"", sound:true, best:{}, log:{levels:[], answers:[], tests:[], survey:[]}}; }
+const S = load();
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+// ---------- 3. КӨМЕКШІ ФУНКЦИЯЛАР ----------
+const $ = (sel, el=document) => el.querySelector(sel);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function starsHtml(n){ let h=""; for(let i=0;i<3;i++) h += i<n ? "★" : '<span class="off">★</span>'; return `<span class="stars" aria-label="${n} жұлдыз">${h}</span>`; }
+function toast(t){ const d=document.createElement("div"); d.className="toast"; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),1800); }
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function today(){ const d=new Date(); return d.toISOString().slice(0,10)+" "+d.toTimeString().slice(0,5); }
+
+// Дыбыс (WebAudio) — ойыншы бірінші басқаннан кейін ғана іске қосылады
+let AC=null;
+function beep(kind){
+  if(!S.sound) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const notes = {step:[[520,.03]], coin:[[880,.07],[1320,.1]], ok:[[660,.08],[880,.08],[1100,.14]], no:[[220,.18]], win:[[523,.1],[659,.1],[784,.1],[1047,.25]], door:[[300,.06],[450,.1]]}[kind] || [];
+    let t = AC.currentTime;
+    for(const [f,d] of notes){
+      const o=AC.createOscillator(), g=AC.createGain();
+      o.type = kind==="no" ? "sawtooth" : "triangle"; o.frequency.value=f;
+      g.gain.setValueAtTime(.12,t); g.gain.exponentialRampToValueAtTime(.001,t+d);
+      o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+d+.02); t+=d*.9;
+    }
+  }catch(e){}
+}
+
+// ---------- 4. ЛАБИРИНТ ҚҰРУ ----------
+// Қабырғалар: 1 — жоғары, 2 — оң, 4 — төмен, 8 — сол
+const DIRS = [[0,-1,1,4],[1,0,2,8],[0,1,4,1],[-1,0,8,2]];
+function makeMaze(n){
+  const w = new Array(n*n).fill(15), seen = new Array(n*n).fill(false), stack=[0]; seen[0]=true;
+  while(stack.length){
+    const c = stack[stack.length-1], x=c%n, y=(c/n)|0;
+    const nb = shuffle(DIRS).filter(([dx,dy])=>{ const nx=x+dx, ny=y+dy; return nx>=0&&ny>=0&&nx<n&&ny<n&&!seen[ny*n+nx]; });
+    if(!nb.length){ stack.pop(); continue; }
+    const [dx,dy,b,ob] = nb[0], nc=(y+dy)*n+(x+dx);
+    w[c]&=~b; w[nc]&=~ob; seen[nc]=true; stack.push(nc);
+  }
+  return w;
+}
+function neighbors(w,n,c){ const x=c%n,y=(c/n)|0, r=[]; for(const [dx,dy,b] of DIRS){ if(!(w[c]&b)) r.push((y+dy)*n+(x+dx)); } return r; }
+function bfsPath(w,n,a,b){
+  const prev=new Array(n*n).fill(-1), q=[a]; prev[a]=a;
+  while(q.length){ const c=q.shift(); if(c===b) break; for(const m of neighbors(w,n,c)) if(prev[m]<0){ prev[m]=c; q.push(m); } }
+  const path=[]; for(let c=b; c!==a; c=prev[c]) path.push(c); path.push(a); return path.reverse();
+}
+
+// ---------- 5. ЭКРАНДАР ----------
+const app = $("#app"), modalRoot = $("#modalRoot");
+let G = null; // ағымдағы ойын күйі
+
+function setScreen(html){ stopGame(); modalRoot.innerHTML=""; app.innerHTML = html; window.scrollTo(0,0); }
+
+function ornament(){
+  // қошқар мүйіз өрнегінің қарапайым нұсқасы (SVG фон)
+  const c = encodeURIComponent(css("--wall")||"#2A3A7C");
+  return `background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='22'%3E%3Cpath d='M2 20 C2 6 14 4 14 12 C14 17 8 17 8 13 M42 20 C42 6 30 4 30 12 C30 17 36 17 36 13 M14 12 L22 20 L30 12' fill='none' stroke='${c}' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E")`;
+}
+
+function home(){
+  const done = LEVELS.filter(l=>S.best[l.id]).length;
+  setScreen(`
+  <div class="screen">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Қазақ тілі · 3-сынып · интерактивті ойын</div>
+        <h1 style="margin-top:8px"><span class="l">С</span>өздер<br>лабиринті</h1>
+        <p>Лабиринттен өт, алтын әріптерді жина, қақпалардағы тапсырмаларды шеш. Жиналған әріптерден жасырын сөзді құрастырсаң, деңгей аяқталады.</p>
+        <div class="codebox" style="margin-top:16px">
+          <label for="pcode">Ойыншы коды
+            <input id="pcode" maxlength="10" placeholder="3А-01" value="${esc(S.player)}" autocomplete="off">
+          </label>
+          <button class="btn primary" id="go">Ойнау ▶</button>
+        </div>
+        <p class="muted" style="font-size:14px">Аты-жөніңді жазба. Мұғалім берген кодты жаз, мысалы: 3А-01.</p>
+      </div>
+      <canvas id="heroMaze" width="380" height="380" aria-hidden="true"></canvas>
+    </div>
+    <div class="orn" style="${ornament()}"></div>
+    <div class="menu">
+      <button class="btn" data-go="levels"><span>🗺 Деңгейлер</span><small>${done} / 5 деңгей өтілді</small></button>
+      <button class="btn" data-go="test"><span>📝 Тексеру тесті</span><small>10 сұрақ, ойынға дейін және кейін</small></button>
+      <button class="btn" data-go="words"><span>📖 Менің сөздігім</span><small>Табылған жасырын сөздер</small></button>
+      <button class="btn" data-go="stats"><span>📊 Нәтижелер</span><small>Зерттеуге арналған деректер</small></button>
+    </div>
+    <div>
+      <h2 style="font-size:20px;margin-bottom:10px">Қалай ойнаймыз?</h2>
+      <div class="steps">
+        <div>Көрсеткі пернелермен немесе экрандағы батырмалармен жүр.</div>
+        <div>Алтын әріпті жина. Барлық әріп жиналса, шығу есігі ашылады.</div>
+        <div>Көк «?» қақпа — тапсырма. Дұрыс жауап берсең, қақпа ашылады.</div>
+        <div>Шығуда әріптерден жасырын сөзді құрастыр да, жұлдыз ал.</div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn small ghost" id="snd">${S.sound?"🔊 Дыбыс қосулы":"🔇 Дыбыс өшірулі"}</button>
+    </div>
+  </div>`);
+  drawHero();
+  const saveCode = () => { S.player = $("#pcode").value.trim().toUpperCase(); save(); };
+  $("#pcode").addEventListener("change", saveCode);
+  $("#go").onclick = () => { saveCode(); levels(); };
+  app.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { saveCode(); ({levels, test:testIntro, words, stats})[b.dataset.go](); });
+  $("#snd").onclick = () => { S.sound=!S.sound; save(); home(); };
+}
+
+function drawHero(){
+  const cv=$("#heroMaze"); if(!cv) return;
+  const n=8, w=makeMaze(n), ctx=cv.getContext("2d"), s=380/n;
+  ctx.fillStyle=css("--floor"); ctx.fillRect(0,0,380,380);
+  ctx.strokeStyle=css("--wall"); ctx.lineWidth=6; ctx.lineCap="round";
+  for(let c=0;c<n*n;c++){ const x=(c%n)*s, y=((c/n)|0)*s; ctx.beginPath();
+    if(w[c]&1){ctx.moveTo(x,y);ctx.lineTo(x+s,y);} if(w[c]&2){ctx.moveTo(x+s,y);ctx.lineTo(x+s,y+s);}
+    if(w[c]&4){ctx.moveTo(x,y+s);ctx.lineTo(x+s,y+s);} if(w[c]&8){ctx.moveTo(x,y);ctx.lineTo(x,y+s);} ctx.stroke(); }
+  const letters="СӨЗДЕР"; const cells=shuffle([...Array(n*n).keys()].slice(2)).slice(0,6);
+  cells.forEach((c,i)=>drawLetter(ctx,(c%n)*s+s/2,((c/n)|0)*s+s/2,s*.34,letters[i]));
+  drawPlayer(ctx,s/2,s/2,s*.36);
+}
+
+function levels(){
+  setScreen(`
+  <div class="screen">
+    <div class="gbar"><button class="btn small" id="back">← Басты бет</button><h2>Деңгейді таңда</h2>
+      <span class="chip">Ойыншы: ${esc(S.player||"—")}</span></div>
+    <div class="levels">
+      ${LEVELS.map(l=>`
+        <button class="lvl" data-l="${l.id}">
+          <span class="n">${l.id}</span>
+          <h3>${esc(l.title)}</h3>
+          <span class="t">${esc(l.topic)}</span>
+          <span class="t">Лабиринт ${l.size}×${l.size} · ${l.gates} қақпа · ${l.word.length} әріп</span>
+          ${starsHtml(S.best[l.id]?.stars||0)}
+        </button>`).join("")}
+    </div>
+    <p class="muted">Деңгейлерді ретімен өткен дұрыс: әр келесі деңгейде лабиринт үлкейіп, қақпа көбейеді.</p>
+  </div>`);
+  $("#back").onclick = home;
+  app.querySelectorAll("[data-l]").forEach(b => b.onclick = () => play(+b.dataset.l));
+}
+
+// ---------- 6. ОЙЫН ----------
+function play(id){
+  const L = LEVELS.find(l=>l.id===id), n=L.size;
+  // Шығу есігі тұйық болуы керек: әйтпесе оның арғы жағындағы әріпке жету мүмкін болмай қалады
+  let w = makeMaze(n); for(let k=0; k<300 && neighbors(w,n,n*n-1).length>1; k++) w = makeMaze(n);
+  const start=0, exit=n*n-1, path=bfsPath(w,n,start,exit);
+  // Қақпалар жолдың бойына біркелкі қойылады — оларды айналып өту мүмкін емес
+  const gates = new Map();
+  for(let k=1;k<=L.gates;k++){ const c = path[Math.round(k*(path.length-1)/(L.gates+1))]; if(c!==start && c!==exit) gates.set(c,true); }
+  // Әріптер тұйықтарға (dead-end) жасырылады
+  const onPath = new Set(path);
+  const dead = shuffle([...Array(n*n).keys()].filter(c=>c!==start&&c!==exit&&!gates.has(c)&&neighbors(w,n,c).length===1&&!onPath.has(c)));
+  const other = shuffle([...Array(n*n).keys()].filter(c=>c!==start&&c!==exit&&!gates.has(c)&&!dead.includes(c)));
+  const spots = dead.concat(other).slice(0, L.word.length);
+  const letters = new Map(); spots.forEach((c,i)=>letters.set(c,i));
+
+  setScreen(`
+  <div class="screen">
+    <div class="gbar">
+      <button class="btn small" id="back">← Деңгейлер</button>
+      <h2>${L.id}. ${esc(L.title)}</h2>
+      <span class="chip" title="Қателер">✖ <span id="mis">0</span></span>
+      <span class="chip" title="Уақыт">⏱ <span id="tm">0:00</span></span>
+      <button class="btn small ghost" id="snd" aria-label="Дыбыс">${S.sound?"🔊":"🔇"}</button>
+    </div>
+    <div class="game">
+      <div class="board" id="board"><canvas id="maze" aria-label="Лабиринт"></canvas></div>
+      <div class="side">
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:8px">Жиналған әріптер</div>
+          <div class="bag" id="bag">${[...L.word].map(()=>'<span class="slot"></span>').join("")}</div>
+        </div>
+        <div class="rule"><b>Тақырып: ${esc(L.topic)}</b>${esc(L.rule)}</div>
+        <div class="pad" aria-label="Басқару">
+          <button class="u" data-d="0" aria-label="Жоғары">↑</button>
+          <button class="l" data-d="3" aria-label="Солға">←</button>
+          <button class="d" data-d="2" aria-label="Төмен">↓</button>
+          <button class="r" data-d="1" aria-label="Оңға">→</button>
+        </div>
+        <div class="legend">
+          <i style="background:var(--gold)"></i><span>Алтын әріп — жина</span>
+          <i style="background:var(--gate)"></i><span>«?» қақпа — тапсырма</span>
+          <i style="background:var(--good)"></i><span>Шығу есігі</span>
+        </div>
+      </div>
+    </div>
+  </div>`);
+  G = { L, n, w, exit, gates, letters, pos:start, from:start, t:1, got:[], trail:new Set([start]),
+        mistakes:0, answered:0, t0:Date.now(), qpool:shuffle(L.q.map((_,i)=>i)), busy:false, raf:0 };
+  $("#back").onclick = levels;
+  $("#snd").onclick = e => { S.sound=!S.sound; save(); e.target.textContent = S.sound?"🔊":"🔇"; };
+  app.querySelectorAll("[data-d]").forEach(b => b.addEventListener("pointerdown", e => { e.preventDefault(); move(+b.dataset.d); }));
+  // Экранды сырғыту (свайп)
+  const board=$("#board"); let sx=0, sy=0;
+  board.addEventListener("pointerdown", e=>{ sx=e.clientX; sy=e.clientY; });
+  board.addEventListener("pointerup", e=>{ const dx=e.clientX-sx, dy=e.clientY-sy; if(Math.max(Math.abs(dx),Math.abs(dy))<24) return; move(Math.abs(dx)>Math.abs(dy) ? (dx>0?1:3) : (dy>0?2:0)); });
+  G.timer = setInterval(()=>{ const s=Math.floor((Date.now()-G.t0)/1000); const el=$("#tm"); if(el) el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }, 500);
+  resize(); loop();
+}
+function stopGame(){ if(G){ cancelAnimationFrame(G.raf); clearInterval(G.timer); } G=null; }
+
+function resize(){
+  if(!G) return; const cv=$("#maze"); if(!cv) return;
+  const box = $("#board").clientWidth - 20;
+  const maxH = Math.max(260, window.innerHeight - 170);
+  const size = Math.floor(Math.min(box, maxH, 640));
+  const dpr = window.devicePixelRatio||1;
+  cv.width = size*dpr; cv.height = size*dpr; cv.style.width = size+"px"; cv.style.height = size+"px";
+  G.size=size; G.dpr=dpr;
+}
+window.addEventListener("resize", ()=>{ resize(); });
+
+function loop(){
+  if(!G) return;
+  if(G.t<1){ G.t = Math.min(1, G.t + 1/7); }
+  draw();
+  G.raf = requestAnimationFrame(loop);
+}
+
+function draw(){
+  const cv=$("#maze"); if(!cv||!G) return;
+  const ctx=cv.getContext("2d"), {n,w,size,dpr}=G, s=size/n;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle=css("--floor"); ctx.fillRect(0,0,size,size);
+  // Жүрген жол
+  ctx.fillStyle=css("--trail");
+  for(const c of G.trail){ ctx.beginPath(); ctx.arc((c%n)*s+s/2,((c/n)|0)*s+s/2,s*.12,0,7); ctx.fill(); }
+  // Шығу есігі
+  const ex=(G.exit%n)*s, ey=((G.exit/n)|0)*s, open = G.got.length===G.L.word.length;
+  ctx.fillStyle = open ? css("--good") : css("--line");
+  roundRect(ctx,ex+s*.14,ey+s*.1,s*.72,s*.8,s*.3); ctx.fill();
+  ctx.fillStyle = open ? "#fff" : css("--muted"); ctx.font=`800 ${s*.42}px ${css("--body")}`; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(open?"⌂":"🔒", ex+s/2, ey+s*.54);
+  // Қақпалар
+  for(const c of G.gates.keys()){
+    const x=(c%n)*s, y=((c/n)|0)*s;
+    ctx.fillStyle=css("--gate"); roundRect(ctx,x+s*.1,y+s*.1,s*.8,s*.8,s*.18); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.font=`800 ${s*.5}px ${css("--display")}`; ctx.fillText("?", x+s/2, y+s*.55);
+  }
+  // Әріптер
+  for(const [c,i] of G.letters){ drawLetter(ctx,(c%n)*s+s/2,((c/n)|0)*s+s/2,s*.34,G.L.word[i]); }
+  // Қабырғалар
+  ctx.strokeStyle=css("--wall"); ctx.lineWidth=Math.max(3,s*.11); ctx.lineCap="round"; ctx.beginPath();
+  for(let c=0;c<n*n;c++){ const x=(c%n)*s, y=((c/n)|0)*s;
+    if(w[c]&1){ctx.moveTo(x,y);ctx.lineTo(x+s,y);} if(w[c]&8){ctx.moveTo(x,y);ctx.lineTo(x,y+s);}
+    if((c%n)===n-1 && (w[c]&2)){ctx.moveTo(x+s,y);ctx.lineTo(x+s,y+s);} if(((c/n)|0)===n-1 && (w[c]&4)){ctx.moveTo(x,y+s);ctx.lineTo(x+s,y+s);} }
+  ctx.stroke();
+  // Ойыншы (қозғалыс анимациясымен)
+  const e = 1-Math.pow(1-G.t,3);
+  const px = ((G.from%n) + ((G.pos%n)-(G.from%n))*e)*s + s/2, py = (((G.from/n)|0) + (((G.pos/n)|0)-((G.from/n)|0))*e)*s + s/2;
+  drawPlayer(ctx,px,py,s*.36);
+}
+function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function drawLetter(ctx,x,y,r,ch){
+  ctx.fillStyle=css("--gold"); ctx.strokeStyle=css("--gold-ink"); ctx.lineWidth=Math.max(1.5,r*.12);
+  ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle=css("--gold-ink"); ctx.font=`800 ${r*1.15}px ${css("--display")}`; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(ch,x,y+r*.06);
+}
+// «Білгіш» — тақия киген бала кейіпкер
+function drawPlayer(ctx,x,y,r){
+  ctx.fillStyle="#F4C9A0"; ctx.strokeStyle="#6B3E1F"; ctx.lineWidth=Math.max(1.5,r*.1);
+  ctx.beginPath(); ctx.arc(x,y+r*.12,r*.82,0,7); ctx.fill(); ctx.stroke();
+  // тақия
+  ctx.fillStyle="#B8322A"; ctx.beginPath(); ctx.moveTo(x-r*.8,y-r*.2); ctx.quadraticCurveTo(x,y-r*1.35,x+r*.8,y-r*.2); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle="#F2B632"; ctx.lineWidth=Math.max(1,r*.09); ctx.beginPath(); ctx.moveTo(x-r*.35,y-r*.55); ctx.quadraticCurveTo(x,y-r*.8,x+r*.35,y-r*.55); ctx.stroke();
+  // көз бен күлкі
+  ctx.fillStyle="#1B2440"; ctx.beginPath(); ctx.arc(x-r*.28,y+r*.12,r*.1,0,7); ctx.arc(x+r*.28,y+r*.12,r*.1,0,7); ctx.fill();
+  ctx.strokeStyle="#1B2440"; ctx.lineWidth=Math.max(1.2,r*.08); ctx.beginPath(); ctx.arc(x,y+r*.3,r*.3,.2*Math.PI,.8*Math.PI); ctx.stroke();
+}
+
+function move(d){
+  if(!G || G.busy || G.t<1 || modalRoot.firstChild) return;
+  const {n,w}=G, c=G.pos, [dx,dy,b]=DIRS[d];
+  if(w[c]&b){ beep("no"); return; }
+  const nc = (((c/n)|0)+dy)*n + (c%n)+dx;
+  if(G.gates.has(nc)){ askGate(nc); return; }
+  if(nc===G.exit && G.got.length<G.L.word.length){ beep("no"); toast(`Алдымен барлық әріпті жина: ${G.got.length} / ${G.L.word.length}`); return; }
+  step(nc);
+}
+function step(nc){
+  G.from=G.pos; G.pos=nc; G.t=0; G.trail.add(nc); beep("step");
+  if(G.letters.has(nc)){
+    const i=G.letters.get(nc); G.letters.delete(nc); G.got.push(i); beep("coin");
+    const slots=[...$("#bag").children]; const sl=slots[G.got.length-1]; sl.textContent=G.L.word[i]; sl.classList.add("got");
+  }
+  if(nc===G.exit) setTimeout(()=>anagram(),250);
+}
+
+document.addEventListener("keydown", e=>{
+  const k={ArrowUp:0,ArrowRight:1,ArrowDown:2,ArrowLeft:3,w:0,d:1,s:2,a:3,W:0,D:1,S:2,A:3,"ц":0,"в":1,"ы":2,"ф":3}[e.key];
+  if(G && k!==undefined && !modalRoot.firstChild && document.activeElement?.tagName!=="INPUT"){ e.preventDefault(); move(k); }
+});
+
+// ---------- 7. ҚАҚПА СҰРАҒЫ ----------
+function nextQ(){ if(!G.qpool.length) G.qpool=shuffle(G.L.q.map((_,i)=>i)); return G.qpool.pop(); }
+function askGate(cell){
+  const qi=nextQ(), Q=G.L.q[qi], opts=shuffle(Q.a); let first=true;
+  modalRoot.innerHTML = `
+  <div class="veil"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="qt">
+    <div class="eyebrow">Қақпа тапсырмасы · ${esc(G.L.topic)}</div>
+    <h3 id="qt">${esc(Q.q)}</h3>
+    <div class="opts">${opts.map((o,i)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${i+1}</span>${esc(o)}</button>`).join("")}</div>
+    <div id="fb"></div>
+  </div></div>`;
+  const btns=[...modalRoot.querySelectorAll(".opt")]; btns[0].focus();
+  const pick = b => {
+    if(b.disabled) return;
+    const ok = b.dataset.o===Q.a[0];
+    if(ok){
+      b.classList.add("ok"); btns.forEach(x=>x.disabled=true); beep("ok");
+      $("#fb").innerHTML=`<div class="fb good">Жарайсың! Қақпа ашылды.</div>`;
+      logAnswer(G.L.id, qi, first);
+      setTimeout(()=>{ modalRoot.innerHTML=""; G.gates.delete(cell); G.answered++; beep("door"); step(cell); }, 800);
+    } else {
+      if(first){ G.mistakes++; $("#mis").textContent=G.mistakes; }
+      first=false; b.classList.add("no"); b.disabled=true; beep("no");
+      $("#fb").innerHTML=`<div class="fb bad"><b>Тағы ойланып көр.</b><br>${esc(Q.h || G.L.rule)}</div>`;
+    }
+  };
+  btns.forEach(b=>b.onclick=()=>pick(b));
+  modalRoot.onkeydown = e => { const i=+e.key-1; if(btns[i]) pick(btns[i]); };
+}
+function logAnswer(lv,qi,first){ S.log.answers.push({code:S.player||"—", lv, q:qi, first, date:today()}); save(); }
+
+// ---------- 8. ЖАСЫРЫН СӨЗДІ ҚҰРАСТЫРУ ----------
+function anagram(){
+  const L=G.L, word=[...L.word]; let pool=shuffle(word.map((ch,i)=>({ch,i}))), built=[], tries=0;
+  if(pool.map(p=>p.ch).join("")===L.word) pool.reverse();
+  const render=()=>{
+    modalRoot.innerHTML=`
+    <div class="veil"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="at">
+      <div class="eyebrow">Шығу есігі</div>
+      <h3 id="at">Әріптерден жасырын сөзді құрастыр</h3>
+      <div class="rule"><b>Жұмбақ</b>${esc(L.meaning)}</div>
+      <div class="tiles" id="built">${word.map((_,k)=>built[k]?`<button class="tile" data-b="${k}">${built[k].ch}</button>`:`<span class="tile empty">${tries>=2&&k===0?`<span class="muted" style="font-size:16px">${word[0]}</span>`:""}</span>`).join("")}</div>
+      <div class="tiles" id="pool">${pool.map((p,k)=>`<button class="tile" data-p="${k}">${p.ch}</button>`).join("")}</div>
+      <div id="afb"></div>
+      <div class="row"><button class="btn small ghost" id="clr">Тазалау</button></div>
+    </div></div>`;
+    modalRoot.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ built.push(pool.splice(+b.dataset.p,1)[0]); beep("step"); check(); });
+    modalRoot.querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{ pool.push(built.splice(+b.dataset.b,1)[0]); render(); });
+    $("#clr").onclick=()=>{ pool=pool.concat(built); built=[]; render(); };
+    const f = modalRoot.querySelector("[data-p]"); if(f) f.focus();
+  };
+  const check=()=>{
+    if(built.length<word.length){ render(); return; }
+    if(built.map(p=>p.ch).join("")===L.word){ finish(); return; }
+    tries++; G.mistakes++; beep("no"); pool=pool.concat(built); built=[]; render();
+    $("#afb").innerHTML=`<div class="fb bad">Бұл сөз емес. ${tries>=2?"Бірінші әріп көрсетілді.":"Жұмбақты тағы оқып көр."}</div>`;
+    const el=$("#mis"); if(el) el.textContent=G.mistakes;
+  };
+  render();
+}
+
+function finish(){
+  const L=G.L, sec=Math.round((Date.now()-G.t0)/1000), m=G.mistakes;
+  const stars = m===0 ? 3 : m<=2 ? 2 : 1;
+  const prev=S.best[L.id]; if(!prev || stars>prev.stars || (stars===prev.stars && sec<prev.sec)) S.best[L.id]={stars,sec};
+  S.log.levels.push({code:S.player||"—", lv:L.id, mistakes:m, sec, stars, date:today()}); save();
+  beep("win"); clearInterval(G.timer);
+  const next = LEVELS.find(l=>l.id===L.id+1);
+  modalRoot.innerHTML=`
+  <div class="veil"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ft">
+    <div class="eyebrow">${L.id}-деңгей аяқталды</div>
+    <h3 id="ft">Жасырын сөз: <span style="color:var(--gate)">${L.word}</span></h3>
+    <div class="big-stars">${starsHtml(stars)}</div>
+    <p style="margin:0">${esc(L.meaning)}</p>
+    <div class="row"><span class="chip">✖ Қате: ${m}</span><span class="chip">⏱ ${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}</span></div>
+    <div class="row">
+      ${next?`<button class="btn primary" id="nx">Келесі деңгей ▶</button>`:`<button class="btn primary" id="tt">Барлығы өтілді! Тестке өту</button>`}
+      <button class="btn" id="again">Қайта ойнау</button>
+      <button class="btn ghost" id="lv">Деңгейлер</button>
+    </div>
+  </div></div>`;
+  if(next) $("#nx").onclick=()=>play(next.id); else $("#tt").onclick=testIntro;
+  $("#again").onclick=()=>play(L.id); $("#lv").onclick=levels;
+}
+
+// ---------- 9. СӨЗДІК ----------
+function words(){
+  setScreen(`
+  <div class="screen">
+    <div class="gbar"><button class="btn small" id="back">← Басты бет</button><h2>Менің сөздігім</h2></div>
+    <p class="muted">Әр деңгейден табылған жасырын сөз осында жиналады.</p>
+    <div class="glossary">${LEVELS.map(l=>S.best[l.id]?`
+      <div class="card"><div class="eyebrow">${l.id}-деңгей</div><h3>${l.word}</h3><p style="margin:6px 0 0">${esc(l.meaning)}</p></div>`:`
+      <div class="card lock"><div class="eyebrow">${l.id}-деңгей</div><h3>${"?".repeat(l.word.length)}</h3><p style="margin:6px 0 0">Деңгейді өтсең, сөз ашылады.</p></div>`).join("")}</div>
+  </div>`);
+  $("#back").onclick=home;
+}
+
+// ---------- 10. ТЕКСЕРУ ТЕСТІ ЖӘНЕ САУАЛНАМА ----------
+function testIntro(){
+  setScreen(`
+  <div class="screen">
+    <div class="gbar"><button class="btn small" id="back">← Басты бет</button><h2>Тексеру тесті</h2><span class="chip">Ойыншы: ${esc(S.player||"—")}</span></div>
+    <div class="card" style="max-width:720px">
+      <p style="margin-top:0">10 сұрақ. Тест кезінде дұрыс жауап көрсетілмейді. Нәтиже зерттеуге сақталады.</p>
+      <p><b>Қай кезде тест тапсырып жатырсың?</b></p>
+      <div class="row">
+        <button class="btn teal" data-k="pre">Ойынға дейін</button>
+        <button class="btn primary" data-k="post">Ойыннан кейін</button>
+      </div>
+      ${S.player?"":`<p class="fb bad" style="margin-bottom:0">Ойыншы коды жазылмаған. Басты бетте кодты жазсаң, нәтижелерді салыстыру оңай болады.</p>`}
+    </div>
+  </div>`);
+  $("#back").onclick=home;
+  app.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>runTest(b.dataset.k));
+}
+function runTest(kind){
+  let i=0, score=0; const ans=[]; const order=TEST.map((t,k)=>({...t,k,opts:shuffle(t.a)}));
+  const show=()=>{
+    const T=order[i];
+    setScreen(`
+    <div class="screen" style="max-width:720px">
+      <div class="gbar"><h2>${kind==="pre"?"Ойынға дейінгі":"Ойыннан кейінгі"} тест</h2><span class="chip">${i+1} / ${TEST.length}</span></div>
+      <div class="progress"><i style="width:${i/TEST.length*100}%"></i></div>
+      <div class="card">
+        <h3 style="font-size:22px;margin-bottom:14px">${esc(T.q)}</h3>
+        <div class="opts">${T.opts.map((o,j)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${j+1}</span>${esc(o)}</button>`).join("")}</div>
+      </div>
+    </div>`);
+    const btns=[...app.querySelectorAll(".opt")];
+    btns.forEach(b=>b.onclick=()=>{ const ok=b.dataset.o===T.a[0]; if(ok) score++; ans.push(ok?1:0); beep("step"); i++; i<TEST.length?show():done(); });
+  };
+  const done=()=>{
+    S.log.tests.push({code:S.player||"—", kind, score, of:TEST.length, answers:ans.join(""), date:today()}); save();
+    beep("win");
+    setScreen(`
+    <div class="screen" style="max-width:720px">
+      <div class="card">
+        <div class="eyebrow">Тест аяқталды</div>
+        <h2 style="margin:6px 0 10px">Нәтиже: ${score} / ${TEST.length}</h2>
+        <div class="progress"><i style="width:${score/TEST.length*100}%"></i></div>
+        <p>${kind==="pre"?"Енді ойынды ойнап көр. Ойыннан кейін тесті қайта тапсырасың.":"Рақмет! Енді үш қысқа сұраққа жауап бер."}</p>
+        <div class="row">${kind==="pre"?`<button class="btn primary" id="n1">Ойынға өту ▶</button>`:`<button class="btn primary" id="n2">Сауалнамаға өту ▶</button>`}
+        <button class="btn ghost" id="hm">Басты бет</button></div>
+      </div>
+    </div>`);
+    if(kind==="pre") $("#n1").onclick=levels; else $("#n2").onclick=survey;
+    $("#hm").onclick=home;
+  };
+  show();
+}
+function survey(){
+  const r=[null,null,null];
+  const render=()=>{
+    setScreen(`
+    <div class="screen" style="max-width:720px">
+      <div class="gbar"><button class="btn small" id="back">← Басты бет</button><h2>Қысқа сауалнама</h2></div>
+      ${SURVEY.map((q,i)=>`<div class="card"><h3 style="font-size:18px;margin-bottom:10px">${i+1}. ${esc(q)}</h3>
+        <div class="faces">${SURVEY_ANS.map((a,j)=>`<button class="btn ${r[i]===j?"sel":""}" data-q="${i}" data-a="${j}">${["😀","🙂","😐"][j]} ${a}</button>`).join("")}</div></div>`).join("")}
+      <div class="row"><button class="btn primary" id="sv" ${r.includes(null)?"disabled":""}>Жіберу</button></div>
+    </div>`);
+    $("#back").onclick=home;
+    app.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{ r[+b.dataset.q]=+b.dataset.a; render(); });
+    $("#sv").onclick=()=>{ S.log.survey.push({code:S.player||"—", a:r.slice(), date:today()}); save(); toast("Рақмет! Жауабың сақталды."); home(); };
+  };
+  render();
+}
+
+// ---------- 11. НӘТИЖЕЛЕР (зерттеу деректері) ----------
+function avg(a){ return a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0; }
+function stats(){
+  const {levels:lv, answers, tests, survey:sv} = S.log;
+  const players = new Set([...lv,...answers,...tests,...sv].map(x=>x.code));
+  const pre = tests.filter(t=>t.kind==="pre").map(t=>t.score), post = tests.filter(t=>t.kind==="post").map(t=>t.score);
+  // Сұрақтар бойынша: бірінші әрекетте қате жауап үлесі
+  const qstat = {};
+  answers.forEach(a=>{ const k=a.lv+"-"+a.q; qstat[k]=qstat[k]||{lv:a.lv,q:a.q,n:0,bad:0}; qstat[k].n++; if(!a.first) qstat[k].bad++; });
+  const hard = Object.values(qstat).filter(x=>x.bad>0).sort((a,b)=>b.bad/b.n-a.bad/a.n || b.n-a.n).slice(0,5);
+  const empty = !lv.length && !answers.length && !tests.length && !sv.length;
+  setScreen(`
+  <div class="screen">
+    <div class="gbar"><button class="btn small" id="back">← Басты бет</button><h2>Нәтижелер</h2></div>
+    <p class="muted" style="margin:0;max-width:60em">Деректер тек осы құрылғының браузерінде сақталады. Сыныптастар ойынды бір компьютерде кезекпен ойнаса, барлық нәтиже осында жиналады. Ойыншылар аты-жөнімен емес, кодпен белгіленеді.</p>
+    ${empty?`<div class="card"><h3 style="font-size:18px">Әзірге деректер жоқ</h3><p style="margin-bottom:0">Зерттеу реті: 1) «Ойынға дейін» тест → 2) 5 деңгейді ойнау → 3) «Ойыннан кейін» тест → 4) сауалнама. Нәтижелер осы бетте кесте мен диаграмма болып шығады.</p></div>`:""}
+    <div class="kpis">
+      <div class="kpi"><b>${players.size}</b><span>ойыншы (код бойынша)</span></div>
+      <div class="kpi"><b>${lv.length}</b><span>өтілген деңгей</span></div>
+      <div class="kpi"><b>${pre.length?avg(pre).toFixed(1):"—"}</b><span>ойынға дейінгі тест, орташа (10-нан)</span></div>
+      <div class="kpi"><b>${post.length?avg(post).toFixed(1):"—"}</b><span>ойыннан кейінгі тест, орташа (10-нан)</span></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3 style="font-size:17px;margin-bottom:10px">Тест нәтижесі: дейін және кейін</h3><canvas class="chart" id="c1" width="480" height="260"></canvas></div>
+      <div class="card"><h3 style="font-size:17px;margin-bottom:10px">Деңгейлердегі орташа қате саны</h3><canvas class="chart" id="c2" width="480" height="260"></canvas></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3 style="font-size:17px;margin-bottom:8px">Сауалнама (${sv.length} жауап)</h3>
+        <div class="tbl"><table><thead><tr><th>Сұрақ</th>${SURVEY_ANS.map(a=>`<th>${a}</th>`).join("")}</tr></thead><tbody>
+        ${SURVEY.map((q,i)=>`<tr><td>${esc(q)}</td>${SURVEY_ANS.map((_,j)=>`<td>${sv.filter(s=>s.a[i]===j).length}</td>`).join("")}</tr>`).join("")}
+        </tbody></table></div></div>
+      <div class="card"><h3 style="font-size:17px;margin-bottom:8px">Ең қиын сұрақтар</h3>
+        ${hard.length?`<div class="tbl"><table><thead><tr><th>Деңгей</th><th>Сұрақ</th><th>Қате / барлығы</th></tr></thead><tbody>
+        ${hard.map(h=>`<tr><td>${h.lv}</td><td>${esc(LEVELS[h.lv-1].q[h.q].q)}</td><td>${h.bad} / ${h.n}</td></tr>`).join("")}</tbody></table></div>`:`<p class="muted" style="margin:0">Қате жауап берілген сұрақтар осында шығады.</p>`}
+      </div>
+    </div>
+    <div class="card"><h3 style="font-size:17px;margin-bottom:8px">Тест нәтижелері (ойыншылар бойынша)</h3>
+      <div class="tbl"><table><thead><tr><th>Код</th><th>Дейін</th><th>Кейін</th><th>Өзгеріс</th></tr></thead><tbody>
+      ${[...new Set(tests.map(t=>t.code))].map(c=>{ const a=tests.filter(t=>t.code===c&&t.kind==="pre").pop(), b=tests.filter(t=>t.code===c&&t.kind==="post").pop();
+        return `<tr><td>${esc(c)}</td><td>${a?a.score:"—"}</td><td>${b?b.score:"—"}</td><td>${a&&b?(b.score-a.score>0?"+":"")+(b.score-a.score):"—"}</td></tr>`; }).join("") || `<tr><td colspan="4" class="muted">Тест әлі тапсырылмаған.</td></tr>`}
+      </tbody></table></div></div>
+    <div class="card">
+      <h3 style="font-size:17px;margin-bottom:8px">Деректерді Excel-ге көшіру</h3>
+      <p class="muted" style="margin-top:0">Мәтінді көшіріп, Excel немесе Google Кестеге қойыңыз (CSV пішімі, бөлгіш — нүктелі үтір).</p>
+      <textarea id="csv" readonly>${esc(toCSV())}</textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn small" id="cp">Көшіру</button>
+        ${location.protocol==="file:"?`<button class="btn small" id="dl">CSV файлын жүктеу</button>`:""}
+        <span style="flex:1"></span>
+        <button class="btn small ghost" id="clr">Барлық деректерді өшіру</button>
+      </div>
+      <div id="clrc"></div>
+    </div>
+  </div>`);
+  $("#back").onclick=home;
+  $("#cp").onclick=()=>{ const t=$("#csv"); const fall=()=>{ t.focus(); t.select(); toast("Мәтін белгіленді — Ctrl+C басыңыз"); };
+    try{ navigator.clipboard.writeText(t.value).then(()=>toast("Көшірілді"), fall); }catch(e){ fall(); } };
+  const dl=$("#dl"); if(dl) dl.onclick=()=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+toCSV()],{type:"text/csv"})); a.download="sozder_labirinti_natizheler.csv"; a.click(); };
+  $("#clr").onclick=()=>{ $("#clrc").innerHTML=`<div class="fb bad" style="margin-top:10px">Барлық нәтиже өшіріледі. Сенімдісіз бе? <button class="btn small" id="yes">Иә, өшіру</button> <button class="btn small ghost" id="no">Жоқ</button></div>`;
+    $("#yes").onclick=()=>{ S.log={levels:[],answers:[],tests:[],survey:[]}; S.best={}; save(); stats(); }; $("#no").onclick=()=>$("#clrc").innerHTML=""; };
+  bars($("#c1"), ["Ойынға дейін","Ойыннан кейін"], [avg(pre), avg(post)], 10, [css("--gate"), css("--gold")], [pre.length, post.length]);
+  const lm = LEVELS.map(l=>{ const r=lv.filter(x=>x.lv===l.id); return [avg(r.map(x=>x.mistakes)), r.length]; });
+  bars($("#c2"), LEVELS.map(l=>l.id+"-деңгей"), lm.map(x=>x[0]), Math.max(4, Math.ceil(Math.max(...lm.map(x=>x[0]))+1)), [css("--wall")], lm.map(x=>x[1]));
+}
+// Қарапайым бағаналы диаграмма
+function bars(cv, labels, vals, max, colors, counts){
+  const dpr=window.devicePixelRatio||1, W=480, H=260; cv.width=W*dpr; cv.height=H*dpr; const ctx=cv.getContext("2d"); ctx.scale(dpr,dpr);
+  const L=34, B=40, T=16, R=10, ph=H-B-T, pw=W-L-R;
+  ctx.font=`600 12px ${css("--body")}`; ctx.fillStyle=css("--muted"); ctx.strokeStyle=css("--line"); ctx.textAlign="right"; ctx.textBaseline="middle";
+  const step = max<=5?1:2;
+  for(let v=0; v<=max; v+=step){ const y=T+ph-v/max*ph; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(W-R,y); ctx.stroke(); ctx.fillText(v,L-6,y); }
+  const bw = pw/labels.length;
+  labels.forEach((lb,i)=>{
+    const v=vals[i], h=v/max*ph, x=L+i*bw+bw*.2, w=bw*.6, y=T+ph-h;
+    ctx.fillStyle=colors[i%colors.length]; if(h>0){ roundRect(ctx,x,y,w,h,Math.min(6,h/2)); ctx.fill(); }
+    ctx.fillStyle=css("--ink"); ctx.textAlign="center"; ctx.textBaseline="bottom"; ctx.font=`800 13px ${css("--body")}`;
+    ctx.fillText(counts[i]?v.toFixed(1):"—", x+w/2, y-3);
+    ctx.fillStyle=css("--muted"); ctx.textBaseline="top"; ctx.font=`600 12px ${css("--body")}`;
+    ctx.fillText(lb, x+w/2, T+ph+6); ctx.fillText(`n=${counts[i]}`, x+w/2, T+ph+21);
+  });
+}
+function toCSV(){
+  const rows=[["түрі","код","деңгей/тест","нәтиже","қате","уақыт_сек","жұлдыз","күні"]];
+  S.log.tests.forEach(t=>rows.push(["тест-"+(t.kind==="pre"?"дейін":"кейін"),t.code,"тест",t.score+"/"+t.of,"","","",t.date]));
+  S.log.levels.forEach(l=>rows.push(["деңгей",l.code,l.lv,"өтті",l.mistakes,l.sec,l.stars,l.date]));
+  S.log.answers.forEach(a=>rows.push(["қақпа-сұрақ",a.code,a.lv+"."+(a.q+1),a.first?"бірден дұрыс":"қатемен","","","",a.date]));
+  S.log.survey.forEach(s=>rows.push(["сауалнама",s.code,"",s.a.map(x=>SURVEY_ANS[x]).join(" | "),"","","",s.date]));
+  return rows.map(r=>r.map(c=>String(c).replace(/;/g,",")).join(";")).join("\n");
+}
+
+// ---------- 12. ІСКЕ ҚОСУ ----------
+function start(){ home(); }
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start();
+</script>
+</body>
+</html>
