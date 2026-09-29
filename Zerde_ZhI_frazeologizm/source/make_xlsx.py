@@ -222,6 +222,25 @@ ch.set_categories(Reference(ws, min_col=2, max_col=4, min_row=e3_first, max_row=
 ch.height = 8; ch.width = 18
 ws.add_chart(ch, "G42")
 
+# Толтырылған ескі кестеден деректерді көшіру: python3 make_xlsx.py жаңа.xlsx толтырылған.xlsx
+# (openpyxl сақтағанда диаграммаларды жоғалтады, сондықтан кесте әрдайым осы скриптпен қайта жасалады)
+if len(sys.argv) > 2:
+    import json, os
+    from openpyxl import load_workbook
+    src = load_workbook(sys.argv[2], data_only=True)
+    one = lambda v: v.strip().upper() if isinstance(v, str) and len(v.strip()) == 1 else (v.strip() if isinstance(v, str) else v)
+    for name, rows, cols in [("1-тәжірибе", range(2, 32), range(5, 14)), ("2-тәжірибе", range(2, 8), range(5, 14)),
+                             ("3-тәжірибе", range(2, 27), range(3, 9))]:
+        for r in rows:
+            for c in cols:
+                wb[name].cell(r, c).value = one(src[name].cell(r, c).value)
+    for r in (2, 3, 4):
+        wb["Қорытынды"].cell(r, 2).value = src["Қорытынды"].cell(r, 2).value
+    if os.path.exists("tuzetuler.json"):  # жетекшімен келісілген түзетулер: {"парақ!ұяшық": мән}
+        for ref, val in json.load(open("tuzetuler.json", encoding="utf8")).items():
+            sh, cell = ref.split("!")
+            wb[sh][cell] = val
+
 for sh in wb.worksheets:
     sh.page_setup.orientation = "landscape"
     sh.page_setup.paperSize = sh.PAPERSIZE_A4

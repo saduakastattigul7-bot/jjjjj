@@ -28,6 +28,7 @@ for k, ai in enumerate(AIS, 1):
         R[f"e1_err_{code}_{k}"] = sum(e == code for e in er)
     R[f"e1_answers_{k}"] = [r[4 + 3 * (k - 1)] for r in rows]
     R[f"e1_scores_{k}"] = sc
+    R[f"e1_errs_{k}"] = er
 for g in ["А", "Ә", "Б", "all"]:
     v = [R[f"e1_{g}_{k}"] for k in range(1, 4) if R[f"e1_{g}_{k}"] is not None]
     R[f"e1_{g}_avg"] = round(sum(v) / len(v), 1) if v else None
@@ -43,6 +44,7 @@ for k in range(1, 4):
     R[f"e2_all_{k}"] = R[f"e2_ant_{k}"] + R[f"e2_syn_{k}"]
     R[f"e2_answers_{k}"] = [r[4 + 3 * (k - 1)] for r in rows]
     er = [txt(r[6 + 3 * (k - 1)]) for r in rows]
+    R[f"e2_scores_{k}"], R[f"e2_errs_{k}"] = sc, er
     for code, _, _ in ERR:
         R[f"e2_err_{code}_{k}"] = sum(e == code for e in er)
 for code, _, _ in ERR:
@@ -51,10 +53,15 @@ for code, _, _ in ERR:
 ws = wb["3-тәжірибе"]
 n3 = len(E3) * E3_N
 for k in range(1, 4):
-    codes = [txt(ws.cell(r, 2 + 2 * k).value) for r in range(2, n3 + 2)]
+    # Оқушы тек ерекше жағдайларды (М, Ж, Т) белгіледі: тіркес жазылып, коды бос қалса – Н (сөздікте бар, мағынасы дұрыс).
+    named = [ws.cell(r, 1 + 2 * k).value not in (None, "") for r in range(2, n3 + 2)]
+    codes = [txt(ws.cell(r, 2 + 2 * k).value) or ("Н" if nm else "") for r, nm in zip(range(2, n3 + 2), named)]
+    R[f"e3_named_{k}"] = sum(named)
+    R[f"e3_codes_{k}"] = codes
     for code, _, _ in E3_CODES:
         R[f"e3_{code}_{k}"] = sum(c == code for c in codes)
     R[f"e3_names_{k}"] = [ws.cell(r, 1 + 2 * k).value for r in range(2, n3 + 2)]
+R["e3_named_sum"] = sum(R[f"e3_named_{k}"] for k in range(1, 4))
 for code, _, _ in E3_CODES:
     R[f"e3_{code}_sum"] = sum(R[f"e3_{code}_{k}"] for k in range(1, 4))
 
