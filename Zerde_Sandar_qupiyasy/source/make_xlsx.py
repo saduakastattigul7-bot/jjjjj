@@ -176,6 +176,12 @@ if len(sys.argv) > 2:
                 v = src[name].cell(r, c).value
                 wb[name].cell(r, c).value = v.strip() if isinstance(v, str) else v
 
+import os, json
+if os.path.exists("tuzetuler.json"):  # жетекшімен келісілген түзетулер: {"парақ!ұяшық": мән}
+    for ref, val in json.load(open("tuzetuler.json", encoding="utf8")).items():
+        sh, cell = ref.split("!")
+        wb[sh][cell] = val
+
 for sh in wb.worksheets:
     sh.page_setup.orientation = "landscape"
     sh.page_setup.paperSize = sh.PAPERSIZE_A4

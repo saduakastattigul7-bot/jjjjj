@@ -49,7 +49,7 @@ save(fig, "kieli")
 # 2-сурет: кезеңдер
 fig, ax = plt.subplots(figsize=(10.5, 2.6))
 ax.set_xlim(0, 10.5); ax.set_ylim(0, 2.6); ax.axis("off")
-steps = ["1-кезең\nТақырып,\nәдебиет", "2-кезең\nКиелі сандар,\nкодтау жүйесі", "3-кезең\n14 ертегіні\nоқып санау",
+steps = ["1-кезең\nТақырып,\nәдебиет", "2-кезең\nКиелі сандар,\nкодтау жүйесі", "3-кезең\n7 ертегіні\nоқып санау",
          "4-кезең\nЕсептеу,\nдиаграмма", "5-кезең\nТалдау,\nертегі-есептер"]
 for i, t in enumerate(steps):
     box(ax, 0.1 + i * 2.1, 0.35, 1.8, 1.9, t, NAVY_L if i < 2 else (GOLD_L if i < 4 else "#e3f3ea"), NAVY if i < 2 else (GOLD if i < 4 else "#1a7f4b"), fs=10.5)
