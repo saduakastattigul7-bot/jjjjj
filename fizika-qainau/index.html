@@ -97,7 +97,7 @@ body.locked{overflow:hidden}
 .struct-total em{font-style:normal;background:var(--gold-soft);border-radius:8px;padding:2px 8px}
 
 /* ---------- groups ---------- */
-.page{padding-block:24px 56px;display:grid;gap:24px}
+.page{padding-block:24px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
 .page-title{font:900 clamp(30px,3.6vw,46px)/1.1 var(--f-display);color:var(--navy)}
 .group-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:20px}
 .gcard{display:grid;grid-template-columns:1fr auto;gap:8px 16px;text-align:left;background:var(--surface);border:3px solid var(--line);border-radius:24px;padding:26px 28px;color:var(--ink)}
@@ -113,8 +113,8 @@ body.locked{overflow:hidden}
 .ghead{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(155deg,#19BAD6,var(--sky-deep));color:#fff;padding:22px 28px 22px 84px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .ghead .orn-v{width:56px}
 .ghead .gnum{font-size:clamp(26px,3vw,36px)}
-.ghead-title{display:grid;gap:4px;min-width:0}
-.ghead h1{font:900 clamp(32px,4.4vw,56px)/1.02 var(--f-display);overflow-wrap:anywhere}
+.ghead-title{display:grid;gap:4px;min-width:0;flex:1 1 320px}
+.ghead h1{font:900 clamp(26px,4.4vw,56px)/1.05 var(--f-display);overflow-wrap:anywhere}
 .ghead p{font:700 clamp(18px,2vw,24px)/1.2 var(--f-body);color:#E8FBFF}
 .ghead .gicon{color:#fff;margin-left:auto;opacity:.9;width:84px;height:84px}
 .stepper{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
@@ -322,6 +322,147 @@ details.ga summary{cursor:pointer;font:900 clamp(20px,2.2vw,26px)/1.2 var(--f-di
 .btn-red{background:var(--bad);color:#fff;border-color:var(--bad-deep)}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:90;background:var(--navy);color:#fff;font-weight:800;font-size:19px;padding:14px 22px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center}
 
+/* ---------- new lesson ---------- */
+.tab.les{border-color:var(--sky);background:var(--sky-soft)}
+.tab.les.cur{background:var(--sky-deep);border-color:var(--sky-deep);color:#fff}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.hero-actions .btn-xl{margin-top:0}
+.btn-white{background:#fff;color:var(--sky-deep);border-color:#fff}
+.btn-white:hover{background:var(--sky-soft)}
+.lsecs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.lsecs .step b{font-size:clamp(15px,1.5vw,19px);font-family:var(--f-body);font-weight:900;text-align:center;line-height:1.15}
+.lsec{display:grid;gap:22px}
+.rule{display:flex;gap:16px;align-items:flex-start;background:var(--gold-soft);border:3px solid var(--gold);border-radius:20px;padding:20px 24px}
+.rule .mark{flex:none;width:44px;height:44px;border-radius:12px;background:var(--bad);color:#fff;display:grid;place-items:center;font:900 24px/1 var(--f-display)}
+.rule p{font:800 clamp(22px,2.5vw,32px)/1.3 var(--f-body);color:var(--navy)}
+.rule p em{font-style:italic;color:var(--sky-deep)}
+.lead{font:600 clamp(20px,2.1vw,26px)/1.5 var(--f-body);color:var(--ink);max-width:62ch}
+.lgrid{display:grid;grid-template-columns:1.15fr 1fr;gap:22px;align-items:start}
+.lcol{display:grid;gap:18px;min-width:0}
+.fig{background:var(--sky-soft);border-radius:22px;padding:16px;display:grid;gap:8px;justify-items:center}
+.fig svg{width:100%;max-width:520px;height:auto}
+.fig figcaption{font-size:17px;font-weight:700;color:var(--muted);text-align:center}
+.callout{border-radius:18px;padding:16px 20px;display:grid;gap:6px;border:3px solid}
+.callout h3{font:900 18px/1.2 var(--f-body);letter-spacing:.06em;text-transform:uppercase;display:flex;gap:10px;align-items:center}
+.callout p{font:700 clamp(19px,2vw,24px)/1.4 var(--f-body)}
+.callout.attn{border-color:var(--sky-deep);background:var(--surface)}
+.callout.attn h3{color:var(--sky-deep)}
+.callout.mem{border-color:var(--ok);background:var(--ok-soft)}
+.callout.mem h3{color:var(--ok)}
+.callout .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:18px;flex:none}
+.callout.attn .ic{background:var(--sky-deep)}
+.callout.mem .ic{background:var(--ok)}
+.cmp{width:100%;border-collapse:separate;border-spacing:0;font-variant-numeric:normal}
+.cmp th,.cmp td{white-space:normal;text-align:left;padding:14px 16px;font-size:clamp(18px,1.8vw,22px)}
+.cmp th{font-size:16px}
+.cmp td:first-child{font-weight:800;color:var(--muted);font-size:17px;width:28%}
+.cmp td{font-weight:700}
+.vals td,.vals th{font-size:clamp(19px,1.9vw,23px)}
+.vals td:first-child{text-align:left;font-weight:800}
+.fcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fcard{min-width:0;background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:20px;display:grid;gap:10px;justify-items:center;text-align:center;align-content:start}
+.fcard span{font:800 16px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fcard .fx{font:800 clamp(34px,5vw,64px)/1.1 "Times New Roman",Georgia,serif;font-style:italic;color:var(--navy);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.25em;max-width:100%}
+.fcard .fx.main{color:var(--bad)}
+.frac{display:inline-grid;text-align:center;font-size:.8em;line-height:1.05}
+.frac>span:first-child{border-bottom:3px solid currentColor;padding:0 .15em}
+.formula-big{background:var(--navy);color:#fff;border-radius:22px;padding:22px 26px;display:grid;gap:14px;justify-items:center;text-align:center}
+.formula-big .fx{font:800 clamp(44px,6vw,80px)/1.1 "Times New Roman",Georgia,serif;font-style:italic;color:#FFE27A}
+.formula-big p{font:600 clamp(18px,1.9vw,23px)/1.4 var(--f-body);color:#E3F3FA;max-width:56ch}
+.terms{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.terms span{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);border-radius:12px;padding:8px 14px;font-size:18px;font-weight:700}
+.terms b{color:#FFE27A;font-family:"Times New Roman",Georgia,serif;font-style:italic;font-size:1.2em}
+.example{border:3px solid var(--sky);border-radius:22px;padding:22px;display:grid;gap:14px;background:var(--surface)}
+.example h3{font:900 clamp(20px,2.2vw,26px)/1.2 var(--f-display);color:var(--navy)}
+.example .task-q{font:700 clamp(20px,2.2vw,26px)/1.4 var(--f-body)}
+.ex-steps{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.ex-steps li{font:700 clamp(19px,2vw,24px)/1.45 var(--f-body);background:var(--sky-soft);border-radius:14px;padding:12px 16px}
+.ex-steps li.last{background:var(--ok);color:#fff}
+.alt{display:grid;gap:18px}
+.alt-read{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.alt-read div{background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:16px;text-align:center;display:grid;gap:6px}
+.alt-read span{font:800 15px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.alt-read b{font:900 clamp(34px,4.6vw,60px)/1 var(--f-display);color:var(--navy);white-space:nowrap}
+.alt-read small{font-size:.45em;color:var(--muted)}
+.alt-read .hot{border-color:var(--bad);background:var(--bad-soft)}
+.alt-read .hot b{color:var(--bad)}
+.alt-range{width:100%;height:44px;accent-color:var(--sky-deep)}
+.presets{display:flex;flex-wrap:wrap;gap:10px}
+.presets .btn{font-size:17px;min-height:50px;padding:10px 16px}
+.presets .btn.cur{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chain{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;font:900 clamp(18px,2vw,24px)/1.2 var(--f-body);color:var(--navy)}
+.chain span{background:var(--sky-soft);border-radius:12px;padding:10px 14px}
+.chain i{font-style:normal;color:var(--sky-deep)}
+.alt-fig svg{width:100%;max-width:none;height:auto;display:block}
+.lq{display:grid;gap:14px;counter-reset:q}
+.lq li{list-style:none;display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:18px 20px;font:700 clamp(21px,2.3vw,28px)/1.4 var(--f-body)}
+.lq li::before{counter-increment:q;content:counter(q);flex:none;width:48px;height:48px;border-radius:50%;background:var(--gold);color:var(--navy);font:900 22px/48px var(--f-display);text-align:center}
+.lq ol,.lq{margin:0;padding:0}
+/* lab */
+.lab-ctrl{display:flex;flex-wrap:wrap;gap:14px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:14px 18px}
+.lab-clock{display:grid;gap:2px;margin-right:auto}
+.lab-clock span{font:800 14px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lab-clock b{font:900 clamp(30px,3.4vw,44px)/1 var(--f-display);color:var(--sky-deep);font-variant-numeric:tabular-nums}
+.lab-clock.tot b{font-size:clamp(20px,2vw,26px);color:var(--navy)}
+.lab-grid{display:grid;grid-template-columns:5fr 7fr;gap:18px}
+.lab-card{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:16px;display:grid;gap:10px;align-content:start;min-width:0}
+.lab-card h3{font:900 clamp(18px,1.9vw,22px)/1.2 var(--f-display);color:var(--navy);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lab-card h3 .badge{margin-left:auto;font:800 15px/1 var(--f-body);border-radius:999px;padding:6px 12px;background:var(--idle);color:var(--muted)}
+.lab-card h3 .badge.on{background:var(--gold-soft);color:var(--gold-deep)}
+.lab-card svg{width:100%;height:auto;display:block}
+.lab-now{display:flex;justify-content:space-between;align-items:center;background:var(--sky-soft);border-radius:14px;padding:10px 14px;font-weight:800;font-size:18px}
+.lab-now b{font:900 28px/1 var(--f-display);color:var(--bad)}
+.g-grid{stroke:#E3EDF3;stroke-width:1}
+.g-axis{stroke:var(--ink);stroke-width:2}
+.g-t{fill:var(--muted);font:600 13px var(--f-body)}
+.g-title{fill:var(--ink);font:800 14px var(--f-body)}
+.g-100{stroke:var(--bad);stroke-width:1.6;stroke-dasharray:6 4}
+.g-100t{fill:var(--bad);font:900 13px var(--f-body)}
+.g-line{fill:none;stroke:var(--sky-deep);stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.g-pt{fill:#fff;stroke:var(--sky-deep);stroke-width:3}
+.g-val{fill:var(--navy);font:800 12px var(--f-body)}
+.lab-banner{display:flex;gap:14px;align-items:flex-start;background:var(--gold-soft);border:3px solid var(--gold);border-radius:18px;padding:14px 18px}
+.lab-banner b{display:block;font:900 15px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep)}
+.lab-banner p{font:700 clamp(19px,2vw,23px)/1.35 var(--f-body);color:var(--navy)}
+.lab-cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:10px}
+.lab-cell{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;border:3px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--surface)}
+.lab-cell .tm{font:900 22px/1 var(--f-display);color:var(--navy);font-variant-numeric:tabular-nums}
+.lab-cell .stt{justify-self:end;font-size:14px;font-weight:800;color:#8A9BAB}
+.lab-cell .stt.ok{color:var(--ok)}
+.lab-cell .stt.err{color:var(--bad)}
+.lab-cell label{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-weight:800;color:var(--muted)}
+.lab-cell input{width:100%;min-width:0;font:800 24px/1.1 var(--f-body);padding:8px 10px;border:2px solid var(--idle-line);border-radius:10px;font-variant-numeric:tabular-nums}
+.lab-cell input:focus{outline:none;border-color:var(--sky-deep);box-shadow:0 0 0 4px var(--sky-soft)}
+.lab-cell.has{border-color:var(--ok)}
+.lab-cell.now{border-color:var(--gold);background:var(--gold-soft);box-shadow:0 0 0 4px rgba(242,183,5,.25)}
+.lab-qs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lab-qs label{display:grid;gap:8px;font:800 clamp(18px,1.9vw,22px)/1.35 var(--f-body);color:var(--navy)}
+.lab-qs textarea{font:600 19px/1.4 var(--f-body);padding:12px 14px;border:2px solid var(--idle-line);border-radius:14px;resize:vertical;min-height:84px;background:var(--surface);color:var(--ink)}
+.lab-qs textarea:focus{outline:none;border-color:var(--sky-deep);box-shadow:0 0 0 4px var(--sky-soft)}
+.flame{transform-box:fill-box;transform-origin:50% 100%;opacity:0;transition:opacity .4s}
+.flame.on{opacity:1}
+.bub{fill:#fff;stroke:#0284C7;stroke-width:.8}
+.steam path{fill:none;stroke:#9FB3C6;stroke-width:3;stroke-linecap:round;opacity:.8}
+@media (prefers-reduced-motion:no-preference){
+  .flame.on{animation:flick .35s infinite alternate ease-in-out}
+  .bub.rise{animation:rise 1.6s infinite linear}
+  .steam path{animation:steam 2.2s infinite linear}
+  .demo-bub{animation:rise 2.4s infinite linear}
+}
+@keyframes flick{from{transform:scale(.94,.9)}to{transform:scale(1.05,1.08)}}
+@keyframes rise{from{transform:translateY(0);opacity:.95}to{transform:translateY(-34px);opacity:0}}
+@keyframes steam{0%{transform:translateY(0);opacity:.8}100%{transform:translateY(-22px);opacity:0}}
+@media (max-width:980px){
+  .lgrid,.lab-grid{grid-template-columns:1fr}
+  .lsecs{grid-template-columns:repeat(3,1fr)}
+  .fcards{grid-template-columns:1fr}
+  .lab-qs{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .lsecs{grid-template-columns:repeat(2,1fr)}
+  .alt-read{grid-template-columns:1fr}
+}
+
 @media (max-width:980px){
   .home-row,.two{grid-template-columns:1fr}
   .fb-grid{grid-template-columns:1fr}
@@ -507,7 +648,8 @@ function blankState(){
   return {
     groups: GROUPS.map(function(){ return { names: ['', '', '', '', '', '', ''], s3: [null,null,null,null,null,null,null,null,null] }; }),
     st: {},
-    ui: { view:'home', g:0, gstep:[0,0,0,0], sel:[0,0,0,0], result:null },
+    ui: { view:'home', g:0, gstep:[0,0,0,0], sel:[0,0,0,0], result:null, lsec:0, ex:0, alt:0 },
+    lab: { temps: range(15).map(function(){ return null; }), ans: ['', '', '', '', '', ''] },
     sample:false
   };
 }
@@ -528,10 +670,17 @@ function normalize(d){
   });
   if (d.st && typeof d.st === 'object') Object.keys(d.st).forEach(function(id){ if (/^g[0-3]s[0-6]$/.test(id)) b.st[id] = normSt(d.st[id]); });
   if (d.ui && typeof d.ui === 'object') {
-    if (['home','groups','group','class'].indexOf(d.ui.view) >= 0) b.ui.view = d.ui.view;
+    if (['home','groups','group','class','lesson'].indexOf(d.ui.view) >= 0) b.ui.view = d.ui.view;
     if (d.ui.g >= 0 && d.ui.g <= 3) b.ui.g = d.ui.g | 0;
     if (Array.isArray(d.ui.gstep)) for (var j=0;j<4;j++) b.ui.gstep[j] = Math.max(0, Math.min(5, d.ui.gstep[j] | 0));
     if (Array.isArray(d.ui.sel)) for (var m=0;m<4;m++) b.ui.sel[m] = Math.max(0, Math.min(6, d.ui.sel[m] | 0));
+    if (d.ui.lsec >= 0 && d.ui.lsec <= 5) b.ui.lsec = d.ui.lsec | 0;
+    if (d.ui.ex >= 0 && d.ui.ex <= 4) b.ui.ex = d.ui.ex | 0;
+    if (typeof d.ui.alt === 'number' && d.ui.alt >= -200 && d.ui.alt <= 7500) b.ui.alt = Math.round(d.ui.alt);
+  }
+  if (d.lab && typeof d.lab === 'object') {
+    if (Array.isArray(d.lab.temps)) for (var t=0;t<15;t++) { var tv = d.lab.temps[t]; b.lab.temps[t] = (typeof tv === 'number' && tv >= 0 && tv <= 110) ? tv : null; }
+    if (Array.isArray(d.lab.ans)) for (var a=0;a<6;a++) b.lab.ans[a] = typeof d.lab.ans[a] === 'string' ? d.lab.ans[a] : '';
   }
   b.sample = !!d.sample;
   return b;
@@ -660,7 +809,8 @@ function sampleBanner(){
 
 function navBar(){
   var v = S.ui.view, g = S.ui.g;
-  var tabs = '<button class="tab' + (v==='groups'?' cur':'') + '" data-act="go" data-view="groups">ТОПТАР</button>';
+  var tabs = '<button class="tab les' + (v==='lesson'?' cur':'') + '" data-act="go" data-view="lesson">ЖАҢА САБАҚ</button>';
+  tabs += '<button class="tab' + (v==='groups'?' cur':'') + '" data-act="go" data-view="groups">ТОПТАР</button>';
   GROUPS.forEach(function(G, i){
     tabs += '<button class="tab' + (v==='group' && g===i ? ' cur' : '') + '" data-act="go" data-view="group" data-g="' + i + '">' + G.n + '-ТОП</button>';
   });
@@ -681,7 +831,8 @@ function viewHome(){
       '<h1>ҚАЙНАУ ЖӘНЕ МЕНШІКТІ БУЛАНУ ЖЫЛУЫ</h1>' +
       '<p class="hero-sub">Қайнау температурасының атмосфералық қысымға байланыстылығын анықтау</p>' +
       '<div class="goals"><span><b>8.3.2.15</b>меншікті булану жылуын анықтау</span><span><b>8.3.2.16</b>қайнау температурасының сыртқы қысымға тәуелділігін түсіндіру</span></div>' +
-      '<button class="btn btn-gold btn-xl" data-act="go" data-view="groups">БАҒАЛАУДЫ БАСТАУ →</button></div>' +
+      '<div class="hero-actions"><button class="btn btn-white btn-xl" data-act="go" data-view="lesson">ЖАҢА САБАҚ</button>' +
+      '<button class="btn btn-gold btn-xl" data-act="go" data-view="groups">БАҒАЛАУДЫ БАСТАУ →</button></div></div>' +
     '</section>' +
     '<div class="home-row">' +
       '<section class="quote">' + band() + '<div class="quote-in"><p class="label">Апта дәйек сөзі</p><blockquote>«Ел-жұртымның бақыты аталатын,<br>сөнбесін мәңгі сенің, Отан, атың!»</blockquote></div></section>' +
@@ -931,6 +1082,299 @@ function viewClass(){
     '<button class="btn btn-danger" data-act="clear">БАРЛЫҚ ДЕРЕКТІ ТАЗАРТУ</button></div></main>';
 }
 
+/* ================= NEW LESSON ================= */
+var LSECS = [
+  ['ҚАЙНАУ', 'Анықтама'],
+  ['МЕНШІКТІ БУЛАНУ ЖЫЛУЫ', 'r = Q / m'],
+  ['ЖЫЛУ МӨЛШЕРІН ЕСЕПТЕУ', 'Q = rm'],
+  ['ҚЫСЫМ ЖӘНЕ ҚАЙНАУ', 'Биіктік'],
+  ['ЗЕРТХАНАЛЫҚ ЖҰМЫС', 'T = f(t) графигі'],
+  ['ЖАУАБЫ ҚАНДАЙ?', 'Сұрақтар']
+];
+var LAB_SLOTS = range(15).map(function(i){ var m = i * 0.5; return { m:m, label: Math.floor(m) + ':' + (i % 2 ? '30' : '00') }; });
+var LAB_QS = [
+  'Су қызған кезде температура қалай өзгерді?',
+  'Қай уақыттан бастап қайнау белгілері байқалды?',
+  'Қайнау кезінде температура қалай өзгерді?',
+  'Тәжірибеңіз бойынша судың қайнау температурасын анықтаңыз.',
+  'Графиктің қай бөлігі қайнау процесіне сәйкес келеді?',
+  'Неліктен қайнау кезінде берілген энергияға қарамастан температура айтарлықтай өспейді?'
+];
+var EX_STEPS = [
+  'Берілгені: m = 3 кг; t₁ = 20°C; t₂ = 100°C; c = 4200 Дж/(кг·°C); r = 2,3·10⁶ Дж/кг',
+  '1) Суды қайнау температурасына дейін қыздыру: Q₁ = cm(t₂ − t₁) = 4200 · 3 · 80 = 1 008 000 Дж',
+  '2) Қайнап тұрған суды буға айналдыру: Q₂ = rm = 2,3·10⁶ · 3 = 6 900 000 Дж',
+  '3) Жалпы жылу мөлшері: Q = Q₁ + Q₂ = 1 008 000 + 6 900 000 = 7 908 000 Дж ≈ 7,9 МДж'
+];
+var PLACES = [
+  ['Қарақия ойысы', -132],
+  ['Теңіз деңгейі', 0],
+  ['Алматы', 800],
+  ['Шымбұлақ', 2200],
+  ['Хан Тәңірі', 7010]
+];
+var lab = { running:false, sec:0, timer:null };
+
+function pAt(h){ return 101.325 * Math.exp(-h / 8400); }
+function tBoil(p){ return 1 / (1 / 373.15 - 8.314 / 40660 * Math.log(p / 101.325)) - 273.15; }
+function fmtN(x, d){ return x.toFixed(d).replace('.', ','); }
+function mmss(s){ return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+
+function frac(a, b){ return '<span class="frac"><span>' + a + '</span><span>' + b + '</span></span>'; }
+function callout(kind, title, text){
+  return '<div class="callout ' + kind + '"><h3><span class="ic">' + (kind === 'mem' ? '✓' : '!') + '</span>' + title + '</h3><p>' + text + '</p></div>';
+}
+function rule(html){ return '<div class="rule"><span class="mark">!</span><p>' + html + '</p></div>'; }
+
+function boilFigSVG(){
+  var b = '';
+  var pts = [[150,250,7],[190,232,5],[230,258,8],[270,238,6],[310,252,7],[350,236,5],[175,200,6],[215,182,8],[255,206,5],[295,188,7],[335,204,6],[200,150,5],[240,135,7],[285,150,6],[320,160,5]];
+  pts.forEach(function(p, i){ b += '<circle class="bub demo-bub" cx="' + p[0] + '" cy="' + p[1] + '" r="' + p[2] + '" style="animation-delay:-' + (i * 0.17).toFixed(2) + 's"/>'; });
+  return '<svg viewBox="0 0 500 360" role="img" aria-label="Қайнап жатқан колба: бу көпіршіктері сұйықтың бүкіл көлемінде пайда болады">' +
+    '<path d="M215 20 H285 V95 Q385 140 380 230 Q372 300 250 302 Q128 300 120 230 Q115 140 215 95 Z" fill="#F4FAFD" stroke="#5A7084" stroke-width="4"/>' +
+    '<path d="M131 128 Q250 118 369 128 Q382 160 380 230 Q372 300 250 302 Q128 300 120 230 Q118 160 131 128 Z" fill="#BDE7F5"/>' +
+    '<path d="M131 128 Q190 138 250 128 Q310 118 369 128" fill="none" stroke="#0EA5E9" stroke-width="3"/>' + b +
+    '<g class="steam"><path d="M232 18 q-10 -14 2 -26 t-2 -26"/><path d="M262 18 q10 -14 -2 -26 t2 -26"/></g>' +
+    '<path d="M150 302 L130 345 M350 302 L370 345 M110 345 H390" stroke="#334155" stroke-width="6" stroke-linecap="round"/>' +
+    '<g transform="translate(250 330)"><path class="flame on" d="M0 12 Q-16 -12 0 -34 Q16 -12 0 12 Z" fill="#FF8C00"/><path class="flame on" d="M0 12 Q-8 -4 0 -18 Q8 -4 0 12 Z" fill="#FFD43B"/></g>' +
+    '<text x="395" y="210" class="g-title">бу көпіршіктері</text><path d="M390 205 L345 205" stroke="#5A7084" stroke-width="2"/>' +
+    '</svg>';
+}
+
+function lessonSec0(){
+  return '<div class="lsec">' +
+    rule('Сұйық қайнайтын температураны <em>қайнау температурасы</em> деп атайды.') +
+    rule('Қайнау – <em>қайнау температурасында</em> сұйықтың тұтас көлеміндегі булану процесі.') +
+    '<div class="lgrid"><div class="lcol">' +
+      '<p class="lead">Әр сұйықтың қайнау температурасы әртүрлі болады. Бұл әртүрлі заттардың молекулаларының өзара әрекеттесу күштерінің айырмашылығымен түсіндіріледі. Молекулалардың өзара күшті әрекеттесуін жеңіп шығу үшін молекулалардың кинетикалық энергиясы үлкен мәнге ие болуы және температуралары да жоғары болуы керек.</p>' +
+      callout('attn', 'Назар аударыңдар!', 'Сұйық қайнаған кезде буға айналу процесі сұйық көлемін тұтас қамтиды.') +
+      '<div class="tbl-wrap"><table class="cmp"><thead><tr><th></th><th>Булану</th><th>Қайнау</th></tr></thead><tbody>' +
+        '<tr><td>Қай жерден?</td><td>Тек сұйықтың бетінен</td><td>Сұйықтың бүкіл көлемінде</td></tr>' +
+        '<tr><td>Қандай температурада?</td><td>Кез келген температурада</td><td>Тек қайнау температурасында</td></tr>' +
+        '<tr><td>Температура</td><td>Сұйық суиды</td><td>Тұрақты болып қалады</td></tr>' +
+      '</tbody></table></div></div>' +
+      '<div class="lcol"><figure class="fig" style="margin:0">' + boilFigSVG() + '<figcaption>Сұйықтың қайнауы</figcaption></figure>' +
+      '<div class="tbl-wrap"><table class="vals"><thead><tr><th style="text-align:left">Зат</th><th>Қайнау температурасы, °C</th></tr></thead><tbody>' +
+        '<tr><td>Эфир</td><td>35</td></tr><tr><td>Спирт</td><td>78</td></tr><tr><td>Су</td><td>100</td></tr><tr><td>Сынап</td><td>357</td></tr>' +
+      '</tbody></table></div><p class="hint">Қалыпты атмосфералық қысымда (2-қосымша, 10-кесте).</p></div>' +
+    '</div></div>';
+}
+
+function lessonSec1(){
+  return '<div class="lsec">' +
+    rule('Меншікті булану жылуы – қайнау температурасындағы 1 кг сұйықты буға айналдыру үшін қажет жылу мөлшеріне тең физикалық шама.') +
+    '<div class="fcards">' +
+      '<div class="fcard"><span>Белгіленуі</span><div class="fx">r</div></div>' +
+      '<div class="fcard"><span>Формуласы</span><div class="fx main">r = ' + frac('Q', 'm') + '</div></div>' +
+      '<div class="fcard"><span>Өлшем бірлігі</span><div class="fx">[r] = ' + frac('Дж', 'кг') + '</div></div>' +
+    '</div>' +
+    '<div class="lgrid"><div class="lcol">' +
+      callout('attn', 'Назар аударыңдар!', 'Су үшін r = 2,3·10⁶ Дж/кг. Бұл 100°C-тағы 1 кг суды буға айналдыру үшін 2 300 000 Дж жылу қажет екенін білдіреді.') +
+      callout('mem', 'Есте сақтаңдар!', 'Газ күйіндегі заттың ішкі энергиясы қайнау температурасы кезінде оның сұйық күйіндегі ішкі энергиясынан көбірек болады.') +
+      '<p class="lead">Қалыпты атмосфералық қысымдағы әртүрлі заттардың меншікті булану жылуы тәжірибелік жолмен анықталған. Олардың кейбіреулері 2-қосымшадағы 11-кестеде берілген.</p>' +
+    '</div><div class="lcol">' +
+      '<div class="tbl-wrap"><table class="vals"><thead><tr><th style="text-align:left">Зат</th><th>r, Дж/кг</th></tr></thead><tbody>' +
+        '<tr><td>Су</td><td>2,3·10⁶</td></tr><tr><td>Спирт</td><td>0,9·10⁶</td></tr><tr><td>Эфир</td><td>0,4·10⁶</td></tr><tr><td>Сынап</td><td>0,3·10⁶</td></tr>' +
+      '</tbody></table></div><p class="hint">Қалыпты атмосфералық қысымда, қайнау температурасында.</p>' +
+    '</div></div></div>';
+}
+
+function lessonSec2(){
+  var n = Math.max(0, Math.min(EX_STEPS.length, S.ui.ex | 0));
+  var steps = EX_STEPS.slice(0, n).map(function(t, i){ return '<li' + (i === EX_STEPS.length - 1 ? ' class="last"' : '') + '>' + t + '</li>'; }).join('');
+  return '<div class="lsec">' +
+    '<div class="formula-big"><p>Қайнау температурасында тұрған сұйықты буға айналдыру үшін қажет жылу мөлшері меншікті булану жылуы мен сұйықтың массасының көбейтіндісіне тең:</p><div class="fx">Q = rm</div>' +
+      '<p>Бу конденсацияланғанда (сұйыққа айналғанда) дәл сондай жылу мөлшері бөлініп шығады.</p></div>' +
+    '<div class="formula-big"><p>Егер сұйықтың температурасы қайнау температурасынан төмен болса, оны алдымен қыздыру керек. Онда қыздыруға және буландыруға кеткен энергиялар қосылады:</p>' +
+      '<div class="fx">Q = cm(t₂ − t₁) + rm</div>' +
+      '<div class="terms"><span><b>cm(t₂ − t₁)</b> — қайнау температурасына дейін қыздыру</span><span><b>rm</b> — буға айналдыру</span></div></div>' +
+    '<section class="example"><h3>ЕСЕПТЕУ МЫСАЛЫ</h3><p class="task-q">3 кг суды 20°C-тан бастап толық буға айналдыру үшін қанша жылу қажет?</p>' +
+      (steps ? '<ol class="ex-steps">' + steps + '</ol>' : '') +
+      '<div class="actions">' + (n < EX_STEPS.length ? '<button class="btn btn-primary" data-act="ex-next" data-k="exnext">КЕЛЕСІ ҚАДАМ ▶</button>' : '') +
+      (n > 0 ? '<button class="btn btn-ghost" data-act="ex-reset">ҚАЙТА БАСТАУ</button>' : '') + '</div></section>' +
+    '</div>';
+}
+
+function altFigSVG(h){
+  var y = function(v){ return 190 - Math.max(-200, v) / 7500 * 168; };
+  var x = h <= 0 ? 52 : 70 + Math.min(h, 7500) / 7500 * 280;
+  return '<svg viewBox="0 0 640 220" role="img" aria-label="Биіктік сызбасы">' +
+    '<line x1="0" y1="190" x2="640" y2="190" stroke="#0EA5E9" stroke-width="2" stroke-dasharray="6 5"/>' +
+    '<text x="560" y="210" class="g-t">теңіз деңгейі</text>' +
+    '<path d="M0 190 L30 190 L52 196 L70 190 L150 150 L210 120 L270 70 L350 ' + y(7010).toFixed(0) + ' L420 80 L470 110 L540 150 L640 170 L640 220 L0 220 Z" fill="#CFE8F2" stroke="#04709E" stroke-width="2.5"/>' +
+    '<path d="M330 45 L350 ' + y(7010).toFixed(0) + ' L372 46 L360 42 L350 50 L340 42 Z" fill="#fff"/>' +
+    '<text x="362" y="' + (y(7010) - 6).toFixed(0) + '" class="g-title">Хан Тәңірі</text>' +
+    '<text x="12" y="214" class="g-t">Қарақия</text>' +
+    '<circle cx="' + x.toFixed(1) + '" cy="' + y(h).toFixed(1) + '" r="10" fill="#C62828" stroke="#fff" stroke-width="3"/>' +
+    '</svg>';
+}
+function altValues(h){ var p = pAt(h); return { p:p, t:tBoil(p) }; }
+function lessonSec3(){
+  var h = S.ui.alt, v = altValues(h);
+  var pre = PLACES.map(function(pl){ return '<button class="btn btn-ghost' + (pl[1] === h ? ' cur' : '') + '" data-act="alt" data-h="' + pl[1] + '">' + pl[0] + ' · ' + pl[1] + ' м</button>'; }).join('');
+  return '<div class="lsec">' +
+    '<div class="chain"><span>Биіктік ↑</span><i>→</i><span>Атмосфералық қысым ↓</span><i>→</i><span>Қайнау температурасы ↓</span></div>' +
+    '<div class="alt">' +
+      '<div class="alt-read"><div><span>Биіктік</span><b id="altH">' + h + '<small> м</small></b></div>' +
+      '<div><span>Атмосфералық қысым</span><b id="altP">≈ ' + fmtN(v.p, 1) + '<small> кПа</small></b></div>' +
+      '<div class="hot"><span>Судың қайнау температурасы</span><b id="altT">≈ ' + fmtN(v.t, 1) + '<small> °C</small></b></div></div>' +
+      '<label class="hint" for="altRange">Биіктікті өзгертіңіз (−200 м … 7500 м)</label>' +
+      '<input id="altRange" class="alt-range" type="range" min="-200" max="7500" step="10" value="' + h + '">' +
+      '<div class="presets">' + pre + '</div>' +
+      '<div class="fig alt-fig" id="altFig">' + altFigSVG(h) + '</div>' +
+    '</div>' +
+    '<div class="lgrid"><div class="lcol">' +
+      callout('attn', 'Таулы жерде', 'Қысым төмен болғандықтан су 100°C-тан төмен температурада қайнайды. Сондықтан тауда тағам баяу піседі.') +
+    '</div><div class="lcol">' +
+      callout('mem', 'Қысым артса', 'Қайнау температурасы жоғарылайды. Теңіз деңгейінен төмен жерде (Қарақия) және қысымды қазанда су 100°C-тан жоғары температурада қайнайды.') +
+    '</div></div>' +
+    '<p class="hint">Мәндер шамамен алынған: қысым биіктікке қарай экспоненциалды заңмен, қайнау температурасы Клапейрон–Клаузиус теңдеуімен есептелді.</p>' +
+    '</div>';
+}
+
+function lessonSec5(){
+  var qs = [
+    'Неліктен заттың меншікті булану жылуы меншікті балқу жылуынан көбірек болады?',
+    'Не себепті қайнау кезінде сұйыққа берілген жылу мөлшері мен конденсация кезінде бөлінген жылу мөлшерінің мәндері бірдей болады?',
+    'Қайнау кезінде неге шуыл мен бүлкілдеу болады? Сұйықтағы қандай процестер осындай дыбыстар шығарады?',
+    'Әртүрлі заттардың қайнау температурасы неге әртүрлі болады?'
+  ];
+  return '<div class="lsec"><ol class="lq">' + qs.map(function(q){ return '<li>' + q + '</li>'; }).join('') + '</ol></div>';
+}
+
+/* ---- lab ---- */
+function labApparatusSVG(){
+  return '<svg viewBox="0 0 320 340" role="img" aria-label="Зертханалық қондырғы: штатив, колба, термометр, отын таблеткасы">' +
+    '<rect x="40" y="300" width="170" height="12" rx="3" fill="#334155"/>' +
+    '<rect x="60" y="30" width="8" height="270" rx="1" fill="#64748B"/>' +
+    '<path d="M68 150 H125 M125 142 V158" stroke="#334155" stroke-width="5" stroke-linecap="round"/><circle cx="68" cy="150" r="6" fill="#1E293B"/>' +
+    '<path d="M68 70 H165 M165 64 V76" stroke="#334155" stroke-width="4" stroke-linecap="round"/><circle cx="68" cy="70" r="5" fill="#1E293B"/>' +
+    '<rect x="110" y="290" width="60" height="10" rx="2" fill="#94A3B8"/><rect x="122" y="280" width="36" height="10" rx="2" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>' +
+    '<g id="labFlame" class="flame' + (lab.running ? ' on' : '') + '"><path d="M140 280 Q128 255 140 236 Q152 255 140 280 Z" fill="#FF8C00"/><path d="M140 280 Q132 262 140 246 Q148 262 140 280 Z" fill="#FFD43B"/><path d="M140 280 Q136 270 140 260 Q144 270 140 280 Z" fill="#fff"/></g>' +
+    '<rect x="128" y="110" width="24" height="45" fill="#F4FAFD" stroke="#94A3B8" stroke-width="2"/>' +
+    '<ellipse cx="140" cy="110" rx="15" ry="3" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2"/>' +
+    '<path d="M128 155 Q95 200 100 240 Q105 270 140 270 Q175 270 180 240 Q185 200 152 155 Z" fill="#F4FAFD" stroke="#94A3B8" stroke-width="2.5"/>' +
+    '<path d="M112 210 Q140 212 168 210 Q178 240 174 255 Q165 268 140 268 Q115 268 106 255 Q102 240 112 210 Z" fill="#BDE7F5" stroke="#0EA5E9" stroke-width="1.5"/>' +
+    '<g id="labBubbles"></g><g id="labSteam" class="steam"></g>' +
+    '<rect x="162" y="50" width="6" height="180" rx="3" fill="#fff" stroke="#64748B" stroke-width="1.5"/>' +
+    '<path d="M162 70 H158 M162 90 H158 M162 110 H158 M162 130 H158 M162 150 H158 M162 170 H158 M162 190 H158 M162 210 H158" stroke="#475569" stroke-width="1"/>' +
+    '<circle cx="165" cy="230" r="6" fill="#EF4444" stroke="#B91C1C" stroke-width="1.5"/>' +
+    '<line id="labFluid" x1="165" y1="230" x2="165" y2="210" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>' +
+    '</svg>';
+}
+function labGraphSVG(){
+  var W = 640, H = 380, m = { t:24, r:24, b:56, l:62 }, w = W - m.l - m.r, h = H - m.t - m.b;
+  var X = function(v){ return m.l + v / 7 * w; }, Y = function(v){ return m.t + h - v / 110 * h; };
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Температураның уақытқа тәуелділік графигі">';
+  [0, 20, 40, 60, 80].forEach(function(v){ s += '<line class="g-grid" x1="' + m.l + '" x2="' + (m.l + w) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text class="g-t" x="' + (m.l - 10) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + v + '</text>'; });
+  s += '<line class="g-100" x1="' + m.l + '" x2="' + (m.l + w) + '" y1="' + Y(100) + '" y2="' + Y(100) + '"/><text class="g-100t" x="' + (m.l - 10) + '" y="' + (Y(100) + 4) + '" text-anchor="end">100</text>';
+  for (var i = 0; i <= 7; i++) s += '<line class="g-grid" x1="' + X(i) + '" x2="' + X(i) + '" y1="' + m.t + '" y2="' + (m.t + h) + '"/><text class="g-t" x="' + X(i) + '" y="' + (m.t + h + 20) + '" text-anchor="middle">' + i + ':00</text>';
+  s += '<line class="g-axis" x1="' + m.l + '" x2="' + (m.l + w) + '" y1="' + (m.t + h) + '" y2="' + (m.t + h) + '"/><line class="g-axis" x1="' + m.l + '" x2="' + m.l + '" y1="' + m.t + '" y2="' + (m.t + h) + '"/>';
+  s += '<text class="g-title" x="' + (m.l + w / 2) + '" y="' + (H - 10) + '" text-anchor="middle">Уақыт, мин</text>';
+  s += '<text class="g-title" transform="rotate(-90)" x="' + (-(m.t + h / 2)) + '" y="18" text-anchor="middle">Температура, °C</text>';
+  var pts = [];
+  S.lab.temps.forEach(function(v, i){ if (v !== null) pts.push([X(LAB_SLOTS[i].m), Y(Math.min(v, 110)), v]); });
+  if (pts.length > 1) s += '<path class="g-line" d="M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + '"/>';
+  pts.forEach(function(p){ s += '<circle class="g-pt" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="6"/><text class="g-val" x="' + p[0].toFixed(1) + '" y="' + (p[1] - 12).toFixed(1) + '" text-anchor="middle">' + fmtN(p[2], p[2] % 1 ? 1 : 0) + '°</text>'; });
+  return s + '</svg>';
+}
+function labLast(){ for (var i = S.lab.temps.length - 1; i >= 0; i--) if (S.lab.temps[i] !== null) return S.lab.temps[i]; return null; }
+function labPlateau(){
+  var v = S.lab.temps.filter(function(x){ return x !== null; });
+  if (v.length < 3) return false;
+  var l = v.slice(-3);
+  return Math.max.apply(null, l) - Math.min.apply(null, l) <= 1 && l[2] >= 80;
+}
+function labUpdate(){
+  var g = document.getElementById('labGraph'); if (!g) return;
+  g.innerHTML = labGraphSVG();
+  var t = labLast(), cur = t === null ? 20 : t;
+  var fluid = document.getElementById('labFluid');
+  if (fluid) fluid.setAttribute('y2', (225 - Math.min(cur, 110) / 110 * 150).toFixed(1));
+  var now = document.getElementById('labNow'); if (now) now.textContent = t === null ? '— °C' : fmtN(t, t % 1 ? 1 : 0) + ' °C';
+  var bub = document.getElementById('labBubbles'), stm = document.getElementById('labSteam'), b = '';
+  if (bub) {
+    if (cur >= 40) {
+      var n = Math.min(Math.floor((cur - 30) / 5), 16), boil = cur >= 95;
+      for (var i = 0; i < n; i++) {
+        var bx = 114 + (i * 37) % 52, by = boil ? 220 + (i * 23) % 44 : 252 + (i * 11) % 14, r = boil ? 2.5 + (i % 3) * 1.5 : 1.5 + (i % 2);
+        b += '<circle class="bub' + (boil ? ' rise' : '') + '" cx="' + bx + '" cy="' + by + '" r="' + r + '" style="animation-delay:-' + (i * 0.13).toFixed(2) + 's"/>';
+      }
+    }
+    bub.innerHTML = b;
+  }
+  if (stm) stm.innerHTML = cur >= 80 ? '<path d="M135 105 Q130 90 138 75 T132 60"/><path d="M142 105 Q148 90 140 75 T146 60"/><path d="M148 105 Q144 92 150 78 T144 62"/>' : '';
+  var ban = document.getElementById('labBanner'); if (ban) ban.hidden = !labPlateau();
+}
+function labTickUI(){
+  var idx = Math.min(14, Math.floor(lab.sec / 30));
+  var cd = document.getElementById('labCountdown'), tot = document.getElementById('labTotal');
+  if (cd) cd.textContent = lab.sec >= 420 ? '00:00' : mmss(30 - lab.sec % 30);
+  if (tot) tot.textContent = mmss(lab.sec) + ' / 07:00';
+  document.querySelectorAll('.lab-cell').forEach(function(c, i){ c.classList.toggle('now', (lab.running || lab.sec > 0) && i === idx && lab.sec < 420); });
+  var fl = document.getElementById('labFlame'); if (fl) fl.classList.toggle('on', lab.running);
+  var badge = document.getElementById('labBadge'); if (badge) { badge.textContent = lab.running ? 'Қыздырғыш жанып тұр' : 'Қыздырғыш сөндірулі'; badge.classList.toggle('on', lab.running); }
+  var sb = document.getElementById('labStart'); if (sb) sb.textContent = lab.running ? '❚❚ ТОҚТАТА ТҰРУ' : (lab.sec > 0 && lab.sec < 420 ? '▶ ЖАЛҒАСТЫРУ' : '▶ ТӘЖІРИБЕНІ БАСТАУ');
+}
+function labToggle(){
+  if (lab.running) { clearInterval(lab.timer); lab.running = false; labTickUI(); return; }
+  if (lab.sec >= 420) lab.sec = 0;
+  lab.running = true;
+  lab.timer = setInterval(function(){
+    lab.sec++;
+    if (lab.sec >= 420) { clearInterval(lab.timer); lab.running = false; toast('Тәжірибе уақыты аяқталды (7 мин)', 3000); }
+    labTickUI();
+  }, 1000);
+  labTickUI();
+}
+function labStop(){ clearInterval(lab.timer); lab.running = false; lab.sec = 0; }
+function labCellState(v, raw){
+  if (v !== null) return ['ok', 'Енгізілді'];
+  if (raw) return ['err', 'Қате мән'];
+  return ['', 'Күтуде'];
+}
+function lessonSec4(){
+  var cells = LAB_SLOTS.map(function(sl, i){
+    var v = S.lab.temps[i], st0 = labCellState(v, '');
+    return '<div class="lab-cell' + (v !== null ? ' has' : '') + '"><span class="tm">' + sl.label + '</span><span class="stt ' + st0[0] + '" id="labSt' + i + '">' + st0[1] + '</span>' +
+      '<label for="labT' + i + '"><input id="labT' + i + '" class="lab-in" data-i="' + i + '" type="number" inputmode="decimal" min="0" max="110" step="0.1" placeholder="—" value="' + (v === null ? '' : v) + '">°C</label></div>';
+  }).join('');
+  var qs = LAB_QS.map(function(q, i){ return '<label for="labQ' + i + '">' + (i + 1) + '. ' + q + '<textarea id="labQ' + i + '" class="lab-ans" data-i="' + i + '" rows="2" placeholder="Жауабыңызды жазыңыз…">' + esc(S.lab.ans[i]) + '</textarea></label>'; }).join('');
+  return '<div class="lsec">' +
+    '<p class="lead">Қалыпты атмосфералық қысымда (p₀ = 101,3 кПа) судың температурасының уақытқа тәуелділік графигін саламыз. Әр 30 секунд сайын термометрдің көрсеткішін кестеге жазыңыз.</p>' +
+    '<div class="lab-ctrl"><div class="lab-clock"><span>Келесі өлшеуге</span><b id="labCountdown">00:30</b></div>' +
+      '<div class="lab-clock tot"><span>Тәжірибе уақыты</span><b id="labTotal">00:00 / 07:00</b></div>' +
+      '<button class="btn btn-primary" id="labStart" data-act="lab-start">▶ ТӘЖІРИБЕНІ БАСТАУ</button>' +
+      '<button class="btn btn-ghost" data-act="lab-clear">ГРАФИКТІ ТАЗАЛАУ</button>' +
+      '<button class="btn btn-danger" data-act="lab-reset">ҚАЙТА БАСТАУ</button></div>' +
+    '<div class="lab-grid">' +
+      '<section class="lab-card"><h3>Зертханалық қондырғы<span class="badge" id="labBadge">Қыздырғыш сөндірулі</span></h3>' +
+        '<p class="hint">Штативтегі колба, термометр және отын таблеткасы. Термометр колбаның түбіне де, қабырғасына да тимейді.</p>' + labApparatusSVG() +
+        '<div class="lab-now"><span>Соңғы температура:</span><b id="labNow">— °C</b></div></section>' +
+      '<section class="lab-card"><h3>Эксперименттік график T = f(t)</h3><p class="hint">Температура енгізілген сайын график өздігінен салынады.</p><div id="labGraph"></div>' +
+        '<div class="lab-banner" id="labBanner" hidden><span class="mark" aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--navy);display:grid;place-items:center;font:900 20px/1 var(--f-display)">?</span><div><b>Зерттеушілік бақылау</b><p>Температура өзгермей тұр. Температураның өзгерісіне назар аударыңыз. Не байқадыңыз?</p></div></div></section>' +
+    '</div>' +
+    '<section class="panel"><h3 class="section-title">ЭКСПЕРИМЕНТТІК ДЕРЕКТЕР</h3><p class="hint">15 өлшеу нүктесі: 0:00 … 7:00, әр 30 секунд сайын.</p><div class="lab-cells">' + cells + '</div></section>' +
+    '<section class="panel"><h3 class="section-title">ТӘЖІРИБЕ СОҢЫНДАҒЫ ТАЛДАУ</h3><p class="hint">График пен бақылау нәтижелеріне сүйеніп жауап беріңіз.</p><div class="lab-qs">' + qs + '</div></section>' +
+    '</div>';
+}
+
+function viewLesson(){
+  var k = S.ui.lsec;
+  var nav = '<nav class="lsecs" aria-label="Сабақ бөлімдері">' + LSECS.map(function(s, i){
+    return '<button class="step' + (i === k ? ' cur' : '') + '" data-act="lsec" data-s="' + i + '"' + (i === k ? ' aria-current="page"' : '') + '><b>' + s[0] + '</b><span>' + s[1] + '</span></button>';
+  }).join('') + '</nav>';
+  var body = [lessonSec0, lessonSec1, lessonSec2, lessonSec3, lessonSec4, lessonSec5][k]();
+  var back = k > 0 ? '<button class="btn btn-ghost" data-act="lsec" data-s="' + (k - 1) + '">← ' + LSECS[k - 1][0] + '</button>' : '<span></span>';
+  var fwd = k < LSECS.length - 1 ? '<button class="btn btn-primary" data-act="lsec" data-s="' + (k + 1) + '">' + LSECS[k + 1][0] + ' →</button>'
+                                 : '<button class="btn btn-gold" data-act="go" data-view="groups">БАҒАЛАУҒА ӨТУ →</button>';
+  return '<main class="page wrap"><section class="ghead">' + ornV() + '<span class="gnum">ЖАҢА САБАҚ</span><div class="ghead-title"><h1>' + LSECS[k][0] + '</h1><p>Қайнау, меншікті булану жылуы. Қайнау температурасының атмосфералық қысымға байланыстылығы</p></div>' + icon('flask') + '</section>' +
+    nav + '<section class="panel">' + body + '</section><div class="nav-row">' + back + fwd + '</div></main>';
+}
+function afterLessonRender(){
+  if (S.ui.view === 'lesson' && S.ui.lsec === 4) { labUpdate(); labTickUI(); }
+}
+
 /* ================= RESULT SHEET ================= */
 function sheetHTML(s){
   var a = analyze(s), sc = a.sc, G = GROUPS[s.g];
@@ -974,9 +1418,10 @@ function render(){
   var ae = document.activeElement, key = ae && ae.getAttribute && ae.getAttribute('data-k');
   var v = S.ui.view, html = sampleBanner();
   if (v === 'home') html += viewHome();
-  else html += navBar() + (v === 'groups' ? viewGroups() : v === 'group' ? viewGroup() : viewClass());
+  else html += navBar() + (v === 'lesson' ? viewLesson() : v === 'groups' ? viewGroups() : v === 'group' ? viewGroup() : viewClass());
   app.innerHTML = html;
   if (key) { var el = app.querySelector('[data-k="' + key + '"]'); if (el) el.focus({ preventScroll:true }); }
+  afterLessonRender();
   renderOverlay();
 }
 
@@ -998,9 +1443,9 @@ function printSheets(list){
   }, 500);
 }
 
-function openModal(){
-  modal.innerHTML = '<div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="mq"><p id="mq">Барлық енгізілген деректер өшіріледі. Жалғастырасыз ба?</p>' +
-    '<div class="actions"><button class="btn btn-ghost" data-act="modal-no">БАС ТАРТУ</button><button class="btn btn-red" data-act="modal-yes">ИӘ, ӨШІРУ</button></div></div>';
+function openModal(msg, yes){
+  modal.innerHTML = '<div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="mq"><p id="mq">' + (msg || 'Барлық енгізілген деректер өшіріледі. Жалғастырасыз ба?') + '</p>' +
+    '<div class="actions"><button class="btn btn-ghost" data-act="modal-no">БАС ТАРТУ</button><button class="btn btn-red" data-act="' + (yes || 'modal-yes') + '">ИӘ, ӨШІРУ</button></div></div>';
   modal.hidden = false;
   var b = modal.querySelector('[data-act="modal-no"]'); if (b) b.focus();
 }
@@ -1066,9 +1511,18 @@ document.addEventListener('click', function(e){
     case 'clear': openModal(); break;
     case 'modal-no': closeModal(); break;
     case 'modal-yes':
-      S = blankState(); try { localStorage.removeItem(LS_KEY); } catch(err) {}
+      labStop(); S = blankState(); try { localStorage.removeItem(LS_KEY); } catch(err) {}
       closeModal(); render(); window.scrollTo(0, 0); toast('Барлық дерек өшірілді'); break;
     case 'sample': loadSample(); break;
+    case 'lsec': S.ui.lsec = +d.s; save(); render(); window.scrollTo(0, 0); break;
+    case 'ex-next': S.ui.ex = Math.min(EX_STEPS.length, S.ui.ex + 1); save(); render(); break;
+    case 'ex-reset': S.ui.ex = 0; save(); render(); break;
+    case 'alt': S.ui.alt = +d.h; save(); render(); break;
+    case 'lab-start': labToggle(); break;
+    case 'lab-clear': openModal('Кестедегі барлық температура мәндері өшіріледі. Жалғастырасыз ба?', 'lab-clear-yes'); break;
+    case 'lab-reset': openModal('Таймер тоқтап, кестедегі мәндер мен талдау жауаптары өшіріледі. Жалғастырасыз ба?', 'lab-reset-yes'); break;
+    case 'lab-clear-yes': S.lab.temps = range(15).map(function(){ return null; }); save(); closeModal(); render(); toast('График тазаланды'); break;
+    case 'lab-reset-yes': labStop(); S.lab = { temps: range(15).map(function(){ return null; }), ans: ['', '', '', '', '', ''] }; save(); closeModal(); render(); toast('Тәжірибе қайта басталды'); break;
   }
 });
 document.addEventListener('input', function(e){
@@ -1077,6 +1531,24 @@ document.addEventListener('input', function(e){
     S.groups[+t.dataset.g].names[+t.dataset.i] = t.value;
     save();
     var p = document.getElementById('namePreview'); if (p) p.innerHTML = previewChips(+t.dataset.g);
+  }
+  if (t.classList && t.classList.contains('lab-in')) {
+    var li = +t.dataset.i, raw = t.value.trim(), num = parseFloat(raw.replace(',', '.'));
+    S.lab.temps[li] = (raw !== '' && !isNaN(num) && num >= 0 && num <= 110) ? num : null;
+    save();
+    var cs = labCellState(S.lab.temps[li], raw), tag = document.getElementById('labSt' + li);
+    if (tag) { tag.textContent = cs[1]; tag.className = 'stt ' + cs[0]; }
+    t.closest('.lab-cell').classList.toggle('has', S.lab.temps[li] !== null);
+    labUpdate();
+  }
+  if (t.classList && t.classList.contains('lab-ans')) { S.lab.ans[+t.dataset.i] = t.value; save(); }
+  if (t.id === 'altRange') {
+    var hv = +t.value, av = altValues(hv); S.ui.alt = hv; save();
+    document.getElementById('altH').innerHTML = hv + '<small> м</small>';
+    document.getElementById('altP').innerHTML = '≈ ' + fmtN(av.p, 1) + '<small> кПа</small>';
+    document.getElementById('altT').innerHTML = '≈ ' + fmtN(av.t, 1) + '<small> °C</small>';
+    document.getElementById('altFig').innerHTML = altFigSVG(hv);
+    document.querySelectorAll('.presets .btn').forEach(function(b){ b.classList.toggle('cur', +b.dataset.h === hv); });
   }
 });
 document.addEventListener('change', function(e){
