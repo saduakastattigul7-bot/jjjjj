@@ -29,7 +29,7 @@ for r in range(2, N_EPISODES + 2):
     other = s(we.cell(r, 5).value)
     eps.append({
         "work": work, "genre": GENRE.get(work, ""), "game": game if game != "Басқа" else (other or "Басқа"),
-        "listed": game != "Басқа", "type": GTYPE.get(game, "БАСҚА"), "hero": s(we.cell(r, 7).value),
+        "listed": game in GTYPE, "type": GTYPE.get(game, "БАСҚА"), "hero": s(we.cell(r, 7).value),
         "episode": s(we.cell(r, 8).value), "func": s(we.cell(r, 9).value).upper(), "quote": s(we.cell(r, 10).value),
         "page": s(we.cell(r, 11).value),
     })
