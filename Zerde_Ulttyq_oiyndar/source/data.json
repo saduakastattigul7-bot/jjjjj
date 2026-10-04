@@ -559,68 +559,74 @@
    "Қозы Көрпеш – Баян сұлу": 2,
    "Айман – Шолпан": 1
   },
-  "n_resp": 0,
+  "n_resp": 19,
   "survey": {
    "Бәйге": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 94.7,
+    "played": 15.8,
+    "folk": 78.9
    },
    "Көкпар": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 100.0,
+    "played": 10.5,
+    "folk": 84.2
    },
    "Қыз қуу": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 73.7,
+    "played": 15.8,
+    "folk": 47.4
    },
    "Теңге алу": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 78.9,
+    "played": 15.8,
+    "folk": 47.4
    },
    "Аударыспақ": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 78.9,
+    "played": 21.1,
+    "folk": 47.4
    },
    "Күрес": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 94.7,
+    "played": 31.6,
+    "folk": 78.9
    },
    "Жамбы ату": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 73.7,
+    "played": 21.1,
+    "folk": 52.6
    },
    "Тоғызқұмалақ": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 100.0,
+    "played": 57.9,
+    "folk": 84.2
    },
    "Жұмбақ айтысу": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 78.9,
+    "played": 21.1,
+    "folk": 57.9
    },
    "Асық": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 100.0,
+    "played": 63.2,
+    "folk": 84.2
    },
    "Ақсүйек": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 73.7,
+    "played": 21.1,
+    "folk": 52.6
    },
    "Алтыбақан": {
-    "know": null,
-    "played": null,
-    "folk": null
+    "know": 94.7,
+    "played": 57.9,
+    "folk": 89.5
    }
+  },
+  "classes": {
+   "5": 2,
+   "6": 8,
+   "7": 5,
+   "8": 4
   }
  }
 }

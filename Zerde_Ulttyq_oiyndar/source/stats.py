@@ -68,6 +68,7 @@ for k, (g, _, _) in enumerate(GAMES):
         "folk": round(sum(x == 1 for x in fo) / len(fo) * 100, 1) if fo else None,
     }
 R["survey"] = survey
+R["classes"] = dict(sorted(Counter(p["class"] for p in resp if p["class"]).items()))
 
 if not eps:
     print("Мәтін талдауында эпизод жоқ – natije.json жазылмады.")

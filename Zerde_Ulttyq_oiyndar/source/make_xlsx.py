@@ -209,6 +209,27 @@ if len(sys.argv) > 2:
                 v = src[name].cell(r, c).value
                 wb[name].cell(r, c).value = v.strip() if isinstance(v, str) else v
 
+# ---- Google Forms жауаптарын көшіру (Файл → Жүктеп алу → .xlsx) ----
+# Келісім бермегендердің жауабы алынбайды, есімдер жоқ: әр қатысушыға реті бойынша код беріледі.
+if len(sys.argv) > 3:
+    fr = load_workbook(sys.argv[3], data_only=True).worksheets[0]
+    head = [str(fr.cell(1, c).value or "") for c in range(1, fr.max_column + 1)]
+    col = lambda pref, g=None: next(i + 1 for i, h in enumerate(head) if h.startswith(pref) and (g is None or h.endswith(f"[{g}]")))
+    c_cons, c_cls = col("Ата-анаң"), col("Нешінші сынып")
+    i = 0
+    for r in range(2, fr.max_row + 1):
+        if str(fr.cell(r, c_cons).value or "").strip() != "Иә":
+            continue
+        i += 1
+        cls = fr.cell(r, c_cls).value
+        wsv.cell(i + 1, 2).value = int(cls) if cls not in (None, "") else None
+        for k, (g, _, _) in enumerate(GAMES):
+            kn = str(fr.cell(r, col("Бұл ойындарды білесің", g)).value or "").strip()
+            fo = str(fr.cell(r, col("Бұл ойындар туралы", g)).value or "").strip()
+            wsv.cell(i + 1, 3 + 2 * k).value = int(kn[0]) if kn[:1] in ("0", "1", "2") else None
+            wsv.cell(i + 1, 4 + 2 * k).value = 1 if fo.startswith("Иә") else (0 if fo else None)
+    print("survey rows from form:", i)
+
 import os, json
 if os.path.exists("tuzetuler.json"):  # жетекшімен келісілген толықтырулар мен түзетулер: {"парақ!ұяшық": мән}
     for ref, val in json.load(open("tuzetuler.json", encoding="utf8")).items():
