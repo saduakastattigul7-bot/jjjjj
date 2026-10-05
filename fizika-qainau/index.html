@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500;600;700;800;900&family=Unbounded:wght@600;700;800;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <style>
 /* Layout: flag-blue ceremonial header over a white working surface; huge touch targets readable from the back of a classroom. Single light theme by request (no dark background). */
 :root{
@@ -322,6 +323,23 @@ details.ga summary{cursor:pointer;font:900 clamp(20px,2.2vw,26px)/1.2 var(--f-di
 .btn-red{background:var(--bad);color:#fff;border-color:var(--bad-deep)}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:90;background:var(--navy);color:#fff;font-weight:800;font-size:19px;padding:14px 22px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center}
 
+.sync.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-soft)}
+.sync.bad i{background:var(--bad)}
+.home-sync{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tab.qr{border-color:var(--navy);font-family:var(--f-display)}
+.sync-warn{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--bad-soft);border:3px solid var(--bad);border-radius:18px;padding:14px 18px;color:var(--ink)}
+.sync-warn>b{flex:none;width:40px;height:40px;border-radius:50%;background:var(--bad);color:#fff;display:grid;place-items:center;font:900 22px/1 var(--f-display)}
+.sync-warn div{flex:1;min-width:220px;display:grid;gap:4px}
+.sync-warn p{font-weight:700;font-size:18px}
+.sync-warn p:first-child{font-weight:900;color:var(--bad);font-size:20px}
+.qr-box{border-color:var(--sky-deep);max-width:560px;justify-items:center;text-align:center;max-height:calc(100vh - 32px);overflow-y:auto}
+.qr-box h2{font:900 clamp(20px,2.6vw,28px)/1.2 var(--f-display);color:var(--navy)}
+.qr-img{width:min(100%,340px);background:#fff;border:3px solid var(--line);border-radius:16px;padding:8px}
+.qr-img svg{width:100%;height:auto;display:block}
+.qr-url{font:700 16px/1.3 var(--f-body);color:var(--sky-deep);word-break:break-all;user-select:all}
+.qr-steps{text-align:left;margin:0;padding-left:24px;display:grid;gap:6px;font-size:18px;font-weight:600}
+.qr-box .actions{justify-content:center}
+.modal-box p.note,.modal-box p.hint{font:600 16px/1.4 var(--f-body);color:var(--muted)}
 /* live sync badge */
 .home-left{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
 .sync{display:inline-flex;align-items:center;gap:8px;font:800 15px/1.2 var(--f-body);border-radius:999px;padding:7px 14px;border:2px solid var(--line);background:var(--surface);color:var(--muted)}
@@ -831,6 +849,7 @@ function navBar(){
     tabs += '<button class="tab' + (v==='group' && g===i ? ' cur' : '') + '" data-act="go" data-view="group" data-g="' + i + '">' + G.n + '-ТОП</button>';
   });
   tabs += '<button class="tab cls' + (v==='class'?' cur':'') + '" data-act="go" data-view="class">СЫНЫП НӘТИЖЕСІ</button>';
+  tabs += '<button class="tab qr" data-act="qr" aria-label="QR код: басқа құрылғыдан ашу">QR</button>';
   return '<header class="topbar"><div class="wrap topbar-in"><button class="brand" data-act="go" data-view="home">' + icon('flask', '') + '<span>ҚАЙНАУ · 8-сынып</span></button>' + syncBadge() + '<nav class="tabs" aria-label="Бөлімдер">' + tabs + '</nav></div></header>';
 }
 
@@ -840,7 +859,7 @@ function viewHome(){
     '<path d="M330 28 L360 10 L392 30 L372 26 L360 36 L346 26 Z M1036 42 L1060 30 L1086 46 L1068 42 L1058 50 L1048 42 Z" fill="#FFFFFF" fill-opacity=".8"/>' +
     '<path d="M0 150 L0 130 L200 98 L380 124 L600 92 L800 128 L1000 104 L1200 132 L1200 150 Z" fill="#FFFFFF" fill-opacity=".3"/></svg>';
   return '<main class="home wrap">' +
-    '<div class="home-top"><div class="home-left"><div class="pill-class">8-сынып | Физика</div>' + syncBadge() + '</div>' +
+    '<div class="home-top"><div class="home-left"><div class="pill-class">8-сынып | Физика</div><div class="home-sync">' + syncBadge() + '<button class="btn btn-ghost btn-sm" data-act="qr">QR КОД</button></div></div>' +
     '<div class="teacher"><span>Пән мұғалімі:</span><b>' + TEACHER + '</b></div></div>' +
     '<section class="hero">' + ornV() + sunSVG('hero-sun') + mount +
       '<div class="hero-body"><p class="eyebrow">Сабақ тақырыбы</p>' +
@@ -1443,7 +1462,7 @@ function render(){
   var ae = document.activeElement, key = ae && ae.getAttribute && ae.getAttribute('data-k');
   var v = S.ui.view, html = sampleBanner();
   if (v === 'home') html += viewHome();
-  else html += navBar() + (v === 'lesson' ? viewLesson() : v === 'groups' ? viewGroups() : v === 'group' ? viewGroup() : viewClass());
+  else html += navBar() + (v === 'group' || v === 'class' ? '<div class="wrap" style="padding-top:16px">' + syncWarn() + '</div>' : '') + (v === 'lesson' ? viewLesson() : v === 'groups' ? viewGroups() : v === 'group' ? viewGroup() : viewClass());
   app.innerHTML = html;
   if (key) { var el = app.querySelector('[data-k="' + key + '"]'); if (el) el.focus({ preventScroll:true }); }
   afterLessonRender();
@@ -1511,9 +1530,34 @@ function syncBadge(){
   if (m === 'live') { txt = 'Барлық құрылғымен синхрондалады'; cls = 'live'; }
   else if (m === 'readonly') { txt = 'Тек қарау режимі'; cls = 'ro'; }
   else if (m === 'connecting') { txt = 'Қосылуда…'; cls = 'wait'; }
-  else if (m === 'offline') { txt = 'Байланыс үзілді: деректер осы құрылғыда'; cls = 'ro'; }
+  else if (m === 'offline') { txt = 'Байланыс үзілді: деректер осы құрылғыда'; cls = 'bad'; }
+  else if (m === 'nodb') { txt = 'Ортақ нәтижеге қосылмаған'; cls = 'bad'; }
   else { txt = 'Деректер тек осы құрылғыда'; cls = 'local'; }
   return '<span class="sync ' + cls + '" data-sync role="status"><i></i>' + txt + '</span>';
+}
+function syncWarn(){
+  var m = sync.mode;
+  if (m !== 'nodb' && m !== 'offline' && m !== 'readonly') return '';
+  var why = m === 'readonly' ? 'Бұл аккаунтта өзгерту құқығы жоқ: белгілер сақталмайды.' : 'Бұл құрылғыда қойылған белгілер мұғалімге түспейді.';
+  return '<div class="sync-warn" role="alert"><b>!</b><div><p>' + why + '</p><p>Мұғалімнің Claude аккаунтымен (немесе Editor ретінде шақырылған аккаунтпен) кіріп, QR код арқылы қайта ашыңыз.</p></div><button class="btn btn-ghost btn-sm" data-act="qr">QR КОД</button></div>';
+}
+var ARTIFACT_URL = 'https://claude.ai/artifact/PMZVqsvfL7YLxCh7Lqsbh8';
+function qrSVG(text){
+  if (typeof window.qrcode !== 'function') return '';
+  try { var q = window.qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 8, margin: 2, scalable: true }); } catch(e) { return ''; }
+}
+function openQR(){
+  var svg = qrSVG(ARTIFACT_URL);
+  modal.innerHTML = '<div class="modal-box qr-box" role="dialog" aria-modal="true" aria-labelledby="qrT">' +
+    '<h2 id="qrT">БАСҚА ҚҰРЫЛҒЫДАН АШУ</h2>' +
+    (svg ? '<div class="qr-img">' + svg + '</div>' : '<p class="hint">QR суреті жүктелмеді. Төмендегі сілтемені пайдаланыңыз.</p>') +
+    '<p class="qr-url" id="qrUrl">' + ARTIFACT_URL + '</p>' +
+    '<ol class="qr-steps"><li>Құрылғыда <b>claude.ai</b>-ға мұғалімнің аккаунтымен (немесе Editor ретінде шақырылған аккаунтпен) кіріңіз.</li>' +
+    '<li>QR кодты камерамен сканерлеңіз.</li>' +
+    '<li>Жоғарыда жасыл <b>«Барлық құрылғымен синхрондалады»</b> жазуы шықса, дайын.</li></ol>' +
+    '<p class="note">Claude аккаунтына кірмеген телефон бетті ашса да, бағаны мұғалімге жібере алмайды.</p>' +
+    '<div class="actions"><button class="btn btn-ghost" data-act="qr-copy">СІЛТЕМЕНІ КӨШІРУ</button><button class="btn btn-primary" data-act="modal-no">ЖАБУ</button></div></div>';
+  modal.hidden = false;
 }
 function updateBadges(){ document.querySelectorAll('[data-sync]').forEach(function(el){ el.outerHTML = syncBadge(); }); }
 
@@ -1624,7 +1668,7 @@ function initSync(){
   var dbP = window.claude.use('db'), userP = window.claude.use('user');
   Promise.all([dbP, userP]).then(function(r){
     var db = r[0], user = r[1];
-    if (!db) { sync.mode = 'local'; updateBadges(); return; }
+    if (!db) { sync.mode = 'nodb'; scheduleRender(); return; }
     return (user ? user.can('data.write') : Promise.resolve(null)).then(function(cw){
       sync.db = db; sync.readonly = cw === false;
       return Promise.all([db.collection('grp').get(), db.collection('st').get()]).then(function(q){
@@ -1642,7 +1686,7 @@ function initSync(){
         scheduleRender();
       });
     });
-  }).catch(function(){ if (!sync.db) sync.mode = 'local'; else sync.mode = 'offline'; updateBadges(); });
+  }).catch(function(){ sync.mode = sync.db ? 'offline' : 'nodb'; scheduleRender(); });
 }
 
 /* ================= EVENTS ================= */
@@ -1687,6 +1731,12 @@ document.addEventListener('click', function(e){
       clearRemote(); labStop(); S = blankState(); try { localStorage.removeItem(LS_KEY); } catch(err) {}
       closeModal(); render(); window.scrollTo(0, 0); toast('Барлық дерек өшірілді'); break;
     case 'sample': loadSample(); break;
+    case 'qr': openQR(); break;
+    case 'qr-copy': {
+      var qfail = function(){ var el = document.getElementById('qrUrl'); if (el) { var r = document.createRange(); r.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } toast('Сілтеме белгіленді: көшіріп алыңыз', 3000); };
+      try { navigator.clipboard.writeText(ARTIFACT_URL).then(function(){ toast('Сілтеме көшірілді'); }, qfail); } catch(err) { qfail(); }
+      break;
+    }
     case 'lsec': S.ui.lsec = +d.s; save(); render(); window.scrollTo(0, 0); break;
     case 'ex-next': S.ui.ex = Math.min(EX_STEPS.length, S.ui.ex + 1); save(); render(); break;
     case 'ex-reset': S.ui.ex = 0; save(); render(); break;
