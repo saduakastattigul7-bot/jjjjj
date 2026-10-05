@@ -322,6 +322,18 @@ details.ga summary{cursor:pointer;font:900 clamp(20px,2.2vw,26px)/1.2 var(--f-di
 .btn-red{background:var(--bad);color:#fff;border-color:var(--bad-deep)}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:90;background:var(--navy);color:#fff;font-weight:800;font-size:19px;padding:14px 22px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center}
 
+/* live sync badge */
+.home-left{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.sync{display:inline-flex;align-items:center;gap:8px;font:800 15px/1.2 var(--f-body);border-radius:999px;padding:7px 14px;border:2px solid var(--line);background:var(--surface);color:var(--muted)}
+.sync i{width:11px;height:11px;border-radius:50%;background:#9AAEBF;flex:none}
+.sync.live{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.sync.live i{background:var(--ok);box-shadow:0 0 0 4px rgba(20,119,58,.18)}
+.sync.ro{border-color:var(--gold);color:var(--gold-deep);background:var(--gold-soft)}
+.sync.ro i{background:var(--gold)}
+.sync.wait i{background:var(--sky)}
+.topbar .sync{margin-right:auto}
+.topbar .brand{margin-right:0}
+
 /* ---------- new lesson ---------- */
 .tab.les{border-color:var(--sky);background:var(--sky-soft)}
 .tab.les.cur{background:var(--sky-deep);border-color:var(--sky-deep);color:#fff}
@@ -819,7 +831,7 @@ function navBar(){
     tabs += '<button class="tab' + (v==='group' && g===i ? ' cur' : '') + '" data-act="go" data-view="group" data-g="' + i + '">' + G.n + '-ТОП</button>';
   });
   tabs += '<button class="tab cls' + (v==='class'?' cur':'') + '" data-act="go" data-view="class">СЫНЫП НӘТИЖЕСІ</button>';
-  return '<header class="topbar"><div class="wrap topbar-in"><button class="brand" data-act="go" data-view="home">' + icon('flask', '') + '<span>ҚАЙНАУ · 8-сынып</span></button><nav class="tabs" aria-label="Бөлімдер">' + tabs + '</nav></div></header>';
+  return '<header class="topbar"><div class="wrap topbar-in"><button class="brand" data-act="go" data-view="home">' + icon('flask', '') + '<span>ҚАЙНАУ · 8-сынып</span></button>' + syncBadge() + '<nav class="tabs" aria-label="Бөлімдер">' + tabs + '</nav></div></header>';
 }
 
 function viewHome(){
@@ -828,7 +840,7 @@ function viewHome(){
     '<path d="M330 28 L360 10 L392 30 L372 26 L360 36 L346 26 Z M1036 42 L1060 30 L1086 46 L1068 42 L1058 50 L1048 42 Z" fill="#FFFFFF" fill-opacity=".8"/>' +
     '<path d="M0 150 L0 130 L200 98 L380 124 L600 92 L800 128 L1000 104 L1200 132 L1200 150 Z" fill="#FFFFFF" fill-opacity=".3"/></svg>';
   return '<main class="home wrap">' +
-    '<div class="home-top"><div class="pill-class">8-сынып | Физика</div>' +
+    '<div class="home-top"><div class="home-left"><div class="pill-class">8-сынып | Физика</div>' + syncBadge() + '</div>' +
     '<div class="teacher"><span>Пән мұғалімі:</span><b>' + TEACHER + '</b></div></div>' +
     '<section class="hero">' + ornV() + sunSVG('hero-sun') + mount +
       '<div class="hero-body"><p class="eyebrow">Сабақ тақырыбы</p>' +
@@ -894,7 +906,7 @@ function previewChips(g){
 function stepNames(g){
   var names = S.groups[g].names;
   var rows = range(7).map(function(i){
-    return '<label class="name-row" for="nm-' + g + '-' + i + '"><span class="num">' + (i+1) + '.</span><input id="nm-' + g + '-' + i + '" class="name-input" data-g="' + g + '" data-i="' + i + '" value="' + esc(names[i]) + '" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Оқушының аты"></label>';
+    return '<label class="name-row" for="nm-' + g + '-' + i + '"><span class="num">' + (i+1) + '.</span><input id="nm-' + g + '-' + i + '" class="name-input" data-g="' + g + '" data-i="' + i + '"' + (sync.readonly ? ' readonly' : '') + ' value="' + esc(names[i]) + '" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Оқушының аты"></label>';
   }).join('');
   return '<section class="panel">' + stageHead('ТІЗІМ', 'ОҚУШЫЛАРДЫ ЕНГІЗУ', 'ең көбі 7') +
     '<p class="hint">Тек аты жазылған оқушылар есептеледі. Бос жолдар есептелмейді.</p>' +
@@ -982,7 +994,7 @@ function viewClass(){
     return '<main class="page wrap"><h1 class="page-title">СЫНЫП НӘТИЖЕСІ</h1><section class="panel"><div class="empty">' +
       '<p>Әзірге оқушы енгізілмеген. Топты ашып, оқушылардың атын жазыңыз.</p>' +
       '<div class="actions"><button class="btn btn-primary" data-act="go" data-view="groups">ТОПТАРҒА ӨТУ</button>' +
-      '<button class="btn btn-ghost" data-act="sample">ҮЛГІ ДЕРЕКТЕРМЕН ҚАРАУ</button></div></div></section></main>';
+      (sync.mode === 'local' ? '<button class="btn btn-ghost" data-act="sample">ҮЛГІ ДЕРЕКТЕРМЕН ҚАРАУ</button>' : '') + '</div></div></section></main>';
   }
   var rs = list.map(function(s){ return { s:s, a:analyze(s) }; });
   var n = rs.length;
@@ -1486,10 +1498,158 @@ function loadSample(){
   toast('Үлгі деректер жүктелді');
 }
 
+/* ================= LIVE SYNC (shared db) =================
+   Assessment data (names, marks, group results) is shared through the
+   artifact's db when the page runs inside claude.ai: grp/g0..g3 hold
+   {names, s3}; st/<studentId> holds {s1, s2, s4}. Lesson and lab state
+   stay on each device. Without db the app works locally as before. */
+var sync = { db:null, mode:'connecting', readonly:false, remoteGrp:{}, remoteSt:{}, pending:{}, queue:{}, inflight:{}, dirtyNames:{}, nameTimers:{}, renderPending:false, unsub:[] };
+
+function syncLive(){ return !!sync.db && sync.mode === 'live'; }
+function syncBadge(){
+  var m = sync.mode, txt, cls;
+  if (m === 'live') { txt = 'Барлық құрылғымен синхрондалады'; cls = 'live'; }
+  else if (m === 'readonly') { txt = 'Тек қарау режимі'; cls = 'ro'; }
+  else if (m === 'connecting') { txt = 'Қосылуда…'; cls = 'wait'; }
+  else if (m === 'offline') { txt = 'Байланыс үзілді: деректер осы құрылғыда'; cls = 'ro'; }
+  else { txt = 'Деректер тек осы құрылғыда'; cls = 'local'; }
+  return '<span class="sync ' + cls + '" data-sync role="status"><i></i>' + txt + '</span>';
+}
+function updateBadges(){ document.querySelectorAll('[data-sync]').forEach(function(el){ el.outerHTML = syncBadge(); }); }
+
+function cleanNames(a){ var o = []; for (var i=0;i<7;i++) o.push(Array.isArray(a) && typeof a[i] === 'string' ? a[i].slice(0, 40) : ''); return o; }
+function cleanS3(a){ var o = []; for (var i=0;i<9;i++) o.push(Array.isArray(a) && (a[i] === 'ok' || a[i] === 'bad') ? a[i] : null); return o; }
+
+function rebuildFromRemote(){
+  for (var g=0; g<4; g++) {
+    if (sync.pending['grp/g' + g]) continue;
+    var d = sync.remoteGrp['g' + g];
+    if (!sync.dirtyNames[g]) S.groups[g].names = cleanNames(d && d.names);
+    S.groups[g].s3 = cleanS3(d && d.s3);
+  }
+  var next = {};
+  Object.keys(sync.remoteSt).forEach(function(id){ if (/^g[0-3]s[0-6]$/.test(id)) next[id] = normSt(sync.remoteSt[id]); });
+  Object.keys(S.st).forEach(function(id){ if (sync.pending['st/' + id]) next[id] = S.st[id]; });
+  S.st = next;
+  S.sample = false;
+  save();
+}
+
+function isTyping(){
+  var ae = document.activeElement;
+  return !!(ae && app.contains(ae) && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));
+}
+function scheduleRender(){
+  if (S.ui.view === 'lesson' || S.ui.view === 'home') { updateBadges(); renderOverlay(); return; }
+  if (isTyping()) { sync.renderPending = true; updateBadges(); return; }
+  render();
+}
+document.addEventListener('focusout', function(){
+  setTimeout(function(){ if (sync.renderPending && !isTyping()) { sync.renderPending = false; render(); } }, 300);
+});
+
+function enqueue(path, fn){
+  sync.queue[path] = fn; sync.pending[path] = true;
+  if (!sync.inflight[path]) runQueue(path);
+}
+function runQueue(path){
+  var fn = sync.queue[path]; delete sync.queue[path];
+  sync.inflight[path] = true;
+  var attempt = function(retry){
+    return fn().catch(function(err){
+      var code = err && err.code;
+      if (code === 'unavailable' && retry) return new Promise(function(r){ setTimeout(r, 600 + Math.random() * 900); }).then(function(){ return attempt(false); });
+      if (code === 'invalid_argument') { sync.readonly = true; sync.mode = 'readonly'; toast('Бұл құрылғыда өзгерту құқығы жоқ: тек қарау режимі.', 5000); }
+      else if (code === 'quota_exceeded') toast('Дерекқор толды. Мұғалім ескі деректі тазартуы керек.', 5000);
+      else if (code === 'revoked') { sync.mode = 'offline'; }
+      else toast('Сақтау сәтсіз аяқталды. Қайталап көріңіз.', 3500);
+    });
+  };
+  attempt(true).then(function(){
+    if (sync.queue[path]) { runQueue(path); return; }
+    sync.inflight[path] = false; delete sync.pending[path];
+    if (!Object.keys(sync.pending).length) { rebuildFromRemote(); scheduleRender(); }
+    else updateBadges();
+  });
+}
+function pushSt(id){
+  if (!syncLive()) return;
+  enqueue('st/' + id, function(){
+    var d = S.st[id], ref = sync.db.doc('st/' + id);
+    return d ? ref.set({ s1:d.s1.slice(), s2:d.s2.slice(), s4:d.s4.slice() }) : ref.delete();
+  });
+}
+function pushGrp(g, fields){
+  if (!syncLive()) return;
+  enqueue('grp/g' + g, function(){
+    var ref = sync.db.doc('grp/g' + g), G = S.groups[g];
+    if (sync.remoteGrp['g' + g]) { var o = {}; fields.forEach(function(f){ o[f] = G[f].slice(); }); return ref.update(o); }
+    return ref.set({ names:G.names.slice(), s3:G.s3.slice() });
+  });
+}
+function queueNames(g){
+  if (!syncLive()) return;
+  sync.dirtyNames[g] = true;
+  clearTimeout(sync.nameTimers[g]);
+  sync.nameTimers[g] = setTimeout(function(){ delete sync.dirtyNames[g]; pushGrp(g, ['names']); }, 700);
+}
+function clearRemote(){
+  if (!syncLive()) return;
+  Object.keys(sync.remoteSt).forEach(function(id){ enqueue('st/' + id, function(){ return sync.db.doc('st/' + id).delete(); }); });
+  for (var g=0; g<4; g++) (function(g){ if (sync.remoteGrp['g' + g]) enqueue('grp/g' + g, function(){ return sync.db.doc('grp/g' + g).delete(); }); })(g);
+}
+function editBlocked(){
+  if (!sync.readonly) return false;
+  toast('Бұл құрылғыда өзгерту құқығы жоқ: тек қарау режимі.', 3500);
+  return true;
+}
+
+function subscribe(){
+  var onErr = function(e){
+    if (e && e.code === 'unavailable') { setTimeout(function(){ sync.unsub.forEach(function(u){ u(); }); sync.unsub = []; subscribe(); }, 3000); return; }
+    sync.mode = 'offline'; updateBadges();
+  };
+  sync.unsub.push(sync.db.collection('grp').onSnapshot(function(snap){
+    var m = {}; snap.docs.forEach(function(d){ if (d.exists) m[d.id] = d.data(); });
+    sync.remoteGrp = m; rebuildFromRemote(); scheduleRender();
+  }, onErr));
+  sync.unsub.push(sync.db.collection('st').onSnapshot(function(snap){
+    var m = {}; snap.docs.forEach(function(d){ if (d.exists) m[d.id] = d.data(); });
+    sync.remoteSt = m; rebuildFromRemote(); scheduleRender();
+  }, onErr));
+}
+
+function initSync(){
+  if (!window.claude || typeof window.claude.use !== 'function') { sync.mode = 'local'; updateBadges(); return; }
+  var dbP = window.claude.use('db'), userP = window.claude.use('user');
+  Promise.all([dbP, userP]).then(function(r){
+    var db = r[0], user = r[1];
+    if (!db) { sync.mode = 'local'; updateBadges(); return; }
+    return (user ? user.can('data.write') : Promise.resolve(null)).then(function(cw){
+      sync.db = db; sync.readonly = cw === false;
+      return Promise.all([db.collection('grp').get(), db.collection('st').get()]).then(function(q){
+        var empty = q[0].empty && q[1].empty;
+        q[0].docs.forEach(function(d){ if (d.exists) sync.remoteGrp[d.id] = d.data(); });
+        q[1].docs.forEach(function(d){ if (d.exists) sync.remoteSt[d.id] = d.data(); });
+        sync.mode = sync.readonly ? 'readonly' : 'live';
+        if (empty && !sync.readonly && !S.sample && allStudents().length) {
+          for (var g=0; g<4; g++) if (S.groups[g].names.some(function(n){ return n.trim(); }) || S.groups[g].s3.some(function(v){ return v; })) pushGrp(g, ['names', 's3']);
+          allStudents().forEach(function(s){ if (S.st[s.id]) pushSt(s.id); });
+        } else {
+          rebuildFromRemote();
+        }
+        subscribe();
+        scheduleRender();
+      });
+    });
+  }).catch(function(){ if (!sync.db) sync.mode = 'local'; else sync.mode = 'offline'; updateBadges(); });
+}
+
 /* ================= EVENTS ================= */
 document.addEventListener('click', function(e){
   var b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   var a = b.getAttribute('data-act'), d = b.dataset, g = S.ui.g, x;
+  if (['s1','s2','s3','s4','clear','sample'].indexOf(a) >= 0 && editBlocked()) return;
   switch (a) {
     case 'go':
       S.ui.view = d.view;
@@ -1497,8 +1657,8 @@ document.addEventListener('click', function(e){
       save(); render(); window.scrollTo(0, 0); break;
     case 'step': S.ui.gstep[g] = +d.step; save(); render(); window.scrollTo(0, 0); break;
     case 'next': S.ui.gstep[g] = Math.min(5, S.ui.gstep[g] + 1); save(); render(); window.scrollTo(0, 0); toast('Сақталды ✓'); break;
-    case 's1': case 's2': case 's4': x = st(d.id)[a]; x[+d.i] = !x[+d.i]; save(); render(); break;
-    case 's3': x = S.groups[g].s3; x[+d.q] = x[+d.q] === d.v ? null : d.v; save(); render(); break;
+    case 's1': case 's2': case 's4': x = st(d.id)[a]; x[+d.i] = !x[+d.i]; save(); render(); pushSt(d.id); break;
+    case 's3': x = S.groups[g].s3; x[+d.q] = x[+d.q] === d.v ? null : d.v; save(); render(); pushGrp(g, ['s3']); break;
     case 'sel': S.ui.sel[g] = +d.slot; save(); render(); break;
     case 'selmove': {
       var l = students(g), cur = l.filter(function(s){ return s.slot === S.ui.sel[g]; })[0] || l[0], k = l.indexOf(cur) + (+d.d);
@@ -1521,10 +1681,10 @@ document.addEventListener('click', function(e){
       try { navigator.clipboard.writeText(txt).then(function(){ toast('Қорытынды көшірілді'); }, fallback); } catch(err) { fallback(); }
       break;
     }
-    case 'clear': openModal(); break;
+    case 'clear': openModal(syncLive() ? 'Барлық енгізілген деректер БАРЛЫҚ құрылғыдан өшіріледі. Жалғастырасыз ба?' : null); break;
     case 'modal-no': closeModal(); break;
     case 'modal-yes':
-      labStop(); S = blankState(); try { localStorage.removeItem(LS_KEY); } catch(err) {}
+      clearRemote(); labStop(); S = blankState(); try { localStorage.removeItem(LS_KEY); } catch(err) {}
       closeModal(); render(); window.scrollTo(0, 0); toast('Барлық дерек өшірілді'); break;
     case 'sample': loadSample(); break;
     case 'lsec': S.ui.lsec = +d.s; save(); render(); window.scrollTo(0, 0); break;
@@ -1541,8 +1701,9 @@ document.addEventListener('click', function(e){
 document.addEventListener('input', function(e){
   var t = e.target;
   if (t.classList && t.classList.contains('name-input')) {
+    if (sync.readonly) { t.value = S.groups[+t.dataset.g].names[+t.dataset.i]; editBlocked(); return; }
     S.groups[+t.dataset.g].names[+t.dataset.i] = t.value;
-    save();
+    save(); queueNames(+t.dataset.g);
     var p = document.getElementById('namePreview'); if (p) p.innerHTML = previewChips(+t.dataset.g);
   }
   if (t.classList && t.classList.contains('lab-in')) {
@@ -1568,7 +1729,7 @@ document.addEventListener('change', function(e){
   var t = e.target;
   if (t.id === 's4sel') { S.ui.sel[S.ui.g] = +t.value; save(); render(); }
   if (t.classList && t.classList.contains('name-input') && !t.value.trim()) {
-    delete S.st['g' + t.dataset.g + 's' + t.dataset.i]; save();
+    delete S.st['g' + t.dataset.g + 's' + t.dataset.i]; save(); pushSt('g' + t.dataset.g + 's' + t.dataset.i);
   }
 });
 document.addEventListener('keydown', function(e){
@@ -1578,6 +1739,7 @@ document.addEventListener('keydown', function(e){
 });
 
 render();
+initSync();
 })();
 </script>
 </body>
