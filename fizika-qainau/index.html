@@ -359,6 +359,10 @@ details.ga summary{cursor:pointer;font:900 clamp(20px,2.2vw,26px)/1.2 var(--f-di
 .cmp td{font-weight:700}
 .vals td,.vals th{font-size:clamp(19px,1.9vw,23px)}
 .vals td:first-child{text-align:left;font-weight:800}
+.subst td:first-child small{display:block;font-size:.72em;font-weight:600;color:var(--muted)}
+.subst th{white-space:normal}
+.subst .unit{text-transform:none;letter-spacing:0;white-space:nowrap}
+.subst .r{font-family:"Times New Roman",Georgia,serif;font-size:1.25em;text-transform:none}
 .fcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .fcard{min-width:0;background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:20px;display:grid;gap:10px;justify-items:center;text-align:center;align-content:start}
 .fcard span{font:800 16px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -1141,6 +1145,19 @@ function boilFigSVG(){
     '</svg>';
 }
 
+function substTable(){
+  var rows = [
+    ['Су', '', '100', '2,3·10⁶'],
+    ['Спирт', '', '78', '0,9·10⁶'],
+    ['Эфир', '', '35', '0,4·10⁶'],
+    ['Сынап', '', '357', '0,3·10⁶'],
+    ['Сұйық май', 'күнбағыс майы', '300*', '–']
+  ];
+  return '<div class="tbl-wrap"><table class="vals subst"><thead><tr><th style="text-align:left">Зат</th><th>Қайнау температурасы, °C</th><th><span class="unit"><i class="r">r</i>, Дж/кг</span></th></tr></thead><tbody>' +
+    rows.map(function(r){ return '<tr><td>' + r[0] + (r[1] ? '<small>(' + r[1] + ')</small>' : '') + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td></tr>'; }).join('') +
+    '</tbody></table></div><p class="hint">*300 °C — шартты мән: май қыздырғанда ыдырайды.<br>Қайнау температуралары қалыпты атмосфералық қысымда берілген.</p>';
+}
+
 function lessonSec0(){
   return '<div class="lsec">' +
     rule('Сұйық қайнайтын температураны <em>қайнау температурасы</em> деп атайды.') +
@@ -1154,9 +1171,7 @@ function lessonSec0(){
         '<tr><td>Температура</td><td>Сұйық суиды</td><td>Тұрақты болып қалады</td></tr>' +
       '</tbody></table></div></div>' +
       '<div class="lcol"><figure class="fig" style="margin:0">' + boilFigSVG() + '<figcaption>Сұйықтың қайнауы</figcaption></figure>' +
-      '<div class="tbl-wrap"><table class="vals"><thead><tr><th style="text-align:left">Зат</th><th>Қайнау температурасы, °C</th></tr></thead><tbody>' +
-        '<tr><td>Эфир</td><td>35</td></tr><tr><td>Спирт</td><td>78</td></tr><tr><td>Су</td><td>100</td></tr><tr><td>Сынап</td><td>357</td></tr>' +
-      '</tbody></table></div><p class="hint">Қалыпты атмосфералық қысымда (2-қосымша, 10-кесте).</p></div>' +
+      substTable() + '</div>' +
     '</div></div>';
 }
 
@@ -1173,9 +1188,7 @@ function lessonSec1(){
       callout('mem', 'Есте сақтаңдар!', 'Газ күйіндегі заттың ішкі энергиясы қайнау температурасы кезінде оның сұйық күйіндегі ішкі энергиясынан көбірек болады.') +
       '<p class="lead">Қалыпты атмосфералық қысымдағы әртүрлі заттардың меншікті булану жылуы тәжірибелік жолмен анықталған. Олардың кейбіреулері 2-қосымшадағы 11-кестеде берілген.</p>' +
     '</div><div class="lcol">' +
-      '<div class="tbl-wrap"><table class="vals"><thead><tr><th style="text-align:left">Зат</th><th>r, Дж/кг</th></tr></thead><tbody>' +
-        '<tr><td>Су</td><td>2,3·10⁶</td></tr><tr><td>Спирт</td><td>0,9·10⁶</td></tr><tr><td>Эфир</td><td>0,4·10⁶</td></tr><tr><td>Сынап</td><td>0,3·10⁶</td></tr>' +
-      '</tbody></table></div><p class="hint">Қалыпты атмосфералық қысымда, қайнау температурасында.</p>' +
+      substTable() +
     '</div></div></div>';
 }
 
