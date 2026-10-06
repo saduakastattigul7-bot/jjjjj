@@ -1,0 +1,176 @@
+rules_version = '2';
+
+// «Қайнау сабағын бағалау» — online version.
+// Who may do what is decided here, on the server, not in the HTML:
+//   * teacher  = signed in with email/password AND has a document teachers/{uid}
+//                (created by hand in the Firebase console);
+//   * group    = an anonymous device that claimed sessions/{code}/groups/{g}
+//                (groups/{g}.ownerUid == its uid). It can write only that group,
+//                only while the lesson is open, and never the teacher's corrections.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function isTeacher() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider != 'anonymous'
+        && exists(/databases/$(database)/documents/teachers/$(uid()));
+    }
+    function sessPath(code) { return /databases/$(database)/documents/sessions/$(code); }
+    function ownsSession(code) { return isTeacher() && get(sessPath(code)).data.teacherUid == uid(); }
+    function isOpen(code) { return get(sessPath(code)).data.status == 'open'; }
+    function groupOwner(code, g) {
+      return get(/databases/$(database)/documents/sessions/$(code)/groups/$(g)).data.ownerUid;
+    }
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function stamped(field) { return request.resource.data[field] == request.time; }
+
+    // ---- value checks (maps are keyed "0", "1", ...) ----
+    // Rules cannot loop and each request may evaluate at most 1000 expressions, so
+    // yes/no and ДҰРЫС/ҚАТЕ maps are checked in one step with values().hasOnly(), and in
+    // name / temperature / answer maps only the keys changed by this write are checked.
+    function keysIn(m, keys) { return m is map && m.keys().hasOnly(keys); }
+    function oneOf(m, keys, vals) { return keysIn(m, keys) && m.values().hasOnly(vals); }
+    function changedIn(m, old) { return m.diff(old is map ? old : {}).affectedKeys(); }
+    function strAt(m, c, k, n) { return !c.hasAny([k]) || !(k in m) || (m[k] is string && m[k].size() <= n); }
+    function numAt(m, c, k) { return !c.hasAny([k]) || !(k in m) || (m[k] is number && m[k] >= 0 && m[k] <= 110); }
+
+    function namesOk(m, old) {
+      let c = changedIn(m, old);
+      return keysIn(m, ['0','1','2','3','4','5','6'])
+        && strAt(m,c,'0',40) && strAt(m,c,'1',40) && strAt(m,c,'2',40) && strAt(m,c,'3',40) && strAt(m,c,'4',40)
+        && strAt(m,c,'5',40) && strAt(m,c,'6',40);
+    }
+    function s3Ok(m) { return oneOf(m, ['0','1','2','3','4','5','6','7','8'], ['ok','bad']); }
+    function doneOk(m) { return oneOf(m, ['s1','s2','s3','s4'], [true, false]); }
+    function tempsOk(m, old) {
+      let c = changedIn(m, old);
+      return keysIn(m, ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14'])
+        && numAt(m,c,'0') && numAt(m,c,'1') && numAt(m,c,'2') && numAt(m,c,'3') && numAt(m,c,'4')
+        && numAt(m,c,'5') && numAt(m,c,'6') && numAt(m,c,'7') && numAt(m,c,'8') && numAt(m,c,'9')
+        && numAt(m,c,'10') && numAt(m,c,'11') && numAt(m,c,'12') && numAt(m,c,'13') && numAt(m,c,'14');
+    }
+    function labAnsOk(m, old) {
+      let c = changedIn(m, old);
+      return keysIn(m, ['0','1','2','3','4','5'])
+        && strAt(m,c,'0',2000) && strAt(m,c,'1',2000) && strAt(m,c,'2',2000) && strAt(m,c,'3',2000) && strAt(m,c,'4',2000)
+        && strAt(m,c,'5',2000);
+    }
+    function labOk(l, old) {
+      let o = old is map ? old : {};
+      return keysIn(l, ['temps','ans'])
+        && (!('temps' in l) || tempsOk(l.temps, o.get('temps', {})))
+        && (!('ans' in l) || labAnsOk(l.ans, o.get('ans', {})));
+    }
+    function marksOk(m) {
+      return keysIn(m, ['s1','s2','s4'])
+        && (!('s1' in m) || oneOf(m.s1, ['0','1','2'], [true, false]))
+        && (!('s2' in m) || oneOf(m.s2, ['0','1'], [true, false]))
+        && (!('s4' in m) || oneOf(m.s4, ['0','1','2','3','4','5','6','7','8'], [true, false]));
+    }
+
+    // ---- groups/{g} updates (only the fields that changed are validated) ----
+    // 1) a device claims a free group (or re-claims its own after a reload)
+    function groupClaimOk(code) {
+      let ch = changed();
+      return signedIn() && ch.hasOnly(['ownerUid','claimedAt'])
+        && request.resource.data.ownerUid == uid()
+        && (resource.data.ownerUid == null || resource.data.ownerUid == uid())
+        && stamped('claimedAt') && isOpen(code);
+    }
+    // 2) the group's own device edits its data while the lesson is open
+    function groupEditOk(code) {
+      let ch = changed();
+      let d = request.resource.data;
+      return signedIn() && resource.data.ownerUid == uid()
+        && ch.hasOnly(['names','s3','done','lab','updatedAt'])
+        && stamped('updatedAt')
+        && (!ch.hasAny(['names']) || namesOk(d.names, resource.data.names))
+        && (!ch.hasAny(['s3']) || s3Ok(d.s3))
+        && (!ch.hasAny(['done']) || doneOk(d.done))
+        && (!ch.hasAny(['lab']) || labOk(d.lab, resource.data.lab))
+        && isOpen(code);
+    }
+    // 3) the teacher corrects group work or frees the device slot (never edits the group's own answers)
+    function teacherGroupOk(code) {
+      let ch = changed();
+      return ch.hasOnly(['s3Final','finalAt','ownerUid'])
+        && (!ch.hasAny(['s3Final']) || s3Ok(request.resource.data.s3Final))
+        && (!ch.hasAny(['ownerUid']) || request.resource.data.ownerUid == null)
+        && ownsSession(code);
+    }
+
+    // ---- teachers: created by hand in the console, never from the app ----
+    match /teachers/{teacherId} {
+      allow get: if signedIn() && uid() == teacherId;
+      allow list, write: if false;
+    }
+
+    // ---- one document per lesson ----
+    match /sessions/{code} {
+      // Any signed-in device that knows the 6-character code may check that the lesson exists.
+      allow get: if signedIn();
+      allow list: if isTeacher() && resource.data.teacherUid == uid();
+      allow create: if isTeacher()
+        && code.matches('^[A-HJ-NP-Z2-9]{6}$')
+        && request.resource.data.keys().hasOnly(['teacherUid','status','title','createdAt','endedAt'])
+        && request.resource.data.teacherUid == uid()
+        && request.resource.data.status == 'open'
+        && request.resource.data.title is string && request.resource.data.title.size() <= 60
+        && stamped('createdAt');
+      allow update: if ownsSession(code)
+        && changed().hasOnly(['status','endedAt','title'])
+        && request.resource.data.status in ['open','ended'];
+      allow delete: if false;
+
+      // ---- one document per group: names, group work, stage flags, lab ----
+      match /groups/{g} {
+        allow get: if ownsSession(code) || (signedIn() && resource.data.ownerUid == uid());
+        allow list: if ownsSession(code);
+
+        // created together with the session (batched write)
+        allow create: if isTeacher()
+          && getAfter(sessPath(code)).data.teacherUid == uid()
+          && g in ['0','1','2','3']
+          && request.resource.data.keys().hasOnly(['g','ownerUid','claimedAt','names','s3','s3Final','done','lab','updatedAt'])
+          && request.resource.data.g == int(g)
+          && request.resource.data.ownerUid == null;
+
+        allow update: if groupClaimOk(code) || groupEditOk(code) || teacherGroupOk(code);
+        allow delete: if false;
+
+        // ---- one document per student slot: self-assessment + teacher's final marks ----
+        match /students/{slot} {
+          allow read: if ownsSession(code) || (signedIn() && groupOwner(code, g) == uid());
+          allow create: if slot in ['0','1','2','3','4','5','6'] && (
+            (signedIn() && groupOwner(code, g) == uid() && isOpen(code)
+              && request.resource.data.keys().hasOnly(['self','updatedAt'])
+              && marksOk(request.resource.data.self) && stamped('updatedAt'))
+            || (ownsSession(code)
+              && request.resource.data.keys().hasOnly(['final','finalAt'])
+              && marksOk(request.resource.data.final) && stamped('finalAt')));
+          allow update: if
+            (signedIn() && changed().hasOnly(['self','updatedAt']) && stamped('updatedAt')
+              && marksOk(request.resource.data.self)
+              && groupOwner(code, g) == uid() && isOpen(code))
+            || (changed().hasOnly(['final','finalAt']) && stamped('finalAt')
+              && marksOk(request.resource.data.final)
+              && ownsSession(code));
+          allow delete: if false;
+        }
+      }
+
+      // ---- heartbeat of each group device, read by the teacher ----
+      match /presence/{g} {
+        allow read: if ownsSession(code);
+        allow create, update: if signedIn() && g in ['0','1','2','3']
+          && groupOwner(code, g) == uid()
+          && request.resource.data.keys().hasOnly(['lastSeen','online'])
+          && stamped('lastSeen')
+          && request.resource.data.online is bool;
+        allow delete: if false;
+      }
+    }
+  }
+}

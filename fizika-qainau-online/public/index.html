@@ -1,0 +1,2446 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Қайнау сабағын бағалау</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500;600;700;800;900&family=Unbounded:wght@600;700;800;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<style>
+/* Layout: flag-blue ceremonial header over a white working surface; huge touch targets readable from the back of a classroom. Single light theme by request (no dark background). */
+:root{
+  color-scheme: light;
+  --paper:#F3F9FC; --surface:#FFFFFF; --sky:#00A3C2; --sky-deep:#04709E; --sky-soft:#E1F3F8;
+  --navy:#0A3760; --ink:#0F2740; --muted:#4A6074; --line:#CBDFEA;
+  --gold:#F2B705; --gold-deep:#9A7000; --gold-soft:#FFF4D2;
+  --idle:#EEF2F6; --idle-line:#B3C3D1;
+  --ok:#14773A; --ok-deep:#0C5A2B; --ok-soft:#E3F3E8;
+  --bad:#C62828; --bad-deep:#9B1B1B; --bad-soft:#FCE8E8;
+  --c-green:#14773A; --c-yellow:#D9A300; --c-blue:#1F6FD1; --c-purple:#7A3FB8; --c-orange:#E0640F; --c-red:#C62828;
+  --f-display:"Unbounded", "Segoe UI", Arial, sans-serif;
+  --f-body:"Golos Text", "Segoe UI", Roboto, Arial, sans-serif;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{background:var(--paper);color:var(--ink)}
+body{margin:0;font-family:var(--f-body);font-size:18px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font-family:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:4px solid var(--gold);outline-offset:3px}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:clamp(16px,3vw,40px)}
+#printRoot{display:none}
+body.locked{overflow:hidden}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:800 20px/1.15 var(--f-body);letter-spacing:.02em;padding:16px 28px;min-height:60px;border-radius:14px;border:3px solid transparent;text-decoration:none}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:#0F4778}
+.btn-gold{background:var(--gold);color:var(--navy);border-color:#D9A300}
+.btn-gold:hover{background:#FFC61A}
+.btn-ghost{background:var(--surface);color:var(--navy);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--sky-deep)}
+.btn-danger{background:var(--surface);color:var(--bad);border-color:var(--bad)}
+.btn-danger:hover{background:var(--bad-soft)}
+.btn-xl{font-size:26px;padding:22px 44px;min-height:80px;border-radius:18px}
+.btn-sm{font-size:17px;min-height:48px;padding:10px 18px}
+
+/* ---------- top nav ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:3px solid var(--sky)}
+.topbar-in{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;font:800 17px/1.1 var(--f-display);color:var(--navy);margin-right:auto;background:none;border:0;padding:6px 4px}
+.brand svg{width:34px;height:34px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font:800 18px/1 var(--f-body);letter-spacing:.03em;padding:14px 18px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--navy)}
+.tab:hover{border-color:var(--sky-deep)}
+.tab.cur{background:var(--navy);border-color:var(--navy);color:#fff}
+.tab.cls{border-color:var(--gold);background:var(--gold-soft)}
+.tab.cls.cur{background:var(--gold);color:var(--navy);border-color:#D9A300}
+
+.sample-banner{background:var(--gold-soft);border-bottom:2px solid var(--gold);color:var(--navy);font-weight:700;font-size:17px}
+.sample-banner .wrap{padding-block:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* ---------- home ---------- */
+.home{padding-block:20px 48px;display:grid;gap:24px}
+.home-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.pill-class{font:800 clamp(20px,2.2vw,26px)/1 var(--f-display);color:var(--navy);background:var(--surface);border:3px solid var(--sky);border-radius:999px;padding:14px 26px}
+.teacher{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px 20px;text-align:right;display:grid}
+.teacher span{font-size:16px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.teacher b{font-size:clamp(19px,2vw,24px);color:var(--navy)}
+.hero{position:relative;overflow:hidden;border-radius:28px;background:linear-gradient(155deg,#19BAD6 0%,var(--sky) 42%,var(--sky-deep) 100%);color:#fff;padding:clamp(28px,4vw,56px);padding-left:calc(clamp(28px,4vw,56px) + 56px);padding-bottom:clamp(90px,10vw,140px)}
+.orn-v{position:absolute;left:0;top:0;bottom:0;width:52px;height:100%;background:rgba(0,0,0,.08)}
+.hero-sun{position:absolute;right:clamp(-150px,-7vw,-30px);top:clamp(-110px,-5vw,-20px);width:clamp(240px,32vw,440px);height:auto;opacity:.95;pointer-events:none}
+.hero-mount{position:absolute;left:0;right:0;bottom:0;width:100%;height:clamp(80px,11vw,150px);pointer-events:none}
+.hero-body{position:relative;display:grid;gap:18px;max-width:min(900px,66%)}
+.eyebrow{font:800 16px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:#FFF3C4}
+.hero h1{font:900 clamp(34px,5.4vw,72px)/1.06 var(--f-display);letter-spacing:-.01em;text-shadow:0 2px 0 rgba(0,40,70,.25)}
+.hero-sub{font:600 clamp(19px,2.1vw,26px)/1.35 var(--f-body);max-width:46ch}
+.goals{display:flex;flex-wrap:wrap;gap:10px}
+.goals span{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.45);border-radius:12px;padding:8px 14px;font-weight:600;font-size:17px}
+.goals b{color:#FFE27A;margin-right:6px}
+.hero .btn-xl{justify-self:start;margin-top:8px;box-shadow:0 6px 0 #B88A00}
+.home-row{display:grid;grid-template-columns:1.1fr 1fr;gap:24px}
+.quote,.structure{background:var(--surface);border:2px solid var(--line);border-radius:22px;overflow:hidden}
+.band{display:block;width:100%;height:26px;background:var(--sky)}
+.quote-in{padding:22px 28px 26px;display:grid;gap:10px}
+.label{font:800 15px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--sky-deep)}
+.quote blockquote{margin:0;font:700 clamp(22px,2.4vw,30px)/1.4 var(--f-body);color:var(--navy)}
+.structure .quote-in{gap:14px}
+.struct-list{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.struct-list div{background:var(--sky-soft);border-radius:14px;padding:12px;text-align:center;display:grid;gap:4px}
+.struct-list b{font:800 30px/1 var(--f-display);color:var(--navy)}
+.struct-list span{font-size:15px;font-weight:600;color:var(--muted);line-height:1.2}
+.struct-total{font:800 20px/1.3 var(--f-body);color:var(--navy)}
+.struct-total em{font-style:normal;background:var(--gold-soft);border-radius:8px;padding:2px 8px}
+
+/* ---------- groups ---------- */
+.page{padding-block:24px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.page-title{font:900 clamp(30px,3.6vw,46px)/1.1 var(--f-display);color:var(--navy)}
+.group-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:20px}
+.gcard{display:grid;grid-template-columns:1fr auto;gap:8px 16px;text-align:left;background:var(--surface);border:3px solid var(--line);border-radius:24px;padding:26px 28px;color:var(--ink)}
+.gcard:hover{border-color:var(--sky-deep)}
+.gnum{justify-self:start;font:900 clamp(24px,2.6vw,32px)/1 var(--f-display);background:var(--gold);color:var(--navy);border-radius:12px;padding:10px 16px}
+.gname{grid-column:1/-1;font:900 clamp(30px,3.6vw,46px)/1.05 var(--f-display);color:var(--navy);letter-spacing:-.01em;overflow-wrap:anywhere}
+.gsub{grid-column:1/-1;font:700 clamp(19px,1.9vw,24px)/1.3 var(--f-body);color:var(--sky-deep)}
+.gicon{width:76px;height:76px;color:var(--sky);grid-row:1;grid-column:2}
+.gmeta{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.gmeta span{background:var(--sky-soft);border-radius:10px;padding:6px 12px;font-weight:700;font-size:17px;color:var(--navy)}
+
+/* ---------- group page ---------- */
+.ghead{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(155deg,#19BAD6,var(--sky-deep));color:#fff;padding:22px 28px 22px 84px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ghead .orn-v{width:56px}
+.ghead .gnum{font-size:clamp(26px,3vw,36px)}
+.ghead-title{display:grid;gap:4px;min-width:0;flex:1 1 320px}
+.ghead h1{font:900 clamp(26px,4.4vw,56px)/1.05 var(--f-display);overflow-wrap:anywhere}
+.ghead p{font:700 clamp(18px,2vw,24px)/1.2 var(--f-body);color:#E8FBFF}
+.ghead .gicon{color:#fff;margin-left:auto;opacity:.9;width:84px;height:84px}
+.stepper{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.step{display:grid;gap:4px;justify-items:center;padding:12px 6px;border-radius:14px;border:3px solid var(--line);background:var(--surface);color:var(--navy)}
+.step b{font:800 clamp(18px,2vw,26px)/1 var(--f-display)}
+.step span{font-size:14px;font-weight:700;color:var(--muted);text-align:center;line-height:1.15}
+.step:hover{border-color:var(--sky-deep)}
+.step.cur{background:var(--navy);border-color:var(--navy);color:#fff}
+.step.cur span{color:#CFE9F7}
+.step.done{border-color:var(--sky)}
+.panel{background:var(--surface);border:2px solid var(--line);border-radius:24px;padding:clamp(18px,3vw,32px);display:grid;gap:22px}
+.stage-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.stage-no{font:900 20px/1 var(--f-display);background:var(--sky-soft);color:var(--sky-deep);border-radius:10px;padding:10px 14px}
+.stage-title{font:900 clamp(24px,3vw,38px)/1.1 var(--f-display);color:var(--navy)}
+.stage-pts{margin-left:auto;font:800 20px/1 var(--f-body);background:var(--gold-soft);border:2px solid var(--gold);color:var(--navy);border-radius:12px;padding:10px 16px}
+.hint{font-size:18px;color:var(--muted);font-weight:600}
+.stmt{border:2px solid var(--line);border-radius:20px;padding:20px;display:grid;gap:16px;background:#FBFDFE}
+.stmt-head{display:flex;gap:16px;align-items:flex-start}
+.stmt-num{flex:none;width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;font:900 22px/48px var(--f-display);text-align:center}
+.stmt-text{font:700 clamp(21px,2.3vw,28px)/1.3 var(--f-body);color:var(--ink)}
+.desc{margin-top:6px;font-size:17px;color:var(--muted)}
+.desc .pt{display:inline-block;margin-left:6px;background:var(--sky-soft);color:var(--sky-deep);font-weight:800;border-radius:8px;padding:1px 8px}
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chip{display:inline-flex;align-items:center;gap:10px;font:800 clamp(22px,2.2vw,28px)/1.1 var(--f-body);letter-spacing:.02em;padding:14px 24px;min-height:66px;border-radius:14px;border:3px solid var(--idle-line);background:var(--idle);color:var(--ink)}
+.chip:hover{border-color:var(--sky-deep)}
+.chip .tick{font-size:1.1em;line-height:1}
+.chip.on{background:var(--ok);border-color:var(--ok-deep);color:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.chip.on:hover{border-color:#063D1C}
+.chip.static{cursor:default;background:var(--surface);border-color:var(--sky)}
+.chip.static:hover{border-color:var(--sky)}
+.chip.sel{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip small{font-size:.7em;font-weight:700;opacity:.85}
+.tally{border-top:2px dashed var(--line);padding-top:18px;display:grid;gap:12px}
+.tally h3{font:800 18px/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tally-row{display:flex;flex-wrap:wrap;gap:10px}
+.tally-item{display:inline-flex;gap:10px;align-items:baseline;background:var(--sky-soft);border-radius:12px;padding:8px 14px;font-size:20px;font-weight:700;color:var(--navy)}
+.tally-item b{font-weight:900}
+.nav-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.nav-row .btn-primary{margin-left:auto}
+
+/* names */
+.name-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.name-row{display:flex;align-items:center;gap:12px}
+.name-row .num{flex:none;width:44px;font:900 26px/1 var(--f-display);color:var(--sky-deep);text-align:right}
+.name-input{flex:1;min-width:0;font:800 26px/1.2 var(--f-body);padding:14px 18px;border:3px solid var(--idle-line);border-radius:14px;background:var(--surface)}
+.name-input:focus{border-color:var(--sky-deep);outline:none;box-shadow:0 0 0 4px var(--sky-soft)}
+.name-input::placeholder{color:#9AAEBF;font-weight:600}
+.empty{display:grid;gap:16px;justify-items:start;padding:12px 0}
+.empty p{font-size:22px;font-weight:700;color:var(--navy)}
+
+/* stage 3 */
+.q-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,500px),1fr));gap:12px}
+.q-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:2px solid var(--line);border-radius:18px;padding:12px 14px 12px 20px;background:#FBFDFE}
+.q-label{font:900 clamp(22px,2.4vw,30px)/1 var(--f-display);color:var(--navy);margin-right:auto;min-width:6.5em}
+.ans{font:900 clamp(20px,2vw,24px)/1 var(--f-body);letter-spacing:.04em;min-width:150px;min-height:62px;padding:12px 18px;border-radius:14px;border:3px solid var(--idle-line);background:var(--idle);color:var(--ink)}
+.ans:hover{border-color:var(--sky-deep)}
+.ans.ok.on{background:var(--ok);border-color:var(--ok-deep);color:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.ans.bad.on{background:var(--bad);border-color:var(--bad-deep);color:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.ans.on:hover{border-color:#222}
+.group-result{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;background:var(--navy);color:#fff;border-radius:22px;padding:22px 28px}
+.group-result .lbl{font:900 clamp(24px,3vw,36px)/1 var(--f-display);color:#FFE27A}
+.group-result .val{font:900 clamp(56px,8vw,96px)/1 var(--f-display)}
+.group-result .val span{color:#9FD5EC}
+.group-result p{flex-basis:100%;text-align:center;font-size:18px;font-weight:600;color:#D6EEF8}
+
+/* stage 4 */
+.picker{display:grid;gap:14px}
+.picker-top{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.picker-top label{font:900 22px/1 var(--f-display);color:var(--navy)}
+.picker select{font:800 24px/1.2 var(--f-body);padding:12px 16px;border-radius:14px;border:3px solid var(--sky);background:var(--surface);min-width:min(100%,320px);max-width:100%}
+.who{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--sky-soft);border-radius:20px;padding:16px 22px}
+.who-name{font:900 clamp(34px,5vw,60px)/1.05 var(--f-display);color:var(--navy);margin-right:auto;overflow-wrap:anywhere;min-width:0}
+.who .btn{min-height:52px}
+.task{border:2px solid var(--line);border-radius:20px;padding:20px;display:grid;gap:14px;background:#FBFDFE}
+.task-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.task-head h3{font:900 clamp(21px,2.4vw,28px)/1.1 var(--f-display);color:var(--navy)}
+.task-head .pts{font-weight:800;color:var(--muted);font-size:18px}
+.task-score{margin-left:auto;font:900 clamp(28px,3.2vw,40px)/1 var(--f-display);color:var(--navy);background:var(--surface);border:3px solid var(--line);border-radius:14px;padding:8px 16px}
+.task-score.full{border-color:var(--ok);color:var(--ok)}
+.crit{font-size:17px;color:var(--muted)}
+.crit b{color:var(--ink)}
+.cb{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:14px 18px;min-height:70px;border-radius:14px;border:3px solid var(--idle-line);background:var(--surface);color:var(--ink);font:700 clamp(19px,2vw,23px)/1.25 var(--f-body)}
+.cb:hover{border-color:var(--sky-deep)}
+.cb .box{flex:none;width:42px;height:42px;border-radius:9px;border:3px solid #5A7084;background:var(--surface);display:grid;place-items:center;font:900 28px/1 var(--f-body);color:var(--ok)}
+.cb .cb-text{flex:1;min-width:0}
+.cb .cb-hint{display:block;font-size:.78em;font-weight:600;color:var(--muted);margin-top:2px}
+.cb .cb-pt{flex:none;font-size:16px;font-weight:800;color:var(--muted)}
+.cb.on{background:var(--ok);border-color:var(--ok-deep);color:#fff}
+.cb.on .box{border-color:#fff}
+.cb.on .cb-hint,.cb.on .cb-pt{color:#D8F2E0}
+.cb.on:hover{border-color:#063D1C}
+.ind-total{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;background:var(--gold-soft);border:3px solid var(--gold);border-radius:22px;padding:18px 24px;color:var(--navy)}
+.ind-total .lbl{font:900 clamp(22px,2.6vw,32px)/1 var(--f-display)}
+.ind-total .val{font:900 clamp(48px,6.5vw,80px)/1 var(--f-display)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:2px solid var(--line);border-radius:18px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:12px 14px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font:800 15px/1.2 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--sky-soft)}
+td{font-size:21px;font-weight:700}
+td.nm{text-align:left;font:900 clamp(21px,2.2vw,26px)/1.1 var(--f-body);color:var(--navy)}
+td.tot{font:900 24px/1 var(--f-display);color:var(--navy)}
+td.ten{font:900 26px/1 var(--f-display);color:var(--sky-deep)}
+td.miss{white-space:normal;text-align:left;font-size:16px;font-weight:600;color:var(--muted);min-width:240px}
+.yes{color:var(--ok);font-weight:900}
+.no{color:#8A9BAB;font-weight:800}
+
+/* class view */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px}
+.stat{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px 20px;display:grid;gap:6px}
+.stat span{font:800 15px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stat b{font:900 clamp(36px,4vw,52px)/1 var(--f-display);color:var(--navy)}
+.stat b small{font-size:.5em;color:var(--muted)}
+.stat em{font-style:normal;font-size:16px;font-weight:600;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.brief{background:var(--navy);color:#fff;border-radius:24px;padding:24px 28px;display:grid;gap:14px}
+.brief h2{font:900 clamp(22px,2.6vw,30px)/1.1 var(--f-display);color:#FFE27A}
+.brief-lines{display:grid;gap:8px;font-size:20px;font-weight:600}
+.brief-lines div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.18);padding-bottom:6px}
+.brief-lines b{font-weight:900}
+.brief-sub{font:800 15px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:#9FD5EC;margin-top:4px}
+.brief-next{background:rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;font-size:20px;font-weight:700}
+.brief .btn{justify-self:start}
+.best{background:var(--surface);border:3px solid var(--gold);border-radius:24px;padding:24px 28px;display:grid;gap:16px;align-content:start}
+.best h2{font:900 clamp(22px,2.6vw,30px)/1.1 var(--f-display);color:var(--navy)}
+.best-list{display:grid;gap:12px}
+.best-item{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--gold-soft);border-radius:16px;padding:14px 18px;text-align:left;border:2px solid transparent}
+.best-item:hover{border-color:var(--gold)}
+.best-item .nm{font:900 clamp(26px,3vw,36px)/1.05 var(--f-display);color:var(--navy);margin-right:auto;overflow-wrap:anywhere}
+.best-item .sc{font:800 22px/1.1 var(--f-body);color:var(--navy);text-align:right}
+.best-item .sc b{display:block;font:900 30px/1 var(--f-display);color:var(--gold-deep)}
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px}
+.mcard{background:var(--surface);border:3px solid var(--line);border-radius:22px;padding:20px 22px;display:grid;gap:12px;align-content:start}
+.mcard-head{display:flex;align-items:center;gap:12px}
+.dot{flex:none;width:28px;height:28px;border-radius:50%;background:var(--dot);box-shadow:0 0 0 4px color-mix(in srgb,var(--dot) 22%,transparent)}
+.mcard h3{font:900 clamp(18px,2vw,23px)/1.15 var(--f-display);color:var(--navy)}
+.mcard .cnt{margin-left:auto;font:900 26px/1 var(--f-display);color:var(--navy)}
+.mcard .rec{font-size:17px;font-weight:600;color:var(--muted)}
+.mcard .rec b{color:var(--ink)}
+.mcard .chip{font-size:clamp(20px,2vw,24px);min-height:56px;padding:10px 18px;background:var(--surface);border-color:var(--dot)}
+.mcard .none{font-size:18px;color:#8A9BAB;font-weight:700}
+.note{font-size:17px;color:var(--muted);font-weight:600;background:var(--sky-soft);border-radius:14px;padding:12px 16px}
+details.ga{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:18px 22px}
+details.ga summary{cursor:pointer;font:900 clamp(20px,2.2vw,26px)/1.2 var(--f-display);color:var(--navy)}
+.ga-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:14px;margin-top:16px}
+.ga-card{border:2px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:8px}
+.ga-card h4{margin:0;font:900 20px/1.2 var(--f-display);color:var(--navy);display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between}
+.ga-card ul{margin:0;padding-left:20px;display:grid;gap:4px;font-size:17px}
+.ga-card .obj{font-size:16px;font-weight:700;color:var(--sky-deep)}
+.tag{display:inline-block;font-size:14px;font-weight:800;background:var(--sky-soft);color:var(--sky-deep);border-radius:6px;padding:0 6px;margin-right:4px}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.section-title{font:900 clamp(24px,3vw,34px)/1.1 var(--f-display);color:var(--navy)}
+.section-sub{font-size:18px;color:var(--muted);font-weight:600;margin-top:6px}
+
+/* ---------- full-screen result ---------- */
+#overlay{position:fixed;inset:0;z-index:50;background:var(--paper);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px)}
+.ov-bar{position:sticky;top:0;z-index:2;background:var(--surface);border-bottom:3px solid var(--sky);padding-top:env(safe-area-inset-top,0px)}
+.ov-bar .wrap{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding-block:10px}
+.ov-bar .count{font-weight:800;color:var(--muted);font-size:18px;margin-inline:auto}
+.ov-body{padding-block:24px 48px}
+
+.sheet{background:var(--surface);max-width:1180px;margin:0 auto;border-radius:26px;overflow:hidden;border:2px solid var(--line);box-shadow:0 14px 40px rgba(10,55,96,.12)}
+.sheet-head{position:relative;overflow:hidden;background:linear-gradient(150deg,#19BAD6,var(--sky-deep));color:#fff;padding:18px clamp(20px,3vw,36px);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.sheet-head .sun{position:absolute;right:-70px;top:-80px;width:190px;height:190px;opacity:.28}
+.sheet-head p:last-of-type{text-align:right}
+.sheet-head p{position:relative;font:800 clamp(15px,1.5vw,18px)/1.3 var(--f-body)}
+.sheet-head .topic{font:800 clamp(16px,1.7vw,21px)/1.25 var(--f-display);max-width:44ch}
+.sheet .band{height:22px}
+.sheet-main{padding:clamp(20px,3.4vw,40px);display:grid;gap:clamp(16px,2.4vw,28px)}
+.sheet-name{font:900 clamp(44px,8vw,104px)/1.02 var(--f-display);color:var(--navy);text-align:center;letter-spacing:-.01em;overflow-wrap:anywhere}
+.sheet-group{text-align:center;font:800 clamp(22px,2.8vw,34px)/1.2 var(--f-body);color:var(--sky-deep)}
+.sheet-scores{display:flex;justify-content:center;gap:clamp(14px,3vw,40px);flex-wrap:wrap}
+.score-box{text-align:center;border-radius:22px;padding:16px clamp(20px,3vw,40px);background:var(--sky-soft);display:grid;gap:6px;min-width:min(100%,280px)}
+.score-box .n{font:900 clamp(56px,9vw,112px)/1 var(--f-display);color:var(--navy);white-space:nowrap}
+.score-box .n span{font-size:.5em;color:var(--muted)}
+.score-box small{font:800 16px/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.score-box.ten{background:var(--gold-soft);border:3px solid var(--gold)}
+.parts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.part{border:2px solid var(--line);border-radius:14px;padding:10px 12px;text-align:center;display:grid;gap:2px}
+.part span{font-size:15px;font-weight:700;color:var(--muted);line-height:1.2}
+.part b{font:900 clamp(22px,2.4vw,30px)/1.1 var(--f-display);color:var(--navy)}
+.fb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fb{border-radius:20px;padding:20px 22px;border:3px solid;display:grid;gap:10px;align-content:start}
+.fb h3{font:900 clamp(20px,2.2vw,26px)/1.15 var(--f-display)}
+.fb ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.fb li{font:700 clamp(19px,2vw,24px)/1.3 var(--f-body)}
+.fb .gnote{font-size:clamp(16px,1.6vw,19px);font-weight:600;color:var(--muted);border-top:2px dashed currentColor;padding-top:8px}
+.fb.good{border-color:var(--ok);background:var(--ok-soft)}
+.fb.good h3{color:var(--ok)}
+.fb.need{border-color:var(--gold);background:var(--gold-soft)}
+.fb.need h3{color:var(--gold-deep)}
+.fb.next{border-color:var(--sky-deep);background:var(--sky-soft)}
+.fb.next h3{color:var(--sky-deep)}
+.motto{text-align:center;font:800 clamp(21px,2.6vw,32px)/1.35 var(--f-body);color:var(--navy);text-wrap:balance}
+.motto .star{color:var(--gold)}
+.sheet-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:2px solid var(--line);padding-top:14px;font-size:17px;font-weight:600;color:var(--muted)}
+.sheet-foot b{color:var(--navy)}
+
+/* ---------- modal & toast ---------- */
+#modal{position:fixed;inset:0;z-index:80;background:rgba(10,40,70,.45);display:grid;place-items:center;padding:16px}
+.modal-box{background:var(--surface);border-radius:24px;border:3px solid var(--bad);max-width:620px;width:100%;padding:28px;display:grid;gap:22px}
+.modal-box p{font:800 clamp(22px,2.6vw,28px)/1.35 var(--f-body);color:var(--navy)}
+.modal-box .actions{justify-content:flex-end}
+.btn-red{background:var(--bad);color:#fff;border-color:var(--bad-deep)}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:90;background:var(--navy);color:#fff;font-weight:800;font-size:19px;padding:14px 22px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center}
+
+.sync.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-soft)}
+.sync.bad i{background:var(--bad)}
+.home-sync{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tab.qr{border-color:var(--navy);font-family:var(--f-display)}
+.sync-warn{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--bad-soft);border:3px solid var(--bad);border-radius:18px;padding:14px 18px;color:var(--ink)}
+.sync-warn>b{flex:none;width:40px;height:40px;border-radius:50%;background:var(--bad);color:#fff;display:grid;place-items:center;font:900 22px/1 var(--f-display)}
+.sync-warn div{flex:1;min-width:220px;display:grid;gap:4px}
+.sync-warn p{font-weight:700;font-size:18px}
+.sync-warn p:first-child{font-weight:900;color:var(--bad);font-size:20px}
+.qr-box{border-color:var(--sky-deep);max-width:560px;justify-items:center;text-align:center;max-height:calc(100vh - 32px);overflow-y:auto}
+.qr-box h2{font:900 clamp(20px,2.6vw,28px)/1.2 var(--f-display);color:var(--navy)}
+.qr-img{width:min(100%,340px);background:#fff;border:3px solid var(--line);border-radius:16px;padding:8px}
+.qr-img svg{width:100%;height:auto;display:block}
+.qr-url{font:700 16px/1.3 var(--f-body);color:var(--sky-deep);word-break:break-all;user-select:all}
+.qr-steps{text-align:left;margin:0;padding-left:24px;display:grid;gap:6px;font-size:18px;font-weight:600}
+.qr-box .actions{justify-content:center}
+.modal-box p.note,.modal-box p.hint{font:600 16px/1.4 var(--f-body);color:var(--muted)}
+/* live sync badge */
+.home-left{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.sync{display:inline-flex;align-items:center;gap:8px;font:800 15px/1.2 var(--f-body);border-radius:999px;padding:7px 14px;border:2px solid var(--line);background:var(--surface);color:var(--muted)}
+.sync i{width:11px;height:11px;border-radius:50%;background:#9AAEBF;flex:none}
+.sync.live{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.sync.live i{background:var(--ok);box-shadow:0 0 0 4px rgba(20,119,58,.18)}
+.sync.ro{border-color:var(--gold);color:var(--gold-deep);background:var(--gold-soft)}
+.sync.ro i{background:var(--gold)}
+.sync.wait i{background:var(--sky)}
+.topbar .sync{margin-right:auto}
+.topbar .brand{margin-right:0}
+
+/* ---------- new lesson ---------- */
+.tab.les{border-color:var(--sky);background:var(--sky-soft)}
+.tab.les.cur{background:var(--sky-deep);border-color:var(--sky-deep);color:#fff}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.hero-actions .btn-xl{margin-top:0}
+.btn-white{background:#fff;color:var(--sky-deep);border-color:#fff}
+.btn-white:hover{background:var(--sky-soft)}
+.lsecs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.lsecs .step b{font-size:clamp(15px,1.5vw,19px);font-family:var(--f-body);font-weight:900;text-align:center;line-height:1.15}
+.lsec{display:grid;gap:22px}
+.rule{display:flex;gap:16px;align-items:flex-start;background:var(--gold-soft);border:3px solid var(--gold);border-radius:20px;padding:20px 24px}
+.rule .mark{flex:none;width:44px;height:44px;border-radius:12px;background:var(--bad);color:#fff;display:grid;place-items:center;font:900 24px/1 var(--f-display)}
+.rule p{font:800 clamp(22px,2.5vw,32px)/1.3 var(--f-body);color:var(--navy)}
+.rule p em{font-style:italic;color:var(--sky-deep)}
+.lead{font:600 clamp(20px,2.1vw,26px)/1.5 var(--f-body);color:var(--ink);max-width:62ch}
+.lgrid{display:grid;grid-template-columns:1.15fr 1fr;gap:22px;align-items:start}
+.lcol{display:grid;gap:18px;min-width:0}
+.fig{background:var(--sky-soft);border-radius:22px;padding:16px;display:grid;gap:8px;justify-items:center}
+.fig svg{width:100%;max-width:520px;height:auto}
+.fig figcaption{font-size:17px;font-weight:700;color:var(--muted);text-align:center}
+.callout{border-radius:18px;padding:16px 20px;display:grid;gap:6px;border:3px solid}
+.callout h3{font:900 18px/1.2 var(--f-body);letter-spacing:.06em;text-transform:uppercase;display:flex;gap:10px;align-items:center}
+.callout p{font:700 clamp(19px,2vw,24px)/1.4 var(--f-body)}
+.callout.attn{border-color:var(--sky-deep);background:var(--surface)}
+.callout.attn h3{color:var(--sky-deep)}
+.callout.mem{border-color:var(--ok);background:var(--ok-soft)}
+.callout.mem h3{color:var(--ok)}
+.callout .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:18px;flex:none}
+.callout.attn .ic{background:var(--sky-deep)}
+.callout.mem .ic{background:var(--ok)}
+.cmp{width:100%;border-collapse:separate;border-spacing:0;font-variant-numeric:normal}
+.cmp th,.cmp td{white-space:normal;text-align:left;padding:14px 16px;font-size:clamp(18px,1.8vw,22px)}
+.cmp th{font-size:16px}
+.cmp td:first-child{font-weight:800;color:var(--muted);font-size:17px;width:28%}
+.cmp td{font-weight:700}
+.vals td,.vals th{font-size:clamp(19px,1.9vw,23px)}
+.vals td:first-child{text-align:left;font-weight:800}
+.subst td:first-child small{display:block;font-size:.72em;font-weight:600;color:var(--muted)}
+.subst th{white-space:normal}
+.subst .unit{text-transform:none;letter-spacing:0;white-space:nowrap}
+.subst .r{font-family:"Times New Roman",Georgia,serif;font-size:1.25em;text-transform:none}
+.fcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fcard{min-width:0;background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:20px;display:grid;gap:10px;justify-items:center;text-align:center;align-content:start}
+.fcard span{font:800 16px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fcard .fx{font:800 clamp(34px,5vw,64px)/1.1 "Times New Roman",Georgia,serif;font-style:italic;color:var(--navy);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.25em;max-width:100%}
+.fcard .fx.main{color:var(--bad)}
+.frac{display:inline-grid;text-align:center;font-size:.8em;line-height:1.05}
+.frac>span:first-child{border-bottom:3px solid currentColor;padding:0 .15em}
+.formula-big{background:var(--navy);color:#fff;border-radius:22px;padding:22px 26px;display:grid;gap:14px;justify-items:center;text-align:center}
+.formula-big .fx{font:800 clamp(44px,6vw,80px)/1.1 "Times New Roman",Georgia,serif;font-style:italic;color:#FFE27A}
+.formula-big p{font:600 clamp(18px,1.9vw,23px)/1.4 var(--f-body);color:#E3F3FA;max-width:56ch}
+.terms{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.terms span{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);border-radius:12px;padding:8px 14px;font-size:18px;font-weight:700}
+.terms b{color:#FFE27A;font-family:"Times New Roman",Georgia,serif;font-style:italic;font-size:1.2em}
+.example{border:3px solid var(--sky);border-radius:22px;padding:22px;display:grid;gap:14px;background:var(--surface)}
+.example h3{font:900 clamp(20px,2.2vw,26px)/1.2 var(--f-display);color:var(--navy)}
+.example .task-q{font:700 clamp(20px,2.2vw,26px)/1.4 var(--f-body)}
+.ex-steps{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.ex-steps li{font:700 clamp(19px,2vw,24px)/1.45 var(--f-body);background:var(--sky-soft);border-radius:14px;padding:12px 16px}
+.ex-steps li.last{background:var(--ok);color:#fff}
+.alt{display:grid;gap:18px}
+.alt-read{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.alt-read div{background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:16px;text-align:center;display:grid;gap:6px}
+.alt-read span{font:800 15px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.alt-read b{font:900 clamp(34px,4.6vw,60px)/1 var(--f-display);color:var(--navy);white-space:nowrap}
+.alt-read small{font-size:.45em;color:var(--muted)}
+.alt-read .hot{border-color:var(--bad);background:var(--bad-soft)}
+.alt-read .hot b{color:var(--bad)}
+.alt-range{width:100%;height:44px;accent-color:var(--sky-deep)}
+.presets{display:flex;flex-wrap:wrap;gap:10px}
+.presets .btn{font-size:17px;min-height:50px;padding:10px 16px}
+.presets .btn.cur{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chain{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;font:900 clamp(18px,2vw,24px)/1.2 var(--f-body);color:var(--navy)}
+.chain span{background:var(--sky-soft);border-radius:12px;padding:10px 14px}
+.chain i{font-style:normal;color:var(--sky-deep)}
+.alt-fig svg{width:100%;max-width:none;height:auto;display:block}
+.lq{display:grid;gap:14px;counter-reset:q}
+.lq li{list-style:none;display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:18px 20px;font:700 clamp(21px,2.3vw,28px)/1.4 var(--f-body)}
+.lq li::before{counter-increment:q;content:counter(q);flex:none;width:48px;height:48px;border-radius:50%;background:var(--gold);color:var(--navy);font:900 22px/48px var(--f-display);text-align:center}
+.lq ol,.lq{margin:0;padding:0}
+/* lab */
+.lab-ctrl{display:flex;flex-wrap:wrap;gap:14px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:14px 18px}
+.lab-clock{display:grid;gap:2px;margin-right:auto}
+.lab-clock span{font:800 14px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lab-clock b{font:900 clamp(30px,3.4vw,44px)/1 var(--f-display);color:var(--sky-deep);font-variant-numeric:tabular-nums}
+.lab-clock.tot b{font-size:clamp(20px,2vw,26px);color:var(--navy)}
+.lab-grid{display:grid;grid-template-columns:5fr 7fr;gap:18px}
+.lab-card{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:16px;display:grid;gap:10px;align-content:start;min-width:0}
+.lab-card h3{font:900 clamp(18px,1.9vw,22px)/1.2 var(--f-display);color:var(--navy);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lab-card h3 .badge{margin-left:auto;font:800 15px/1 var(--f-body);border-radius:999px;padding:6px 12px;background:var(--idle);color:var(--muted)}
+.lab-card h3 .badge.on{background:var(--gold-soft);color:var(--gold-deep)}
+.lab-card svg{width:100%;height:auto;display:block}
+.lab-now{display:flex;justify-content:space-between;align-items:center;background:var(--sky-soft);border-radius:14px;padding:10px 14px;font-weight:800;font-size:18px}
+.lab-now b{font:900 28px/1 var(--f-display);color:var(--bad)}
+.g-grid{stroke:#E3EDF3;stroke-width:1}
+.g-axis{stroke:var(--ink);stroke-width:2}
+.g-t{fill:var(--muted);font:600 13px var(--f-body)}
+.g-title{fill:var(--ink);font:800 14px var(--f-body)}
+.g-100{stroke:var(--bad);stroke-width:1.6;stroke-dasharray:6 4}
+.g-100t{fill:var(--bad);font:900 13px var(--f-body)}
+.g-line{fill:none;stroke:var(--sky-deep);stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.g-pt{fill:#fff;stroke:var(--sky-deep);stroke-width:3}
+.g-val{fill:var(--navy);font:800 12px var(--f-body)}
+.lab-banner{display:flex;gap:14px;align-items:flex-start;background:var(--gold-soft);border:3px solid var(--gold);border-radius:18px;padding:14px 18px}
+.lab-banner b{display:block;font:900 15px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep)}
+.lab-banner p{font:700 clamp(19px,2vw,23px)/1.35 var(--f-body);color:var(--navy)}
+.lab-cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:10px}
+.lab-cell{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;border:3px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--surface)}
+.lab-cell .tm{font:900 22px/1 var(--f-display);color:var(--navy);font-variant-numeric:tabular-nums}
+.lab-cell .stt{justify-self:end;font-size:14px;font-weight:800;color:#8A9BAB}
+.lab-cell .stt.ok{color:var(--ok)}
+.lab-cell .stt.err{color:var(--bad)}
+.lab-cell label{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-weight:800;color:var(--muted)}
+.lab-cell input{width:100%;min-width:0;font:800 24px/1.1 var(--f-body);padding:8px 10px;border:2px solid var(--idle-line);border-radius:10px;font-variant-numeric:tabular-nums}
+.lab-cell input:focus{outline:none;border-color:var(--sky-deep);box-shadow:0 0 0 4px var(--sky-soft)}
+.lab-cell.has{border-color:var(--ok)}
+.lab-cell.now{border-color:var(--gold);background:var(--gold-soft);box-shadow:0 0 0 4px rgba(242,183,5,.25)}
+.lab-qs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lab-qs label{display:grid;gap:8px;font:800 clamp(18px,1.9vw,22px)/1.35 var(--f-body);color:var(--navy)}
+.lab-qs textarea{font:600 19px/1.4 var(--f-body);padding:12px 14px;border:2px solid var(--idle-line);border-radius:14px;resize:vertical;min-height:84px;background:var(--surface);color:var(--ink)}
+.lab-qs textarea:focus{outline:none;border-color:var(--sky-deep);box-shadow:0 0 0 4px var(--sky-soft)}
+.flame{transform-box:fill-box;transform-origin:50% 100%;opacity:0;transition:opacity .4s}
+.flame.on{opacity:1}
+.bub{fill:#fff;stroke:#0284C7;stroke-width:.8}
+.steam path{fill:none;stroke:#9FB3C6;stroke-width:3;stroke-linecap:round;opacity:.8}
+@media (prefers-reduced-motion:no-preference){
+  .flame.on{animation:flick .35s infinite alternate ease-in-out}
+  .bub.rise{animation:rise 1.6s infinite linear}
+  .steam path{animation:steam 2.2s infinite linear}
+  .demo-bub{animation:rise 2.4s infinite linear}
+}
+@keyframes flick{from{transform:scale(.94,.9)}to{transform:scale(1.05,1.08)}}
+@keyframes rise{from{transform:translateY(0);opacity:.95}to{transform:translateY(-34px);opacity:0}}
+@keyframes steam{0%{transform:translateY(0);opacity:.8}100%{transform:translateY(-22px);opacity:0}}
+@media (max-width:980px){
+  .lgrid,.lab-grid{grid-template-columns:1fr}
+  .lsecs{grid-template-columns:repeat(3,1fr)}
+  .fcards{grid-template-columns:1fr}
+  .lab-qs{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .lsecs{grid-template-columns:repeat(2,1fr)}
+  .alt-read{grid-template-columns:1fr}
+}
+
+@media (max-width:980px){
+  .home-row,.two{grid-template-columns:1fr}
+  .fb-grid{grid-template-columns:1fr}
+  .stepper{grid-template-columns:repeat(3,1fr)}
+  .hero-body{max-width:none}
+  .hero-sun{opacity:.35}
+}
+@media (max-width:640px){
+  .hero{padding-left:calc(24px + 34px)}
+  .hero-body{max-width:none}
+  .hero-sun{opacity:.35}
+  .orn-v{width:30px}
+  .ghead{padding-left:52px}
+  .ghead .orn-v{width:32px}
+  .ghead .gicon{display:none}
+  .struct-list,.parts{grid-template-columns:repeat(2,1fr)}
+  .stepper{grid-template-columns:repeat(2,1fr)}
+  .ans{min-width:0;flex:1}
+  .q-label{min-width:100%}
+  .teacher{text-align:left}
+  .nav-row .btn{flex:1}
+}
+@media (prefers-reduced-motion:no-preference){
+  .chip,.ans,.cb,.btn,.tab,.step,.gcard{transition:border-color .15s,background-color .15s,color .15s}
+}
+
+/* ---------- A4 print ---------- */
+@page{size:A4 portrait;margin:10mm}
+@media print{
+  html,body{background:#fff !important}
+  #app,#overlay,#modal,#toast{display:none !important}
+  #printRoot{display:block !important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sheet{max-width:none;border-radius:0;border:0;box-shadow:none;break-after:page;page-break-after:always;break-inside:avoid}
+  .sheet:last-child{break-after:auto;page-break-after:auto}
+  .sheet-head{padding:12px 20px}
+  .sheet-head .topic{font-size:15px}
+  .sheet-head p{font-size:13px}
+  .sheet .band{height:16px}
+  .sheet-main{padding:18px 8px 0;gap:16px}
+  .sheet-name{font-size:48px}
+  .sheet-group{font-size:22px}
+  .score-box{padding:12px 24px;min-width:230px}
+  .score-box .n{font-size:64px}
+  .score-box small{font-size:12px}
+  .parts{grid-template-columns:repeat(4,1fr)}
+  .part span{font-size:12px}
+  .part b{font-size:20px}
+  .fb-grid{grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .fb{padding:12px 14px;border-radius:14px}
+  .fb h3{font-size:15px}
+  .fb li{font-size:15px}
+  .fb .gnote{font-size:13px}
+  .motto{font-size:19px}
+  .sheet-foot{font-size:13px}
+}
+
+/* ---------- online: roles, forms, monitor ---------- */
+.role-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.role-row .btn-xl{margin-top:0}
+.form{display:grid;gap:18px;max-width:640px}
+.field{display:grid;gap:8px}
+.field>span{font:800 16px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.field input{width:100%;min-width:0;font:800 24px/1.2 var(--f-body);padding:14px 18px;border:3px solid var(--idle-line);border-radius:14px;background:var(--surface)}
+.field input:focus{border-color:var(--sky-deep);outline:none;box-shadow:0 0 0 4px var(--sky-soft)}
+.field input.code-input{font:900 clamp(30px,4vw,42px)/1.1 var(--f-display);letter-spacing:.2em;text-transform:uppercase;max-width:420px}
+.form-err{font-weight:800;color:var(--bad);font-size:19px;min-height:1px}
+.form-err:empty{display:none}
+.gcard.pick.on{border-color:var(--navy);background:var(--sky-soft);box-shadow:inset 0 0 0 3px var(--navy)}
+.pill-group{font:800 clamp(16px,1.8vw,20px)/1.2 var(--f-body);color:var(--navy);background:var(--gold-soft);border:3px solid var(--gold);border-radius:999px;padding:10px 20px}
+.topbar .code-pill{font:900 16px/1 var(--f-display);letter-spacing:.12em;color:var(--navy);background:var(--gold-soft);border:2px solid var(--gold);border-radius:10px;padding:10px 12px}
+.sync.saving{border-color:var(--sky);color:var(--sky-deep);background:var(--sky-soft)}
+.sync.saving i{background:var(--sky)}
+.sync.saved{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.sync.saved i{background:var(--ok);box-shadow:0 0 0 4px rgba(20,119,58,.18)}
+.ended-banner{background:var(--bad-soft);border-bottom:3px solid var(--bad);color:var(--bad-deep);font-weight:800;font-size:18px}
+.ended-banner .wrap{padding-block:12px}
+.code-card{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center}
+.code-card .qr-img{width:clamp(160px,18vw,220px)}
+.code-info{display:grid;gap:8px;min-width:0}
+.code-big{font:900 clamp(52px,8vw,96px)/1 var(--f-display);letter-spacing:.12em;color:var(--navy)}
+.sess-state{display:grid;gap:12px;justify-items:start}
+.gst-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:14px}
+.gst{background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:16px 18px;display:grid;gap:8px;align-content:start}
+.gst h3{font:900 clamp(18px,1.9vw,22px)/1.15 var(--f-display);color:var(--navy)}
+.gst.on{border-color:var(--ok)}
+.gst.lost{border-color:var(--bad)}
+.gst-line{font-size:17px;font-weight:600;color:var(--muted)}
+.gst-line b{color:var(--ink)}
+.gst .btn{justify-self:start}
+.pres{justify-self:start;display:inline-flex;gap:8px;align-items:center;font:800 16px/1 var(--f-body);border-radius:999px;padding:7px 13px}
+.pres i{width:11px;height:11px;border-radius:50%;flex:none}
+.pres.on{background:var(--ok-soft);color:var(--ok)}
+.pres.on i{background:var(--ok)}
+.pres.lost{background:var(--bad-soft);color:var(--bad)}
+.pres.lost i{background:var(--bad)}
+.pres.none{background:var(--idle);color:var(--muted)}
+.pres.none i{background:#9AAEBF}
+.stage-dot{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;margin-right:4px;font:900 14px/1 var(--f-display);background:var(--idle);color:#8A9BAB}
+.stage-dot.on{background:var(--ok);color:#fff}
+.na{color:#8A9BAB;font-weight:800}
+td.fixd{background:var(--gold-soft)}
+.fixmark{font-size:.7em;color:var(--gold-deep);margin-left:4px}
+td.grp{text-align:left;font-size:17px;color:var(--sky-deep)}
+.top5{display:grid;gap:10px;counter-reset:t5}
+.chip.locked{border-style:dashed}
+.chip.locked small{font-size:.6em}
+.ans.locked{border-style:dashed}
+.cb.locked{border-style:dashed}
+.lock-note{font-size:15px;font-weight:800;color:var(--gold-deep)}
+.fix-box{max-width:960px;border-color:var(--sky-deep);max-height:calc(100vh - 32px);overflow-y:auto;gap:16px}
+.fix-box h2{font:900 clamp(22px,2.6vw,30px)/1.15 var(--f-display);color:var(--navy)}
+.fix-box h3{font:800 16px/1.2 var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--sky-deep);margin-top:6px}
+.fix-sum{display:flex;gap:10px;flex-wrap:wrap}
+.fix-sum span{background:var(--sky-soft);border-radius:10px;padding:6px 12px;font-weight:800;color:var(--navy)}
+.fix-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:8px 0}
+.fix-row .fl{flex:1 1 280px;font-weight:700;font-size:18px;line-height:1.3}
+.fix-row .fs{font-size:15px;font-weight:800;color:var(--muted);min-width:110px}
+.fixb{min-height:46px;min-width:64px;padding:8px 12px;font:900 17px/1 var(--f-body);border-radius:12px;border:3px solid var(--idle-line);background:var(--idle);color:var(--ink)}
+.fixb:hover{border-color:var(--sky-deep)}
+.fixb.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.fixb.ok.on{background:var(--ok);border-color:var(--ok-deep)}
+.fixb.bad.on{background:var(--bad);border-color:var(--bad-deep)}
+.labs-all{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,560px),1fr));gap:16px}
+.mini-temps{display:flex;flex-wrap:wrap;gap:6px}
+.mini-temps span{background:var(--sky-soft);border-radius:8px;padding:4px 8px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.mini-temps span.na{background:var(--idle)}
+.lab-ans-list{margin:0;padding-left:22px;display:grid;gap:8px;font-size:17px}
+.lab-ans-list b{color:var(--navy)}
+.lab-ans-list p{font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}
+.loading{padding-block:60px;text-align:center;font:800 22px/1.3 var(--f-body);color:var(--muted)}
+#resTable th{white-space:normal;font-size:13px;letter-spacing:.04em;vertical-align:bottom}
+#resTable td{padding:10px 10px}
+#resTable td.nm{font-size:clamp(18px,1.7vw,22px);white-space:normal;min-width:180px}
+#resTable td.grp{white-space:normal;min-width:120px;font-size:15px}
+#resTable td:last-child{white-space:nowrap}
+@media (max-width:980px){ .code-card{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="orn" width="40" height="26" patternUnits="userSpaceOnUse">
+      <path d="M20 23V15C20 8 13 4 9 7C5 10 7 15 11 14C13 13.5 13.5 11.5 12 10.5M20 15C20 8 27 4 31 7C35 10 33 15 29 14C27 13.5 26.5 11.5 28 10.5M0 23H40" fill="none" stroke="#F2B705" stroke-width="2.4" stroke-linecap="round"/>
+    </pattern>
+    <pattern id="ornV" width="40" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(90)">
+      <path d="M20 23V15C20 8 13 4 9 7C5 10 7 15 11 14C13 13.5 13.5 11.5 12 10.5M20 15C20 8 27 4 31 7C35 10 33 15 29 14C27 13.5 26.5 11.5 28 10.5M0 23H40" fill="none" stroke="#F2B705" stroke-width="2.4" stroke-linecap="round"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div id="app"><main class="page wrap"><p class="loading">Жүктелуде…</p></main></div>
+<div id="overlay" hidden></div>
+<div id="modal" hidden></div>
+<div id="toast" hidden></div>
+<div id="printRoot"></div>
+
+<script src="firebase-config.js"></script>
+<script>
+/* If the Firebase modules cannot load (no internet, blocked CDN, file:// opening) the page would stay blank. */
+setTimeout(function(){
+  if (window.__qainauBooted) return;
+  document.getElementById('app').innerHTML = '<main class="page wrap"><section class="panel"><h1 class="page-title">ҚОСЫМША ЖҮКТЕЛМЕДІ</h1>' +
+    '<p class="lead">Firebase кітапханасы жүктелмеді. Интернетті тексеріп, бетті жаңартыңыз. Файлды компьютерден тікелей (file://) ашпаңыз: қосымшаны жарияланған сілтеме арқылы ашыңыз.</p></section></main>';
+}, 12000);
+</script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import { getAuth, connectAuthEmulator, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, connectFirestoreEmulator, doc, collection, query, where, getDoc, getDocs, setDoc, updateDoc, writeBatch, onSnapshot, serverTimestamp, deleteField } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+
+window.__qainauBooted = true;
+
+/* ================= DATA ================= */
+var TEACHER = 'Маженова Салтанат Төлендіқызы';
+var TOPIC = 'Қайнау, меншікті булану жылуы. Қайнау температурасының атмосфералық қысымға байланыстылығын анықтау';
+
+var GROUPS = [
+  {n:1, name:'АЛЬПИНИСТЕР', sub:'Хан Тәңірі экспедициясы', icon:'mountain', q:[
+    ['Биіктіктің артуын дұрыс сәйкестендіреді.', null],
+    ['Атмосфералық қысым төмендегенде қайнау температурасының төмендейтінін анықтайды.', '16'],
+    ['Қайнау кезінде будың сұйықтың бүкіл көлемінде түзілетінін анықтайды.', null],
+    ['Булануға қажетті жылу мөлшерінің формуласын анықтайды.', '15'],
+    ['Биіктік артқанда атмосфералық қысым төмендейтінін анықтайды.', '16'],
+    ['Қысым төмендегенде қайнау температурасының төмендейтінін анықтайды.', '16'],
+    ['Q = rm формуласын анықтайды және қолданады.', '15'],
+    ['Меншікті булану жылуының өлшем бірлігін Дж/кг деп анықтайды.', '15'],
+    ['Тауда атмосфералық қысым төмен болғандықтан судың төмен температурада қайнайтынын түсіндіреді.', '16']
+  ]},
+  {n:2, name:'РЕСТОРАТОРЛАР', sub:'Таулы аймақтағы ресторан', icon:'pot', q:[
+    ['Қайнауды оның сипаттамасымен дұрыс сәйкестендіреді.', null],
+    ['Булануды оның сипаттамасымен дұрыс сәйкестендіреді.', null],
+    ['Масса шамасының ХБЖ-дағы өлшем бірлігін анықтайды.', null],
+    ['Меншікті булану жылуының өлшем бірлігін анықтайды.', '15'],
+    ['Қайнау кезінде бу сұйықтың бүкіл көлемінде пайда болатынын анықтайды.', null],
+    ['Қалыпты атмосфералық қысымда судың 100°C-та қайнайтынын анықтайды.', '16'],
+    ['Қайнау температурасына атмосфералық қысымның әсер ететінін анықтайды.', '16'],
+    ['500 г = 0,5 кг екенін анықтайды.', '15'],
+    ['Тауда судың қайнау температурасының төмен болуымен тағамның баяу пісуін байланыстырады.', '16']
+  ]},
+  {n:3, name:'ИНЖЕНЕРЛЕР', sub:'Алматы метросы', icon:'metro', q:[
+    ['Жылу мөлшерінің өлшем бірлігін дұрыс анықтайды.', null],
+    ['Массаның ХБЖ-дағы өлшем бірлігін дұрыс анықтайды.', null],
+    ['Меншікті булану жылуының өлшем бірлігін дұрыс анықтайды.', '15'],
+    ['Температураның берілген өлшем бірлігін дұрыс сәйкестендіреді.', null],
+    ['m = Q/r формуласын дұрыс анықтайды.', '15'],
+    ['750 г = 0,75 кг екенін анықтайды.', '15'],
+    ['1 кДж = 1000 Дж екенін анықтайды.', null],
+    ['Бу көпіршіктерінің сұйықтың бүкіл көлемінде пайда болуын қайнаудың белгісі ретінде анықтайды.', null],
+    ['Қайнау температурасын анықтағанда нақты сыртқы қысымды ескеру керектігін түсіндіреді.', '16']
+  ]},
+  {n:4, name:'ЗЕРТТЕУШІЛЕР', sub:'Қарақия ойысындағы ғылыми экспедиция', icon:'basin', q:[
+    ['Биіктік пен атмосфералық қысым арасындағы байланысты анықтайды.', '16'],
+    ['Қысымның төмендеуінің қайнау температурасына әсерін анықтайды.', '16'],
+    ['Қысымның артуының қайнау температурасына әсерін анықтайды.', '16'],
+    ['Буланатын масса мен қажетті жылу мөлшерінің байланысын анықтайды.', '15'],
+    ['Қарақия ойысының теңіз деңгейінен төмен орналасқанын анықтайды.', null],
+    ['Қысым артқанда қайнау температурасының жоғарылайтынын анықтайды.', '16'],
+    ['r тұрақты болғанда масса екі есе артса, жылу мөлшерінің де екі есе артатынын анықтайды.', '15'],
+    ['575 кДж = 575 000 Дж екенін анықтайды.', '15'],
+    ['Екі жердегі атмосфералық қысымды салыстырып, Қарақияда қысымның жоғарырақ болуы күтілетінін анықтайды.', '16']
+  ]}
+];
+
+var S1 = [
+  ['Булану мен кебудің қандай факторларға тәуелді екенін түсіндіре аламын.', 'Булану мен кебу жылдамдығына әсер ететін факторларды атайды және түсіндіреді.'],
+  ['Конденсация дегеніміз не екенін түсіндіре аламын.', 'Конденсация құбылысының мағынасын түсіндіреді.'],
+  ['Сублимация және десублимация құбылыстарына мысал келтіре аламын.', 'Сублимация мен десублимацияны ажыратып, мысал келтіреді.']
+];
+var S2 = [
+  ['Судың қайнау температурасының атмосфералық қысымға тәуелді екенін түсіндім.', 'Атмосфералық қысым өзгергенде қайнау температурасының өзгеретінін түсіндіреді.'],
+  ['Қайнау қандай жағдайда жүретінін және қайнау кезіндегі температураның өзгеру ерекшелігін түсіндім.', 'Қайнау құбылысын сипаттайды және қайнау кезінде температураның тұрақты болу ерекшелігін түсіндіреді.']
+];
+/* Stage 4: 9 descriptors, index 0 = task 1, 1..3 = task 2, 4..8 = task 3 */
+var TASKS = [
+  {t:1, title:'ТАПСЫРМА 1', pts:1, from:0, crit:'Қайнау температурасының сыртқы қысымға тәуелділігін түсіндіреді.', items:[
+    ['Мәтіндегі қайнау температурасымен салыстырып, дұрыс жауап берді', '']
+  ]},
+  {t:2, title:'ТАПСЫРМА 2', pts:3, from:1, crit:'Меншікті булану жылуын қолданып, булануға қажетті жылу мөлшерін анықтайды.', items:[
+    ['Массаны ХБЖ-ға айналдырды', ''],
+    ['Булануға қажетті жылуды есептеу тәсілін дұрыс қолданды', ''],
+    ['Жылу мөлшерін есептеп, өлшем бірлігін жазды', '']
+  ]},
+  {t:3, title:'ТАПСЫРМА 3', pts:5, from:4, crit:'Қыздыру мен булануға қажетті жалпы жылу мөлшерін анықтайды.', items:[
+    ['Екі массаны ХБЖ-ға айналдырды', ''],
+    ['Температура өзгерісін анықтады', ''],
+    ['Қыздыруға қажетті жылуды есептеді', ''],
+    ['Булануға қажетті жылуды есептеді', ''],
+    ['Екі жылуды қосып, өлшем бірлігін жазды', '']
+  ]}
+];
+var S4_SHORT = ['Т1: қысым–қайнау', 'Т2: г → кг', 'Т2: Q = rm', 'Т2: нәтиже, Дж', 'Т3: г → кг', 'Т3: Δt', 'Т3: Q₁ = cmΔt', 'Т3: Q₂ = rm', 'Т3: Q₁ + Q₂, Дж'];
+var S1_SHORT = ['1-к: булану/кебу', '1-к: конденсация', '1-к: сублимация'];
+var S2_SHORT = ['2-к: қысым–қайнау', '2-к: қайнау ерекшелігі'];
+var STAGE_N = { s1:3, s2:2, s4:9 };
+var STAGE_KEYS = ['s1', 's2', 's3', 's4'];
+
+var STEPS = [
+  ['ТІЗІМ', 'Оқушылар'],
+  ['1/4', 'Үй тапсырмасы'],
+  ['2/4', 'Эксперимент'],
+  ['3/4', 'Топтық жұмыс'],
+  ['4/4', 'Жеке жұмыс'],
+  ['ҚОРЫТЫНДЫ', 'Нәтиже']
+];
+var MONTHS = ['қаңтар','ақпан','наурыз','сәуір','мамыр','маусым','шілде','тамыз','қыркүйек','қазан','қараша','желтоқсан'];
+
+/* ================= HELPERS ================= */
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function up(s){ try { return s.toLocaleUpperCase('kk-KZ'); } catch(e){ return s.toUpperCase(); } }
+function fmt1(x){ return x.toFixed(1).replace('.', ','); }
+function cnt(a){ var n=0; for(var i=0;i<a.length;i++) if(a[i]) n++; return n; }
+function range(n){ var a=[]; for(var i=0;i<n;i++) a.push(i); return a; }
+function qWord(nums){ return nums.join(', ') + (nums.length > 1 ? '-сұрақтарда' : '-сұрақта'); }
+function own(m, k){ return !!m && typeof m === 'object' && Object.prototype.hasOwnProperty.call(m, k); }
+function pick(m, k){ return own(m, k) ? m[k] : undefined; }
+function hasAny(m){ return !!m && typeof m === 'object' && Object.keys(m).length > 0; }
+function tsMs(t){ return t && typeof t.toMillis === 'function' ? t.toMillis() : 0; }
+function pad2(n){ return String(n).padStart(2, '0'); }
+function clock(ms){ var d = new Date(ms); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds()); }
+function ago(ms){
+  var s = Math.max(0, Math.round((Date.now() - ms) / 1000));
+  if (s < 10) return 'жаңа ғана';
+  if (s < 60) return s + ' сек бұрын';
+  var m = Math.floor(s / 60);
+  return m < 60 ? m + ' мин бұрын' : Math.floor(m / 60) + ' сағ бұрын';
+}
+function dateStr(t){ var ms = tsMs(t); if (!ms) return ''; var d = new Date(ms); return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + clock(ms).slice(0, 5); }
+function normCode(s){ return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); }
+function withTimeout(p, ms){
+  return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ rej({ code:'timeout' }); }, ms); })]);
+}
+function lsGet(k){ try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch(e){ return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function lsDel(k){ try { localStorage.removeItem(k); } catch(e){} }
+
+/* ================= FIREBASE =================
+   Shared data lives in Cloud Firestore (see firestore.rules):
+     sessions/{code}                         teacherUid, status, title, createdAt, endedAt
+     sessions/{code}/groups/{g}              ownerUid, names, s3, s3Final, done, lab, updatedAt
+     sessions/{code}/groups/{g}/students/{slot}   self {s1,s2,s4}, final {s1,s2,s4}
+     sessions/{code}/presence/{g}            lastSeen, online
+   Every edit writes only the changed field (e.g. "names.3", "self.s4.2").
+   localStorage keeps only this device's screen state and which lesson it joined. */
+var CFG = window.FIREBASE_CONFIG || null;
+var OPT = Object.assign({ heartbeatMs: 20000, presenceTimeoutMs: 90000, emulator: false }, window.QAINAU_OPTIONS || {});
+var CONFIGURED = !!(CFG && CFG.apiKey && CFG.projectId && !/^(YOUR|PASTE|ОСЫНДА)/i.test(CFG.apiKey));
+var auth = null, db = null;
+if (CONFIGURED) {
+  var fbApp = initializeApp(CFG);
+  auth = getAuth(fbApp);
+  db = initializeFirestore(fbApp, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+  if (OPT.emulator) {
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+    connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  }
+}
+function sRef(code){ return doc(db, 'sessions', code); }
+function gRef(code, g){ return doc(db, 'sessions', code, 'groups', String(g)); }
+function stRef(code, g, slot){ return doc(db, 'sessions', code, 'groups', String(g), 'students', String(slot)); }
+function pRef(code, g){ return doc(db, 'sessions', code, 'presence', String(g)); }
+
+/* ================= STATE ================= */
+var LS_JOIN = 'qainau-online-v1:join';
+var LS_UI = 'qainau-online-v1:ui:';
+var ROLE = null, CODE = null, MYG = null, USER = null;
+var S = { ui: blankUI() };
+var D = blankData();
+var MODAL = null;   // data-bound modal: {kind:'fix', id} | {kind:'fix3', g}
+var FORM = { joinCode:'', joinG:null, email:'', pass:'', err:'', busy:false };
+
+function blankUI(){ return { view:'start', g:0, gstep:[0,0,0,0], sel:[0,0,0,0], result:null, lsec:0, ex:0, alt:0, tlab:0 }; }
+function blankData(){ return { session:null, sessionMissing:false, groups:[null,null,null,null], studs:[{},{},{},{}], pres:[null,null,null,null], presRecv:[0,0,0,0], sessions:null }; }
+
+function uiKey(){ return LS_UI + ROLE + ':' + (CODE || '-'); }
+function saveUI(){
+  if (!ROLE) return;
+  var u = S.ui;
+  lsSet(uiKey(), { view:u.view, gstep:u.gstep, sel:u.sel, lsec:u.lsec, ex:u.ex, alt:u.alt, tlab:u.tlab });
+}
+function loadUI(views, def){
+  var b = blankUI(), d = lsGet(uiKey()) || {};
+  b.view = views.indexOf(d.view) >= 0 ? d.view : def;
+  if (Array.isArray(d.gstep)) for (var j=0;j<4;j++) b.gstep[j] = Math.max(0, Math.min(5, d.gstep[j] | 0));
+  if (Array.isArray(d.sel)) for (var m=0;m<4;m++) b.sel[m] = Math.max(0, Math.min(6, d.sel[m] | 0));
+  if (d.lsec >= 0 && d.lsec <= 5) b.lsec = d.lsec | 0;
+  if (d.ex >= 0 && d.ex <= 4) b.ex = d.ex | 0;
+  if (typeof d.alt === 'number' && d.alt >= -200 && d.alt <= 7500) b.alt = Math.round(d.alt);
+  if (d.tlab >= 0 && d.tlab <= 3) b.tlab = d.tlab | 0;
+  S.ui = b;
+}
+function ended(){ return !!(D.session && D.session.status === 'ended'); }
+
+/* ---- unsent edits typed on this device (names, lab values) ---- */
+var draft = {}, dTimers = {}, dRun = {};
+function dget(key, path, fallback){ var k = key + '|' + path; if (own(draft, k)) return draft[k] === null ? undefined : draft[k]; return fallback; }
+function queueField(ref, key, path, value, ms){
+  var k = key + '|' + path;
+  draft[k] = value;
+  clearTimeout(dTimers[k]);
+  dRun[k] = function(){
+    delete dTimers[k]; delete dRun[k];
+    var v = draft[k]; delete draft[k];
+    var o = { updatedAt: serverTimestamp() }; o[path] = v === null ? deleteField() : v;
+    write(updateDoc(ref, o));
+  };
+  dTimers[k] = setTimeout(dRun[k], ms);
+  netTouch();
+}
+function flushDrafts(){ Object.keys(dRun).forEach(function(k){ clearTimeout(dTimers[k]); dRun[k](); }); }
+function dropDrafts(prefix){
+  Object.keys(dRun).forEach(function(k){ if (k.indexOf(prefix) === 0) { clearTimeout(dTimers[k]); delete dTimers[k]; delete dRun[k]; delete draft[k]; } });
+}
+
+/* ---- reading shared data ---- */
+function G(g){ return D.groups[g] || {}; }
+function names(g){
+  var m = G(g).names;
+  return range(7).map(function(i){ var v = dget('g' + g, 'names.' + i, pick(m, String(i))); return typeof v === 'string' ? v : ''; });
+}
+function students(g){
+  return names(g).map(function(n, i){ return { id:'g'+g+'s'+i, name:String(n).trim(), g:g, slot:i }; }).filter(function(s){ return s.name; });
+}
+function allStudents(){ return [0,1,2,3].reduce(function(a, g){ return a.concat(students(g)); }, []); }
+function findStudent(id){ var l = allStudents(); for (var i=0;i<l.length;i++) if (l[i].id === id) return l[i]; return null; }
+function sdoc(g, slot){ return D.studs[g][String(slot)] || {}; }
+/* self = students' own mark (self-assessment); fin = teacher's correction, which always wins. */
+function markInfo(s, k, i){
+  var d = sdoc(s.g, s.slot);
+  var self = pick(d.self && d.self[k], String(i)), fin = pick(d.final && d.final[k], String(i));
+  self = typeof self === 'boolean' ? self : undefined;
+  fin = typeof fin === 'boolean' ? fin : undefined;
+  return { self:self, fin:fin, v: fin !== undefined ? fin : self === true };
+}
+function st(id){
+  var s = findStudent(id), o = { s1:[], s2:[], s4:[] };
+  ['s1','s2','s4'].forEach(function(k){ for (var i=0;i<STAGE_N[k];i++) o[k].push(s ? markInfo(s, k, i).v : false); });
+  return o;
+}
+function stSelf(s){
+  var o = {};
+  ['s1','s2','s4'].forEach(function(k){ o[k] = range(STAGE_N[k]).map(function(i){ return markInfo(s, k, i).self === true; }); });
+  return o;
+}
+function s3info(g, q){
+  var a = pick(G(g).s3, String(q)), f = pick(G(g).s3Final, String(q));
+  a = (a === 'ok' || a === 'bad') ? a : null; f = (f === 'ok' || f === 'bad') ? f : null;
+  return { self:a, fin:f, v: f || a };
+}
+function s3arr(g){ return range(9).map(function(q){ return s3info(g, q).v; }); }
+function groupScore(g){ return s3arr(g).filter(function(v){ return v === 'ok'; }).length; }
+function groupSelfScore(g){ return range(9).filter(function(q){ return s3info(g, q).self === 'ok'; }).length; }
+function groupWrong(g){ var w=[]; s3arr(g).forEach(function(v,i){ if (v === 'bad') w.push(i+1); }); return w; }
+function doneFlag(g, k){ var d = G(g).done; return !!(d && d[k] === true); }
+/* A stage counts as entered once the group saved it, or once any mark exists; otherwise it shows "—", not 0. */
+function entered(s, k){
+  if (doneFlag(s.g, k)) return true;
+  var d = sdoc(s.g, s.slot);
+  return hasAny(d.self && d.self[k]) || hasAny(d.final && d.final[k]);
+}
+function s3Entered(g){ return doneFlag(g, 's3') || s3arr(g).some(function(v){ return v; }); }
+function corrected(s, k){ var d = sdoc(s.g, s.slot); return hasAny(d.final && d.final[k]); }
+function s3Corrected(g){ return hasAny(G(g).s3Final); }
+
+function score(s){
+  var d = st(s.id);
+  var a = cnt(d.s1), b = cnt(d.s2), c = groupScore(s.g), e = cnt(d.s4);
+  var total = a + b + c + e;
+  var e1 = entered(s, 's1'), e2 = entered(s, 's2'), e3 = s3Entered(s.g), e4 = entered(s, 's4');
+  return { s1:a, s2:b, s3:c, s4:e, t1:d.s4[0]?1:0, t2:cnt(d.s4.slice(1,4)), t3:cnt(d.s4.slice(4,9)), total:total, ten: Math.round(total / 23 * 100) / 10,
+    e1:e1, e2:e2, e3:e3, e4:e4, any: e1 || e2 || e3 || e4 };
+}
+function selfTotal(s){ var d = stSelf(s); return cnt(d.s1) + cnt(d.s2) + groupSelfScore(s.g) + cnt(d.s4); }
+function anyCorrected(s){ return corrected(s, 's1') || corrected(s, 's2') || corrected(s, 's4') || s3Corrected(s.g); }
+
+/* Individual diagnosis. Stages 1, 2, 4 are personal; stage 3 is reported only as the group's result. */
+function analyze(s){
+  var d = st(s.id), sc = score(s), k = d.s4;
+  var m15 = (sc.t2 + sc.t3) >= 6;
+  var m16 = k[0] && d.s2[0];
+  var fRm = !k[2] || !k[7];
+  var fSI = !k[1] || !k[4] || !k[3];
+  var fP = !k[0] || !d.s2[0];
+  var fHeat = !k[5] || !k[6] || !k[7] || !k[8];
+  var missed = 14 - (sc.s1 + sc.s2 + sc.s4);
+  var fRed = missed >= 7;
+  var green = m15 && m16 && !fRm && !fSI && !fP && !fHeat;
+
+  var good = [];
+  if (sc.t3 === 5) good.push('Қыздыру мен булану есебін толық шығардың.');
+  if (k[0] && d.s2[0]) good.push('Қысым мен қайнау температурасының байланысын жақсы түсіндің.');
+  if (k[2] && k[7]) good.push('Q = rm формуласын дұрыс қолдандың.');
+  if (k[1] && k[4]) good.push('Массаны ХБЖ-ға дұрыс айналдырдың.');
+  if (sc.s1 === 3) good.push('Үй тапсырмасын жақсы меңгергенсің.');
+  if (d.s2[1]) good.push('Қайнау кезінде температураның тұрақты болатынын түсіндің.');
+  if (sc.s3 >= 7) good.push('Топпен бірге жоғары нәтиже көрсеттің.');
+  if (!good.length) good.push('Сабаққа қатысып, тапсырмаларды орындауға тырыстың.');
+  good = good.slice(0, 2);
+
+  var need = [];
+  if (fP) need.push('Қысым ↓ → қайнау температурасы ↓');
+  if (fRm) need.push('Q = rm формуласын қолдану');
+  if (!k[1] || !k[4]) need.push('ХБЖ-ға айналдыру (г → кг)');
+  if (!k[3]) need.push('Нәтиженің өлшем бірлігі (Дж)');
+  if (!k[5] || !k[6] || !k[8]) need.push('Q = cmΔt + rm есебінің қадамдары');
+  if (!d.s2[1]) need.push('Қайнау кезінде температура тұрақты');
+  if (sc.s1 < 3) need.push('Булану, конденсация, сублимация');
+  need = need.slice(0, 3);
+  if (!need.length) need.push('Жеке дескрипторлардың бәрі орындалды.');
+
+  var next;
+  if (fRm) next = 'Булануға арналған 2 қысқа есеп шығар (Q = rm).';
+  else if (!k[1] || !k[4] || !k[3]) next = 'г → кг, кДж → Дж бойынша 5 айналдыру жаса.';
+  else if (fP) next = 'Биіктік → қысым → қайнау температурасы тізбегін сызбамен қайтала.';
+  else if (fHeat) next = 'Қыздыру + булану бойынша 1 аралас есеп шығар.';
+  else if (sc.s1 < 3 || !d.s2[1]) next = 'Булану, конденсация және қайнау анықтамаларын қайтала.';
+  else next = 'Q = cmΔt + rm түріндегі күрделі есеп шығарып көр.';
+
+  var wrong = groupWrong(s.g);
+  var gnote = wrong.length ? s.name + ' қатысқан топ ' + qWord(wrong) + ' қате жіберді.' : '';
+
+  var motto;
+  if (sc.ten >= 8) motto = 'Жарайсың, ' + s.name + '! Келесі қадам нәтижеңді жақсартуға көмектеседі.';
+  else if (sc.ten >= 5) motto = 'Жақсы жұмыс, ' + s.name + '! Келесі қадам нәтижеңді жақсартуға көмектеседі.';
+  else motto = 'Мұңайма, ' + s.name + '! Бұл — тек осы сабақтағы нәтижең. Алда біліміңді әлі де шыңдайсың!';
+
+  var miss = [];
+  d.s1.forEach(function(v,i){ if (!v) miss.push(S1_SHORT[i]); });
+  d.s2.forEach(function(v,i){ if (!v) miss.push(S2_SHORT[i]); });
+  k.forEach(function(v,i){ if (!v) miss.push(S4_SHORT[i]); });
+
+  return { sc:sc, m15:m15, m16:m16, fRm:fRm, fSI:fSI, fP:fP, fHeat:fHeat, fRed:fRed, green:green, missed:missed, good:good, need:need, next:next, gnote:gnote, motto:motto, miss:miss };
+}
+
+/* ================= SAVING & CONNECTION STATUS ================= */
+var NET = { fromCache:true, cacheSince:Date.now(), pend:{}, writes:0, lastSaved:0 };
+function write(p){
+  NET.writes++; netTouch();
+  return p.then(function(){ NET.writes--; NET.lastSaved = Date.now(); netTouch(); },
+    function(err){ NET.writes--; netTouch(); onWriteError(err); });
+}
+function onWriteError(err){
+  var code = err && err.code;
+  if (code === 'permission-denied') toast(ended() ? 'Сабақ аяқталған: өзгеріс сақталмады.' : 'Рұқсат жоқ: өзгеріс серверде сақталмады.', 4500);
+  else if (code === 'not-found') toast('Жазба табылмады: өзгеріс сақталмады.', 4000);
+  else toast('Сақтау сәтсіз аяқталды. Қайталап көріңіз.', 3500);
+}
+function netState(){
+  if (!ROLE || !CODE) return null;
+  var pending = NET.writes > 0 || Object.keys(dRun).length > 0 || Object.keys(NET.pend).some(function(k){ return NET.pend[k]; });
+  var offline = !navigator.onLine || (NET.fromCache && Date.now() - NET.cacheSince > 5000);
+  if (offline) return { cls:'bad', txt:'Байланыс жоқ' + (pending ? ': өзгерістер әлі серверге жетпеді' : '') };
+  if (pending) return { cls:'saving', txt:'Сақталуда…' };
+  if (NET.lastSaved) return { cls:'saved', txt:'Сақталды' };
+  if (NET.fromCache) return { cls:'wait', txt:'Қосылуда…' };
+  return { cls:'live', txt:'Серверге қосылды' };
+}
+function netBadge(){
+  var n = netState(); if (!n) return '';
+  return '<span class="sync ' + n.cls + '" data-net role="status" aria-live="polite"><i></i>' + n.txt + '</span>';
+}
+var lastNetHTML = '';
+function netTouch(){
+  var h = netBadge(); if (h === lastNetHTML) return;
+  lastNetHTML = h;
+  document.querySelectorAll('[data-net]').forEach(function(el){ el.outerHTML = h; });
+}
+setInterval(netTouch, 1000);
+window.addEventListener('online', function(){ netTouch(); if (ROLE === 'group') beat(true); });
+window.addEventListener('offline', netTouch);
+
+/* ================= LIVE LISTENERS ================= */
+var unsubs = [], seen = {};
+function stopListeners(){ unsubs.forEach(function(u){ try { u(); } catch(e){} }); unsubs = []; NET.pend = {}; seen = {}; NET.fromCache = true; NET.cacheSince = Date.now(); }
+function fresh(key, data){ var j = JSON.stringify(data); if (seen[key] === j) return false; seen[key] = j; return true; }
+function colMap(snap){ var m = {}; snap.forEach(function(d){ m[d.id] = d.data(); }); return m; }
+
+function listenSession(){
+  unsubs.push(onSnapshot(sRef(CODE), { includeMetadataChanges:true }, function(snap){
+    var fc = snap.metadata.fromCache;
+    if (fc && !NET.fromCache) NET.cacheSince = Date.now();
+    NET.fromCache = fc; NET.pend.s = snap.metadata.hasPendingWrites;
+    var data = snap.exists() ? snap.data() : null;
+    D.sessionMissing = !data && !fc;
+    if (fresh('s', data)) { D.session = data; scheduleRender(); } else netTouch();
+  }, onListenErr));
+}
+function listenGroupDevice(){
+  unsubs.push(onSnapshot(gRef(CODE, MYG), { includeMetadataChanges:true }, function(snap){
+    NET.pend.g = snap.metadata.hasPendingWrites;
+    var data = snap.exists() ? snap.data() : null;
+    if (fresh('g', data)) { D.groups[MYG] = data; scheduleRender(); } else netTouch();
+  }, onListenErr));
+  unsubs.push(onSnapshot(collection(gRef(CODE, MYG), 'students'), { includeMetadataChanges:true }, function(snap){
+    NET.pend.st = snap.metadata.hasPendingWrites;
+    var m = colMap(snap);
+    if (fresh('st', m)) { D.studs[MYG] = m; scheduleRender(); } else netTouch();
+  }, onListenErr));
+}
+function listenTeacher(){
+  unsubs.push(onSnapshot(collection(sRef(CODE), 'groups'), { includeMetadataChanges:true }, function(snap){
+    NET.pend.g = snap.metadata.hasPendingWrites;
+    var m = colMap(snap);
+    if (fresh('g', m)) { for (var g=0; g<4; g++) D.groups[g] = m[String(g)] || null; scheduleRender(); } else netTouch();
+  }, onListenErr));
+  [0,1,2,3].forEach(function(g){
+    unsubs.push(onSnapshot(collection(gRef(CODE, g), 'students'), { includeMetadataChanges:true }, function(snap){
+      NET.pend['st' + g] = snap.metadata.hasPendingWrites;
+      var m = colMap(snap);
+      if (fresh('st' + g, m)) { D.studs[g] = m; scheduleRender(); } else netTouch();
+    }, onListenErr));
+  });
+  var first = true;
+  unsubs.push(onSnapshot(collection(sRef(CODE), 'presence'), function(snap){
+    snap.docChanges().forEach(function(ch){
+      var g = +ch.doc.id; if (!(g >= 0 && g <= 3)) return;
+      var p = ch.doc.data(); D.pres[g] = p;
+      /* time of arrival on this device: immune to clock differences between laptops */
+      D.presRecv[g] = first || snap.metadata.fromCache ? tsMs(p.lastSeen) : Date.now();
+    });
+    first = false;
+    updateGStatus();
+  }, onListenErr));
+}
+function onListenErr(err){
+  var code = err && err.code;
+  if (code === 'permission-denied') {
+    if (ROLE === 'group') { kickGroup('Бұл құрылғы топтан ажыратылды (мұғалім құрылғыны босатты немесе сабақ коды өзгерді). Қайта кіріңіз.'); return; }
+    if (ROLE === 'teacher') { toast('Бұл сабақты ашуға рұқсат жоқ.', 4000); showSessions(); return; }
+  }
+  toast('Серверден деректі алу үзілді. Бетті жаңартыңыз.', 5000);
+}
+
+/* ================= PRESENCE (group device heartbeat) ================= */
+var hbTimer = null;
+function beat(online){
+  if (ROLE !== 'group' || !CODE || MYG === null || !navigator.onLine) return;
+  setDoc(pRef(CODE, MYG), { lastSeen: serverTimestamp(), online: online !== false }).catch(function(){});
+}
+function startHeartbeat(){ clearInterval(hbTimer); beat(true); hbTimer = setInterval(function(){ beat(true); }, OPT.heartbeatMs); }
+function stopHeartbeat(sayBye){ clearInterval(hbTimer); hbTimer = null; if (sayBye) beat(false); }
+window.addEventListener('pagehide', function(){ flushDrafts(); if (ROLE === 'group') beat(false); });
+window.addEventListener('beforeunload', function(e){
+  if (ROLE !== 'group') return;
+  var typed = Object.keys(dRun).length > 0;
+  flushDrafts();
+  /* queued edits survive in this browser's offline cache, but warn while they have not reached the server */
+  if ((typed || NET.writes > 0) && !navigator.onLine) { e.preventDefault(); e.returnValue = ''; }
+});
+document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible' && hbTimer) beat(true); });
+
+function presState(g){
+  var x = G(g); if (!x.ownerUid) return 'none';
+  var p = D.pres[g];
+  if (p && p.online && Date.now() - D.presRecv[g] < OPT.presenceTimeoutMs) return 'on';
+  return 'lost';
+}
+function lastUpdate(g){
+  var m = tsMs(G(g).updatedAt), sd = D.studs[g];
+  Object.keys(sd).forEach(function(k){ m = Math.max(m, tsMs(sd[k].updatedAt)); });
+  return m;
+}
+
+/* ================= GRAPHICS ================= */
+function sunSVG(cls){
+  var d = '';
+  for (var i=0;i<32;i++){
+    var a = i * Math.PI * 2 / 32, a1 = a - 0.05, a2 = a + 0.05, r1 = 47, r2 = 80;
+    d += 'M' + (Math.cos(a1)*r1).toFixed(1) + ' ' + (Math.sin(a1)*r1).toFixed(1) + 'L' + (Math.cos(a)*r2).toFixed(1) + ' ' + (Math.sin(a)*r2).toFixed(1) + 'L' + (Math.cos(a2)*r1).toFixed(1) + ' ' + (Math.sin(a2)*r1).toFixed(1) + 'Z';
+  }
+  return '<svg class="' + cls + '" viewBox="-84 -84 168 168" aria-hidden="true"><path d="' + d + '" fill="#F2B705"/><circle r="40" fill="#F2B705"/></svg>';
+}
+function ornV(){ return '<svg class="orn-v" aria-hidden="true" preserveAspectRatio="none"><rect width="100%" height="100%" fill="url(#ornV)"/></svg>'; }
+function band(){ return '<svg class="band" aria-hidden="true" preserveAspectRatio="none"><rect width="100%" height="100%" fill="#0A3760"/><rect width="100%" height="100%" fill="url(#orn)"/></svg>'; }
+function icon(name, cls){
+  var p = {
+    mountain:'<path d="M4 54 L24 18 L33 32 L42 22 L60 54 Z"/><path d="M18.5 28 L24 18 L29.5 28 L26.5 25.5 L23.5 29 L21 26 Z" fill="currentColor"/><path d="M38 28 L42 22 L46 28"/>',
+    pot:'<path d="M12 30 H52 V44 a10 10 0 0 1 -10 10 H22 a10 10 0 0 1 -10 -10 Z"/><path d="M6 30 H58"/><path d="M24 22 c-4 -4 4 -7 0 -12 M32 22 c-4 -4 4 -7 0 -12 M40 22 c-4 -4 4 -7 0 -12"/>',
+    metro:'<rect x="14" y="7" width="36" height="41" rx="9"/><path d="M14 29 H50"/><circle cx="23" cy="38.5" r="2.8" fill="currentColor"/><circle cx="41" cy="38.5" r="2.8" fill="currentColor"/><path d="M22 48 L15 58 M42 48 L49 58 M18 54 H46"/><path d="M24 15 H40"/>',
+    basin:'<path d="M2 22 H62" stroke-dasharray="3 4"/><path d="M2 22 L13 22 L22 38 L32 48 L42 38 L51 22 L62 22"/><path d="M32 26 V40 M27 35 L32 40 L37 35"/>',
+    flask:'<path d="M24 6 H40 M28 6 V22 L12 50 a5 5 0 0 0 4 8 H48 a5 5 0 0 0 4 -8 L36 22 V6"/><path d="M18 42 H46"/><circle cx="27" cy="49" r="2" fill="currentColor"/><circle cx="36" cy="51" r="2.5" fill="currentColor"/>',
+    teacher:'<circle cx="32" cy="18" r="10"/><path d="M12 58 c0 -14 9 -22 20 -22 s20 8 20 22"/>',
+    group:'<circle cx="20" cy="22" r="8"/><circle cx="44" cy="22" r="8"/><path d="M4 56 c0 -11 7 -18 16 -18 s16 7 16 18 M28 56 c0 -11 7 -18 16 -18 s16 7 16 18"/>'
+  }[name] || '';
+  return '<svg class="' + (cls || 'gicon') + '" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+}
+
+/* ================= VIEWS ================= */
+var app = document.getElementById('app');
+var overlay = document.getElementById('overlay');
+var modal = document.getElementById('modal');
+var toastEl = document.getElementById('toast');
+var printRoot = document.getElementById('printRoot');
+
+function ro(){ return ROLE !== 'group' || ended() ? ' readonly' : ''; }
+
+function plainBar(){
+  return '<header class="topbar"><div class="wrap topbar-in"><button class="brand" data-act="back-start">' + icon('flask', '') + '<span>ҚАЙНАУ · 8-сынып</span></button></div></header>';
+}
+function navBar(){
+  var v = S.ui.view, tabs = '';
+  if (ROLE === 'group') {
+    var Gm = GROUPS[MYG];
+    tabs += '<button class="tab les' + (v==='lesson'?' cur':'') + '" data-act="go" data-view="lesson">ЖАҢА САБАҚ</button>';
+    tabs += '<button class="tab' + (v==='group'?' cur':'') + '" data-act="go" data-view="group">' + Gm.n + '-ТОП · ' + Gm.name + '</button>';
+    tabs += '<button class="tab" data-act="leave">ШЫҒУ</button>';
+    return '<header class="topbar"><div class="wrap topbar-in"><button class="brand" data-act="go" data-view="home">' + icon('flask', '') + '<span>ҚАЙНАУ · 8-сынып</span></button>' + netBadge() + '<span class="code-pill">' + esc(CODE) + '</span><nav class="tabs" aria-label="Бөлімдер">' + tabs + '</nav></div></header>';
+  }
+  tabs += '<button class="tab les' + (v==='lesson'?' cur':'') + '" data-act="go" data-view="lesson">ЖАҢА САБАҚ</button>';
+  tabs += '<button class="tab' + (v==='monitor'?' cur':'') + '" data-act="go" data-view="monitor">БАҚЫЛАУ</button>';
+  tabs += '<button class="tab' + (v==='lab'?' cur':'') + '" data-act="go" data-view="lab">ТӘЖІРИБЕ</button>';
+  tabs += '<button class="tab cls' + (v==='class'?' cur':'') + '" data-act="go" data-view="class">СЫНЫП НӘТИЖЕСІ</button>';
+  tabs += '<button class="tab qr" data-act="qr" aria-label="QR код: топтарды қосу">QR</button>';
+  tabs += '<button class="tab" data-act="sessions">САБАҚТАР</button>';
+  return '<header class="topbar"><div class="wrap topbar-in"><button class="brand" data-act="go" data-view="monitor">' + icon('flask', '') + '<span>ҚАЙНАУ · 8-сынып</span></button>' + netBadge() + '<span class="code-pill">' + esc(CODE) + '</span><nav class="tabs" aria-label="Бөлімдер">' + tabs + '</nav></div></header>';
+}
+function endedBanner(){
+  if (!ended()) return '';
+  var when = D.session.endedAt ? ' (' + clock(tsMs(D.session.endedAt)).slice(0, 5) + ')' : '';
+  return '<div class="ended-banner" role="status"><div class="wrap">САБАҚ АЯҚТАЛДЫ' + when + '. ' +
+    (ROLE === 'group' ? 'Деректерді енді өзгертуге болмайды, тек қарауға болады.' : 'Оқушылар деректерді өзгерте алмайды. Сіз нәтижелерді түзете аласыз.') + '</div></div>';
+}
+function loadingMain(txt){ return '<main class="page wrap"><p class="loading">' + (txt || 'Деректер жүктелуде…') + '</p></main>'; }
+
+function viewSetup(){
+  return plainBar() + '<main class="page wrap"><section class="panel"><h1 class="page-title">ДЕРЕКҚОР ҚОСЫЛМАҒАН</h1>' +
+    '<p class="lead">Бұл қосымша ортақ онлайн дерекқормен (Firebase) жұмыс істейді. <b>firebase-config.js</b> файлына Firebase жобасының баптауларын енгізіңіз. Қадамдар README.md файлында жазылған.</p></section></main>';
+}
+
+function homeHero(actions){
+  var mount = '<svg class="hero-mount" viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true">' +
+    '<path d="M0 150 L0 110 L140 40 L230 92 L360 10 L470 80 L560 52 L700 120 L820 60 L930 96 L1060 30 L1200 100 L1200 150 Z" fill="#FFFFFF" fill-opacity=".22"/>' +
+    '<path d="M330 28 L360 10 L392 30 L372 26 L360 36 L346 26 Z M1036 42 L1060 30 L1086 46 L1068 42 L1058 50 L1048 42 Z" fill="#FFFFFF" fill-opacity=".8"/>' +
+    '<path d="M0 150 L0 130 L200 98 L380 124 L600 92 L800 128 L1000 104 L1200 132 L1200 150 Z" fill="#FFFFFF" fill-opacity=".3"/></svg>';
+  return '<section class="hero">' + ornV() + sunSVG('hero-sun') + mount +
+      '<div class="hero-body"><p class="eyebrow">Сабақ тақырыбы</p>' +
+      '<h1>ҚАЙНАУ ЖӘНЕ МЕНШІКТІ БУЛАНУ ЖЫЛУЫ</h1>' +
+      '<p class="hero-sub">Қайнау температурасының атмосфералық қысымға байланыстылығын анықтау</p>' +
+      '<div class="goals"><span><b>8.3.2.15</b>меншікті булану жылуын анықтау</span><span><b>8.3.2.16</b>қайнау температурасының сыртқы қысымға тәуелділігін түсіндіру</span></div>' +
+      actions + '</div></section>';
+}
+function homeRow(){
+  return '<div class="home-row">' +
+      '<section class="quote">' + band() + '<div class="quote-in"><p class="label">Апта дәйек сөзі</p><blockquote>«Ел-жұртымның бақыты аталатын,<br>сөнбесін мәңгі сенің, Отан, атың!»</blockquote></div></section>' +
+      '<section class="structure">' + band() + '<div class="quote-in"><p class="label">Бағалау құрылымы</p>' +
+        '<div class="struct-list"><div><b>3</b><span>Үй тапсырмасын қайталау</span></div><div><b>2</b><span>Эксперименттен кейін</span></div><div><b>9</b><span>Топтық жұмыс</span></div><div><b>9</b><span>Жеке жұмыс</span></div></div>' +
+        '<p class="struct-total">Барлығы <em>23 балл</em> → 10 балдық жүйе: (балл / 23) × 10</p></div></section>' +
+    '</div>';
+}
+function viewStart(){
+  return '<main class="home wrap">' +
+    '<div class="home-top"><div class="home-left"><div class="pill-class">8-сынып | Физика</div></div>' +
+    '<div class="teacher"><span>Пән мұғалімі:</span><b>' + TEACHER + '</b></div></div>' +
+    homeHero('<div class="role-row"><button class="btn btn-white btn-xl" data-act="role-teacher">МҰҒАЛІМ</button>' +
+      '<button class="btn btn-gold btn-xl" data-act="role-group">ТОП →</button></div>') +
+    homeRow() + '</main>';
+}
+function viewGroupHome(){
+  var Gm = GROUPS[MYG];
+  return '<main class="home wrap">' +
+    '<div class="home-top"><div class="home-left"><div class="pill-class">8-сынып | Физика</div><div class="home-sync"><span class="pill-group">' + Gm.n + '-ТОП · ' + Gm.name + ' · код ' + esc(CODE) + '</span>' + netBadge() + '</div></div>' +
+    '<div class="teacher"><span>Пән мұғалімі:</span><b>' + TEACHER + '</b></div></div>' +
+    homeHero('<div class="hero-actions"><button class="btn btn-white btn-xl" data-act="go" data-view="lesson">ЖАҢА САБАҚ</button>' +
+      '<button class="btn btn-gold btn-xl" data-act="go" data-view="group">БАҒАЛАУДЫ БАСТАУ →</button></div>') +
+    homeRow() + '</main>';
+}
+
+function formHead(title, sub, ic){
+  return '<section class="ghead">' + ornV() + '<div class="ghead-title"><h1>' + title + '</h1><p>' + sub + '</p></div>' + icon(ic) + '</section>';
+}
+function viewJoin(){
+  var cards = GROUPS.map(function(Gr, i){
+    var on = FORM.joinG === i;
+    return '<button class="gcard pick' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="join-g" data-g="' + i + '" data-k="jg' + i + '">' +
+      '<span class="gnum">' + Gr.n + '-ТОП</span>' + icon(Gr.icon) + '<span class="gname">' + Gr.name + '</span><span class="gsub">' + Gr.sub + '</span></button>';
+  }).join('');
+  return plainBar() + '<main class="page wrap">' + formHead('ТОП РЕТІНДЕ КІРУ', 'Мұғалім берген сабақ кодын енгізіп, тобыңызды таңдаңыз', 'group') +
+    '<section class="panel"><label class="field" for="joinCode"><span>Сабақ коды</span>' +
+    '<input id="joinCode" class="code-input" maxlength="6" autocomplete="off" spellcheck="false" autocapitalize="characters" placeholder="••••••" value="' + esc(FORM.joinCode) + '"></label>' +
+    '<p class="label">Топты таңдаңыз</p><div class="group-grid">' + cards + '</div>' +
+    '<p class="form-err" role="alert">' + esc(FORM.err) + '</p>' +
+    '<div class="nav-row"><button class="btn btn-ghost" data-act="back-start">← АРТҚА</button>' +
+    '<button class="btn btn-gold btn-xl" data-act="join"' + (FORM.busy ? ' disabled' : '') + '>' + (FORM.busy ? 'ҚОСЫЛУДА…' : 'КІРУ →') + '</button></div></section></main>';
+}
+function viewLogin(){
+  return plainBar() + '<main class="page wrap">' + formHead('МҰҒАЛІМ РЕТІНДЕ КІРУ', 'Firebase-те тіркелген мұғалім аккаунтының email-і мен құпия сөзі', 'teacher') +
+    '<section class="panel"><form class="form" data-form="login" autocomplete="on">' +
+    '<label class="field" for="tEmail"><span>Email</span><input id="tEmail" type="email" autocomplete="username" required value="' + esc(FORM.email) + '"></label>' +
+    '<label class="field" for="tPass"><span>Құпия сөз</span><input id="tPass" type="password" autocomplete="current-password" required></label>' +
+    '<p class="form-err" role="alert">' + esc(FORM.err) + '</p>' +
+    '<div class="nav-row"><button type="button" class="btn btn-ghost" data-act="back-start">← АРТҚА</button>' +
+    '<button type="submit" class="btn btn-gold btn-xl"' + (FORM.busy ? ' disabled' : '') + '>' + (FORM.busy ? 'ТЕКСЕРІЛУДЕ…' : 'КІРУ →') + '</button></div></form></section></main>';
+}
+function viewSessions(){
+  var l = D.sessions, items;
+  if (l === null) items = '<p class="hint">Жүктелуде…</p>';
+  else if (!l.length) items = '<p class="hint">Әзірге сабақ ашылмаған.</p>';
+  else items = '<div class="group-grid">' + l.map(function(x){
+    return '<button class="gcard" data-act="open-session" data-code="' + esc(x.id) + '"><span class="gnum">' + esc(x.id) + '</span>' +
+      '<span class="gname">' + esc(x.title || 'Сабақ') + '</span><span class="gsub">' + dateStr(x.createdAt) + '</span>' +
+      '<span class="gmeta"><span>' + (x.status === 'open' ? 'Ашық' : 'Аяқталған') + '</span></span></button>';
+  }).join('') + '</div>';
+  return '<header class="topbar"><div class="wrap topbar-in"><span class="brand">' + icon('flask', '') + '<span>ҚАЙНАУ · 8-сынып</span></span>' +
+    '<nav class="tabs"><button class="tab" data-act="logout">ШЫҒУ</button></nav></div></header>' +
+    '<main class="page wrap"><h1 class="page-title">МЕНІҢ САБАҚТАРЫМ</h1>' +
+    '<section class="panel"><div class="form"><label class="field" for="newTitle"><span>Сынып немесе сабақ атауы (міндетті емес)</span><input id="newTitle" maxlength="60" placeholder="Мысалы: 8 «А» сынып"></label>' +
+    '<p class="form-err" role="alert">' + esc(FORM.err) + '</p>' +
+    '<button class="btn btn-gold btn-xl" data-act="new-session"' + (FORM.busy ? ' disabled' : '') + '>' + (FORM.busy ? 'АШЫЛУДА…' : 'ЖАҢА САБАҚ ОТЫРЫСЫН АШУ') + '</button></div></section>' +
+    '<section style="display:grid;gap:16px"><h2 class="section-title">БҰРЫНҒЫ САБАҚТАР</h2>' + items + '</section></main>';
+}
+
+/* ---------- group device: assessment ---------- */
+function stageHead(no, title, pts){
+  return '<div class="stage-head"><span class="stage-no">' + no + '</span><h2 class="stage-title">' + title + '</h2><span class="stage-pts">' + pts + '</span></div>';
+}
+function chip(act, s, i){
+  var m = markInfo(s, act, i), on = m.v, lock = m.fin !== undefined;
+  return '<button class="chip' + (on ? ' on' : '') + (lock ? ' locked' : '') + '" aria-pressed="' + on + '" data-act="' + act + '" data-id="' + s.id + '" data-i="' + i + '" data-k="' + act + s.id + i + '"' + (lock ? ' title="Мұғалім түзеткен"' : '') + '>' +
+    (on ? '<span class="tick">✓</span>' : '') + '<span>' + esc(up(s.name)) + '</span>' + (lock ? '<small>✎ мұғалім</small>' : '') + '</button>';
+}
+function navRow(step){
+  var back = step > 0 ? '<button class="btn btn-ghost" data-act="step" data-step="' + (step-1) + '">← АРТҚА</button>' : '<span></span>';
+  var fwd = step < 5 ? '<button class="btn btn-primary" data-act="next">САҚТАУ ЖӘНЕ КЕЛЕСІ КЕЗЕҢ →</button>'
+                     : '<button class="btn btn-gold" data-act="go" data-view="lesson">ЖАҢА САБАҚ →</button>';
+  return '<div class="nav-row">' + back + fwd + '</div>';
+}
+function viewGroup(){
+  var g = MYG, Gm = GROUPS[g], step = S.ui.gstep[g], list = students(g);
+  if (!D.groups[g]) return loadingMain();
+  var head = '<section class="ghead">' + ornV() + '<span class="gnum">' + Gm.n + '-ТОП</span><div class="ghead-title"><h1>' + Gm.name + '</h1><p>' + Gm.sub + '</p></div>' + icon(Gm.icon) + '</section>';
+  var stepper = '<nav class="stepper" aria-label="Кезеңдер">' + STEPS.map(function(s, i){
+    return '<button class="step' + (i===step ? ' cur' : (i < step ? ' done' : '')) + '" data-act="step" data-step="' + i + '"' + (i===step ? ' aria-current="step"' : '') + '><b>' + s[0] + '</b><span>' + s[1] + '</span></button>';
+  }).join('') + '</nav>';
+  var body;
+  if (step === 0) body = stepNames(g);
+  else if (!list.length) body = '<section class="panel"><div class="empty"><p>Алдымен оқушылардың атын енгізіңіз.</p><button class="btn btn-primary" data-act="step" data-step="0">ОҚУШЫЛАР ТІЗІМІ</button></div></section>';
+  else body = [null, stage1, stage2, stage3, stage4, stageSummary][step](g, list);
+  return '<main class="page wrap">' + head + stepper + body + navRow(step) + '</main>';
+}
+function previewChips(g){
+  var list = students(g);
+  if (!list.length) return '<p class="hint">Аттар енгізілгеннен кейін осында үлкен батырма болып көрінеді.</p>';
+  return '<p class="hint">Тізімде: ' + list.length + ' оқушы</p><div class="chips">' + list.map(function(s){ return '<span class="chip static">' + esc(up(s.name)) + '</span>'; }).join('') + '</div>';
+}
+function stepNames(g){
+  var nm = names(g);
+  var rows = range(7).map(function(i){
+    return '<label class="name-row" for="nm-' + g + '-' + i + '"><span class="num">' + (i+1) + '.</span><input id="nm-' + g + '-' + i + '" class="name-input" data-g="' + g + '" data-i="' + i + '"' + ro() + ' value="' + esc(nm[i]) + '" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Оқушының аты-жөні"></label>';
+  }).join('');
+  return '<section class="panel">' + stageHead('ТІЗІМ', 'ОҚУШЫЛАРДЫ ЕНГІЗУ', 'ең көбі 7') +
+    '<p class="hint">Тек аты жазылған оқушылар есептеледі. Бос жолдар есептелмейді. Әр өзгеріс автоматты түрде сақталады.</p>' +
+    '<div class="name-grid">' + rows + '</div><div id="namePreview" style="display:grid;gap:12px">' + previewChips(g) + '</div></section>';
+}
+function tally(list, fn, max){
+  return '<div class="tally"><h3>Кезең нәтижесі</h3><div class="tally-row">' + list.map(function(s){
+    return '<span class="tally-item"><b>' + esc(up(s.name)) + '</b>' + fn(s) + ' / ' + max + '</span>';
+  }).join('') + '</div></div>';
+}
+function statements(act, items, list){
+  return items.map(function(it, i){
+    return '<article class="stmt"><div class="stmt-head"><span class="stmt-num">' + (i+1) + '</span><div><p class="stmt-text">«' + it[0] + '»</p>' +
+      '<p class="desc"><b>Дескриптор:</b> ' + it[1] + ' <span class="pt">1 балл</span></p></div></div>' +
+      '<div class="chips">' + list.map(function(s){ return chip(act, s, i); }).join('') + '</div></article>';
+  }).join('');
+}
+var MARK_HINT = 'Оқушы өз атын басады. Қайта басса, белгі алынады. «Сақтау және келесі кезең» басылғанда белгісіз қалған оқушыға 0 балл есептеледі.';
+function stage1(g, list){
+  return '<section class="panel">' + stageHead('1-КЕЗЕҢ', 'ҮЙ ТАПСЫРМАСЫН ҚАЙТАЛАУ', '3 балл') +
+    '<p class="hint">' + MARK_HINT + '</p>' +
+    statements('s1', S1, list) + tally(list, function(s){ return cnt(st(s.id).s1); }, 3) + '</section>';
+}
+function stage2(g, list){
+  return '<section class="panel">' + stageHead('2-КЕЗЕҢ', 'ЭКСПЕРИМЕНТТЕН КЕЙІН', '2 балл') +
+    '<p class="hint">' + MARK_HINT + '</p>' +
+    statements('s2', S2, list) + tally(list, function(s){ return cnt(st(s.id).s2); }, 2) + '</section>';
+}
+function stage3(g, list){
+  var rows = range(9).map(function(q){
+    var x = s3info(g, q), v = x.v, lock = !!x.fin, lk = lock ? ' locked' : '';
+    return '<div class="q-row"><span class="q-label">' + (q+1) + '-сұрақ</span>' +
+      (lock ? '<span class="lock-note">✎ мұғалім</span>' : '') +
+      '<button class="ans ok' + (v==='ok' ? ' on' : '') + lk + '" aria-pressed="' + (v==='ok') + '" data-act="s3" data-q="' + q + '" data-v="ok" data-k="s3' + q + 'ok">' + (v==='ok' ? '✓ ' : '') + 'ДҰРЫС</button>' +
+      '<button class="ans bad' + (v==='bad' ? ' on' : '') + lk + '" aria-pressed="' + (v==='bad') + '" data-act="s3" data-q="' + q + '" data-v="bad" data-k="s3' + q + 'bad">' + (v==='bad' ? '✕ ' : '') + 'ҚАТЕ</button></div>';
+  }).join('');
+  var marked = s3arr(g).filter(function(v){ return v; }).length;
+  return '<section class="panel">' + stageHead('3-КЕЗЕҢ', 'ТОПТЫҚ ЖҰМЫС', '9 балл') +
+    '<p class="hint">Жұмыс парағы тексерілгеннен кейін әр сұрақтың нәтижесін белгілеңіз. Мұғалім түзеткен жауапты өзгертуге болмайды.</p>' +
+    '<div class="q-grid">' + rows + '</div>' +
+    '<div class="group-result"><span class="lbl">ТОП НӘТИЖЕСІ:</span><span class="val">' + groupScore(g) + ' <span>/ 9</span></span>' +
+    '<p>Белгіленді: ' + marked + ' / 9 сұрақ. Бұл балл топтың әр мүшесіне қосылады: ' + list.map(function(s){ return esc(up(s.name)); }).join(', ') + '.</p></div></section>';
+}
+function stage4(g, list){
+  var sel = list.filter(function(s){ return s.slot === S.ui.sel[g]; })[0] || list[0];
+  var idx = list.indexOf(sel);
+  var d = st(sel.id);
+  var opts = list.map(function(s){ return '<option value="' + s.slot + '"' + (s === sel ? ' selected' : '') + '>' + esc(up(s.name)) + '</option>'; }).join('');
+  var chips = list.map(function(s){
+    var on = s === sel;
+    return '<button class="chip' + (on ? ' sel' : '') + '" aria-pressed="' + on + '" data-act="sel" data-slot="' + s.slot + '" data-k="sel' + s.slot + '"><span>' + esc(up(s.name)) + '</span><small>' + cnt(st(s.id).s4) + '/9</small></button>';
+  }).join('');
+  var tasks = TASKS.map(function(T){
+    var got = cnt(d.s4.slice(T.from, T.from + T.items.length));
+    var rows = T.items.map(function(it, j){
+      var i = T.from + j, m = markInfo(sel, 's4', i), on = m.v, lock = m.fin !== undefined;
+      return '<button class="cb' + (on ? ' on' : '') + (lock ? ' locked' : '') + '" role="checkbox" aria-checked="' + on + '" data-act="s4" data-id="' + sel.id + '" data-i="' + i + '" data-k="s4' + sel.id + i + '">' +
+        '<span class="box">' + (on ? '✓' : '') + '</span><span class="cb-text">' + it[0] + (lock ? '<span class="cb-hint">✎ Мұғалім түзеткен</span>' : '') + '</span><span class="cb-pt">1 балл</span></button>';
+    }).join('');
+    return '<article class="task"><div class="task-head"><h3>' + T.title + '</h3><span class="pts">' + T.pts + ' балл</span><span class="task-score' + (got === T.pts ? ' full' : '') + '">' + got + '/' + T.pts + '</span></div>' +
+      '<p class="crit"><b>Бағалау критерийі:</b> ' + T.crit + '</p>' + rows + '</article>';
+  }).join('');
+  return '<section class="panel">' + stageHead('4-КЕЗЕҢ', 'ЖЕКЕ ЖҰМЫС · «ЖЕРАСТЫНДАҒЫ СУ»', '9 балл') +
+    '<div class="picker"><div class="picker-top"><label for="s4sel">ОҚУШЫ:</label><select id="s4sel">' + opts + '</select></div><div class="chips">' + chips + '</div></div>' +
+    '<div class="who"><span class="who-name">' + esc(up(sel.name)) + '</span>' +
+      '<button class="btn btn-ghost btn-sm" data-act="selmove" data-d="-1"' + (idx <= 0 ? ' disabled' : '') + '>◀ Алдыңғы</button>' +
+      '<button class="btn btn-ghost btn-sm" data-act="selmove" data-d="1"' + (idx >= list.length-1 ? ' disabled' : '') + '>Келесі ▶</button></div>' +
+    tasks +
+    '<div class="ind-total"><span class="lbl">ЖЕКЕ ЖҰМЫС ЖАЛПЫ:</span><span class="val">' + cnt(d.s4) + ' / 9</span></div></section>';
+}
+function cell(isIn, val, max, fixd){
+  if (!isIn) return '<td><span class="na" title="Енгізілмеген">—</span></td>';
+  return '<td' + (fixd ? ' class="fixd" title="Мұғалім түзеткен"' : '') + '>' + val + '/' + max + (fixd ? '<span class="fixmark">✎</span>' : '') + '</td>';
+}
+function totalCells(sc){
+  if (!sc.any) return '<td class="tot"><span class="na">—</span></td><td class="ten"><span class="na">—</span></td>';
+  return '<td class="tot">' + sc.total + '/23</td><td class="ten">' + fmt1(sc.ten) + '</td>';
+}
+function stageSummary(g, list){
+  var rows = list.map(function(s){
+    var sc = score(s);
+    return '<tr><td class="nm">' + esc(up(s.name)) + '</td>' + cell(sc.e1, sc.s1, 3, corrected(s, 's1')) + cell(sc.e2, sc.s2, 2, corrected(s, 's2')) + cell(sc.e3, sc.s3, 9, s3Corrected(g)) + cell(sc.e4, sc.s4, 9, corrected(s, 's4')) + totalCells(sc) +
+      '<td><button class="btn btn-gold btn-sm" data-act="show" data-id="' + s.id + '">НӘТИЖЕНІ КӨРСЕТУ</button></td></tr>';
+  }).join('');
+  return '<section class="panel">' + stageHead('ҚОРЫТЫНДЫ', 'ТОП ОҚУШЫЛАРЫНЫҢ НӘТИЖЕСІ', '23 балл') +
+    '<div class="tbl-wrap"><table><thead><tr><th style="text-align:left">Оқушы</th><th>Үй тапсырмасы</th><th>Эксперимент</th><th>Топтық</th><th>Жеке</th><th>Жалпы</th><th>/10</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<p class="note">«—» — әлі енгізілмеген. ✎ — мұғалім тексеріп түзеткен балл.</p>' +
+    '<div class="actions"><button class="btn btn-primary" data-act="print-group">ТОП НӘТИЖЕСІН БАСЫП ШЫҒАРУ</button></div></section>';
+}
+
+/* ---------- teacher: live monitor ---------- */
+function joinLink(code){ return location.origin + location.pathname + '?code=' + encodeURIComponent(code); }
+function gstCards(){
+  return GROUPS.map(function(Gr, g){
+    var ps = presState(g), x = G(g), last = lastUpdate(g), done = x.done || {};
+    var label = { on:'Қосылған', lost:'Байланыс үзілді', none:'Қосылмаған' }[ps];
+    return '<article class="gst ' + ps + '" data-gst="' + g + '"><h3>' + Gr.n + '-ТОП · ' + Gr.name + '</h3><span class="pres ' + ps + '"><i></i>' + label + '</span>' +
+      '<p class="gst-line">Соңғы жаңарту: <b>' + (last ? clock(last) + ' · ' + ago(last) : '—') + '</b></p>' +
+      '<p class="gst-line">Оқушылар: <b>' + students(g).length + ' / 7</b> · Топтық жұмыс: <b>' + (s3Entered(g) ? groupScore(g) + ' / 9' : '—') + '</b></p>' +
+      '<p class="gst-line">Аяқталған кезеңдер: ' + STAGE_KEYS.map(function(k, i){ return '<span class="stage-dot' + (done[k] ? ' on' : '') + '">' + (i+1) + '</span>'; }).join('') + '</p>' +
+      (x.ownerUid ? '<button class="btn btn-ghost btn-sm" data-act="release" data-g="' + g + '">ҚҰРЫЛҒЫНЫ БОСАТУ</button>' : '') + '</article>';
+  }).join('');
+}
+function updateGStatus(){ var el = document.getElementById('gstatus'); if (el) el.innerHTML = gstCards(); }
+setInterval(function(){ if (ROLE === 'teacher') updateGStatus(); }, 5000);
+
+function scoredList(){
+  return allStudents().map(function(s){ return { s:s, a:analyze(s) }; });
+}
+function topFive(rs){
+  return rs.filter(function(r){ return r.a.sc.any; }).sort(function(a, b){ return b.a.sc.total - a.a.sc.total || a.s.g - b.s.g || a.s.slot - b.s.slot; }).slice(0, 5);
+}
+function bestSection(rs){
+  var best = topFive(rs);
+  return '<section class="best"><h2>🏆 ҮЗДІК 5 НӘТИЖЕ</h2><div class="best-list">' +
+    (best.length ? best.map(function(r, i){
+      return '<button class="best-item" data-act="show" data-id="' + r.s.id + '"><span class="nm">' + (i + 1) + '. ' + esc(up(r.s.name)) + '</span><span class="sc">' + r.a.sc.total + '/23<b>' + fmt1(r.a.sc.ten) + '/10</b></span></button>';
+    }).join('') : '<p class="hint">Бағалау енгізілгеннен кейін көрсетіледі.</p>') + '</div></section>';
+}
+function statBlock(rs){
+  var sc = rs.filter(function(r){ return r.a.sc.any; });
+  var avg = sc.length ? Math.round(sc.reduce(function(t, r){ return t + r.a.sc.ten; }, 0) / sc.length * 10) / 10 : null;
+  var max = sc.length ? Math.max.apply(null, sc.map(function(r){ return r.a.sc.ten; })) : null;
+  return '<div class="stats">' +
+    '<div class="stat"><span>Оқушы саны</span><b>' + rs.length + '</b><em>бағаланғаны: ' + sc.length + '</em></div>' +
+    '<div class="stat"><span>Сыныптың орташа балы</span><b>' + (avg === null ? '—' : fmt1(avg)) + '<small> /10</small></b></div>' +
+    '<div class="stat"><span>Ең жоғары нәтиже</span><b>' + (max === null ? '—' : fmt1(max)) + '<small> /10</small></b></div></div>';
+}
+function viewMonitor(){
+  if (D.sessionMissing) return '<main class="page wrap"><section class="panel"><p class="lead">Бұл сабақ табылмады.</p><button class="btn btn-primary" data-act="sessions">САБАҚТАР ТІЗІМІ</button></section></main>';
+  if (!D.session) return loadingMain();
+  var link = joinLink(CODE), isEnded = ended();
+  var state = isEnded
+    ? '<div class="sess-state"><span class="pres lost"><i></i>Сабақ аяқталды</span><button class="btn btn-ghost" data-act="reopen">САБАҚТЫ ҚАЙТА АШУ</button></div>'
+    : '<div class="sess-state"><span class="pres on"><i></i>Сабақ ашық</span><button class="btn btn-danger" data-act="end-session">САБАҚТЫ АЯҚТАУ</button></div>';
+  var codeCard = '<section class="panel code-card"><div class="qr-img">' + qrSVG(link) + '</div>' +
+    '<div class="code-info"><p class="label">Сабаққа қосылу коды' + (D.session.title ? ' · ' + esc(D.session.title) : '') + '</p><p class="code-big" id="sessCode">' + esc(CODE) + '</p>' +
+    '<p class="qr-url">' + esc(link) + '</p><div class="actions"><button class="btn btn-ghost btn-sm" data-act="qr-copy">СІЛТЕМЕНІ КӨШІРУ</button><button class="btn btn-ghost btn-sm" data-act="qr">QR КОДТЫ ҮЛКЕЙТУ</button></div></div>' + state + '</section>';
+
+  var rs = scoredList();
+  var rows = rs.map(function(r){
+    var s = r.s, sc = r.a.sc, Gr = GROUPS[s.g];
+    return '<tr data-row="' + s.id + '"><td class="grp">' + Gr.n + '-топ · ' + Gr.name + '</td><td class="nm">' + esc(up(s.name)) + '</td>' +
+      cell(sc.e1, sc.s1, 3, corrected(s, 's1')) + cell(sc.e2, sc.s2, 2, corrected(s, 's2')) + cell(sc.e3, sc.s3, 9, s3Corrected(s.g)) + cell(sc.e4, sc.s4, 9, corrected(s, 's4')) + totalCells(sc) +
+      '<td><button class="btn btn-ghost btn-sm" data-act="fix-open" data-id="' + s.id + '">ТҮЗЕТУ</button> <button class="btn btn-gold btn-sm" data-act="show" data-id="' + s.id + '">НӘТИЖЕ</button></td></tr>';
+  }).join('');
+  var table = rs.length
+    ? '<div class="tbl-wrap"><table id="resTable"><thead><tr><th style="text-align:left">Топ</th><th style="text-align:left">Оқушының аты-жөні</th><th>Үй тапсырмасы<br>0–3</th><th>Эксперименттен кейін<br>0–2</th><th>Топтық жұмыс<br>0–9</th><th>Жеке жұмыс<br>0–9</th><th>Жалпы<br>0–23</th><th>10 балдық</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="note">«—» — жауап әлі енгізілмеген (0 балл емес). ✎ — мұғалім түзеткен балл: оқушылар оны өзгерте алмайды. Топтық жұмыс балы топтың әр мүшесіне қосылады. 10 балдық жүйе: жалпы балл / 23 × 10.</p>'
+    : '<section class="panel"><p class="lead">Әзірге оқушы енгізілмеген. Топтар кодты енгізіп, оқушылардың аты-жөнін жазғанда осында бірден көрінеді.</p></section>';
+
+  return '<main class="page wrap"><h1 class="page-title">САБАҚТЫ БАҚЫЛАУ</h1>' + codeCard +
+    '<section style="display:grid;gap:16px"><h2 class="section-title">ТОПТАРДЫҢ ҚОСЫЛУЫ</h2><div class="gst-grid" id="gstatus">' + gstCards() + '</div></section>' +
+    statBlock(rs) +
+    '<section style="display:grid;gap:16px"><h2 class="section-title">БАРЛЫҚ ОҚУШЫЛАРДЫҢ НӘТИЖЕСІ</h2>' + table + '</section>' +
+    '<div class="two">' + bestSection(rs) + '<section class="brief"><h2>НӘТИЖЕЛЕРДІ САҚТАУ</h2><p class="brief-next">CSV файлын Excel немесе Google Sheets-те ашуға болады. Басып шығару терезесінде «PDF ретінде сақтау» таңдаңыз.</p>' +
+      '<button class="btn btn-gold" data-act="csv">CSV ЖҮКТЕУ</button><button class="btn btn-white" data-act="print-all">БАРЛЫҚ НӘТИЖЕНІ БАСЫП ШЫҒАРУ / PDF</button></section></div></main>';
+}
+
+/* ---------- teacher: class analytics (original summary) ---------- */
+function viewClass(){
+  var rs = scoredList().filter(function(r){ return r.a.sc.any; });
+  if (!rs.length) {
+    return '<main class="page wrap"><h1 class="page-title">СЫНЫП НӘТИЖЕСІ</h1><section class="panel"><div class="empty">' +
+      '<p>Әзірге бағаланған оқушы жоқ. Топтар деректі енгізгенде осында бірден көрінеді.</p>' +
+      '<div class="actions"><button class="btn btn-primary" data-act="go" data-view="monitor">БАҚЫЛАУҒА ӨТУ</button></div></div></section></main>';
+  }
+  var n = rs.length;
+  var avg = Math.round(rs.reduce(function(t, r){ return t + r.a.sc.ten; }, 0) / n * 10) / 10;
+  var maxTen = Math.max.apply(null, rs.map(function(r){ return r.a.sc.ten; }));
+  var m15 = rs.filter(function(r){ return r.a.m15; }).length;
+  var m16 = rs.filter(function(r){ return r.a.m16; }).length;
+
+  var cats = [
+    { key:'green', color:'var(--c-green)', title:'КҮРДЕЛІ ЕСЕПКЕ ДАЙЫН', rec:'<b>Ұсыныс:</b> Q = cmΔt + rm түріндегі күрделі есептер.', f:function(a){ return a.green; } },
+    { key:'rm', color:'var(--c-yellow)', title:'Q = rm ФОРМУЛАСЫН БЕКІТУ ҚАЖЕТ', rec:'<b>Ұсыныс:</b> Q = rm және m = Q/r бойынша қысқа есептер.', f:function(a){ return a.fRm; } },
+    { key:'si', color:'var(--c-blue)', title:'ХБЖ ЖӘНЕ ӨЛШЕМ БІРЛІКТЕРІН БЕКІТУ ҚАЖЕТ', rec:'<b>Ұсыныс:</b> г → кг, кДж → Дж, Дж/кг бойынша жаттығу.', f:function(a){ return a.fSI; } },
+    { key:'p', color:'var(--c-purple)', title:'ҚЫСЫМ–ҚАЙНАУ БАЙЛАНЫСЫН БЕКІТУ ҚАЖЕТ', rec:'<b>Ұсыныс:</b> қысым ↓ → қайнау температурасы ↓ байланысын қайталау.', f:function(a){ return a.fP; } },
+    { key:'heat', color:'var(--c-orange)', title:'ҚЫЗДЫРУ + БУЛАНУ ЕСЕБІН БЕКІТУ ҚАЖЕТ', rec:'<b>Ұсыныс:</b> Δt → Q₁ = cmΔt → Q₂ = rm → Qжалпы = Q₁ + Q₂ қадамдарын қайталау.', f:function(a){ return a.fHeat; } },
+    { key:'red', color:'var(--c-red)', title:'ҚОСЫМША ҚОЛДАУ ҚАЖЕТ', rec:'<b>Ұсыныс:</b> жеке кеңес және қадамдық тірек-сызба.', f:function(a){ return a.fRed; } }
+  ];
+  cats.forEach(function(c){ c.list = rs.filter(function(r){ return c.f(r.a); }); });
+  var byKey = {}; cats.forEach(function(c){ byKey[c.key] = c.list.length; });
+
+  var nextCands = [
+    [byKey.heat, byKey.heat + ' оқушымен қыздыру және булану процестерін біріктіретін есепті қайталау.'],
+    [byKey.rm, byKey.rm + ' оқушымен Q = rm бойынша қысқа есептерді қайталау.'],
+    [byKey.si, byKey.si + ' оқушымен ХБЖ-ға айналдыруды (г → кг, кДж → Дж) бекіту.'],
+    [byKey.p, byKey.p + ' оқушымен қысым мен қайнау температурасының байланысын қайталау.']
+  ].sort(function(a, b){ return b[0] - a[0]; });
+  var nextStep = nextCands[0][0] > 0 ? nextCands[0][1] : 'Сынып күрделі есептерге дайын: Q = cmΔt + rm.';
+
+  var stats = '<div class="stats">' +
+    '<div class="stat"><span>Оқушы саны</span><b>' + n + '</b></div>' +
+    '<div class="stat"><span>Орташа нәтиже</span><b>' + fmt1(avg) + '<small> /10</small></b></div>' +
+    '<div class="stat"><span>Ең жоғары нәтиже</span><b>' + fmt1(maxTen) + '<small> /10</small></b></div>' +
+    '<div class="stat"><span>8.3.2.15 меңгерді</span><b>' + m15 + '<small> /' + n + '</small></b><em>Меншікті булану жылуы</em></div>' +
+    '<div class="stat"><span>8.3.2.16 меңгерді</span><b>' + m16 + '<small> /' + n + '</small></b><em>Қысым мен қайнау</em></div></div>';
+
+  var briefText = [
+    'Сынып: ' + n + ' оқушы',
+    'Орташа нәтиже: ' + fmt1(avg) + '/10',
+    '8.3.2.15: ' + m15 + '/' + n + ' меңгерді',
+    '8.3.2.16: ' + m16 + '/' + n + ' меңгерді',
+    'Қолдау қажет:',
+    'Q = rm — ' + byKey.rm + ' оқушы',
+    'ХБЖ — ' + byKey.si + ' оқушы',
+    'Қысым–қайнау — ' + byKey.p + ' оқушы',
+    'Q = cmΔt + rm — ' + byKey.heat + ' оқушы',
+    'КЕЛЕСІ ҚАДАМ: ' + nextStep
+  ].join('\n');
+  var brief = '<section class="brief"><h2>МҰҒАЛІМГЕ ҚЫСҚА ҚОРЫТЫНДЫ</h2><div class="brief-lines">' +
+    '<div><span>Сынып</span><b>' + n + ' оқушы</b></div>' +
+    '<div><span>Орташа нәтиже</span><b>' + fmt1(avg) + '/10</b></div>' +
+    '<div><span>8.3.2.15</span><b>' + m15 + '/' + n + ' меңгерді</b></div>' +
+    '<div><span>8.3.2.16</span><b>' + m16 + '/' + n + ' меңгерді</b></div>' +
+    '<p class="brief-sub">Қолдау қажет</p>' +
+    '<div><span>Q = rm</span><b>' + byKey.rm + ' оқушы</b></div>' +
+    '<div><span>ХБЖ</span><b>' + byKey.si + ' оқушы</b></div>' +
+    '<div><span>Қысым–қайнау</span><b>' + byKey.p + ' оқушы</b></div>' +
+    '<div><span>Q = cmΔt + rm</span><b>' + byKey.heat + ' оқушы</b></div></div>' +
+    '<p class="brief-sub">Келесі қадам</p><p class="brief-next">' + nextStep + '</p>' +
+    '<pre id="briefText" hidden>' + esc(briefText) + '</pre>' +
+    '<button class="btn btn-gold btn-sm" data-act="copy">ҚОРЫТЫНДЫНЫ КӨШІРУ</button></section>';
+
+  var map = '<div class="map">' + cats.map(function(c){
+    return '<article class="mcard" style="--dot:' + c.color + ';border-color:' + c.color + '"><div class="mcard-head"><span class="dot"></span><h3>' + c.title + '</h3><span class="cnt">' + c.list.length + '</span></div>' +
+      (c.list.length ? '<div class="chips">' + c.list.map(function(r){ return '<button class="chip" data-act="show" data-id="' + r.s.id + '">' + esc(up(r.s.name)) + '</button>'; }).join('') + '</div>' : '<p class="none">—</p>') +
+      '<p class="rec">' + c.rec + '</p></article>';
+  }).join('') + '</div>';
+
+  var ga = '<details class="ga" open><summary>МҰҒАЛІМГЕ: ТОПТЫҚ ЖҰМЫС ТАЛДАУЫ</summary><p class="note" style="margin-top:12px">Бұл — топтың нәтижесі. Топтық қате жеке оқушының қатесі ретінде есептелмейді. «Түзету» арқылы топ белгілеген жауапты өзгерте аласыз.</p><div class="ga-grid">' +
+    GROUPS.map(function(Gr, g){
+      var arr = s3arr(g), wrong = groupWrong(g), open = arr.filter(function(v){ return !v; }).length;
+      var o = { '15':[0,0], '16':[0,0] };
+      Gr.q.forEach(function(q, i){ if (q[1]) { o[q[1]][1]++; if (arr[i] === 'ok') o[q[1]][0]++; } });
+      return '<article class="ga-card"><h4><span>' + Gr.n + '-ТОП · ' + Gr.name + '</span><span>' + (s3Entered(g) ? groupScore(g) + ' / 9' : '—') + (s3Corrected(g) ? ' ✎' : '') + '</span></h4>' +
+        '<p class="obj">8.3.2.15: ' + o['15'][0] + '/' + o['15'][1] + ' сұрақ · 8.3.2.16: ' + o['16'][0] + '/' + o['16'][1] + ' сұрақ' + (open ? ' · белгіленбеген: ' + open : '') + '</p>' +
+        (wrong.length ? '<ul>' + wrong.map(function(q){ var it = Gr.q[q-1]; return '<li><b>' + q + '-сұрақ</b> ' + (it[1] ? '<span class="tag">8.3.2.' + it[1] + '</span>' : '') + it[0] + '</li>'; }).join('') + '</ul>' : '<p class="hint">Қате белгіленбеген.</p>') +
+        '<button class="btn btn-ghost btn-sm" data-act="fix3-open" data-g="' + g + '">ТОПТЫҚ ЖҰМЫСТЫ ТҮЗЕТУ</button></article>';
+    }).join('') + '</div></details>';
+
+  var rows = rs.map(function(r){
+    var sc = r.a.sc;
+    return '<tr><td class="nm">' + esc(up(r.s.name)) + '</td><td>' + GROUPS[r.s.g].n + '-топ</td>' + cell(sc.e1, sc.s1, 3, corrected(r.s, 's1')) + cell(sc.e2, sc.s2, 2, corrected(r.s, 's2')) + cell(sc.e3, sc.s3, 9, s3Corrected(r.s.g)) + cell(sc.e4, sc.s4, 9, corrected(r.s, 's4')) + totalCells(sc) +
+      '<td class="' + (r.a.m15 ? 'yes' : 'no') + '">' + (r.a.m15 ? '✓' : '—') + '</td><td class="' + (r.a.m16 ? 'yes' : 'no') + '">' + (r.a.m16 ? '✓' : '—') + '</td>' +
+      '<td class="miss">' + (r.a.miss.length ? r.a.miss.join(' · ') : '—') + '</td>' +
+      '<td><button class="btn btn-gold btn-sm" data-act="show" data-id="' + r.s.id + '">НӘТИЖЕНІ КӨРСЕТУ</button></td></tr>';
+  }).join('');
+  var table = '<div class="tbl-wrap"><table><thead><tr><th style="text-align:left">Оқушы</th><th>Топ</th><th>1-кезең</th><th>2-кезең</th><th>3-кезең</th><th>4-кезең</th><th>Жалпы</th><th>/10</th><th>8.3.2.15</th><th>8.3.2.16</th><th style="text-align:left">Орындалмаған жеке дескрипторлар</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+
+  return '<main class="page wrap"><h1 class="page-title">СЫНЫП НӘТИЖЕСІ</h1>' + stats +
+    '<div class="two">' + brief + bestSection(rs) + '</div>' +
+    '<section style="display:grid;gap:16px"><div><h2 class="section-title">СЫНЫПТЫҢ ОҚУ КАРТАСЫ</h2><p class="section-sub">Оқушылар баллы бойынша емес, қай жерде қолдау керек екеніне қарай топтастырылды. Тек жеке нәтиже (1, 2, 4-кезең) ескеріледі. Бұл — келесі сабақты саралап жоспарлауға арналған карта.</p></div>' + map + '</section>' +
+    ga +
+    '<section style="display:grid;gap:16px"><h2 class="section-title">БАРЛЫҚ ОҚУШЫЛАР</h2>' + table + '</section>' +
+    '<p class="note">Меңгеру шарты: 8.3.2.15 — 4-кезеңнің 2 және 3-тапсырмасынан кемінде 6/8 дескриптор; 8.3.2.16 — 1-тапсырма орындалды және 2-кезеңнің 1-тұжырымы белгіленді.</p>' +
+    '<div class="actions"><button class="btn btn-primary btn-xl" data-act="print-all">БАРЛЫҚ ОҚУШЫ НӘТИЖЕСІН БАСЫП ШЫҒАРУ</button>' +
+    '<button class="btn btn-ghost" data-act="csv">CSV ЖҮКТЕУ</button></div></main>';
+}
+
+/* ---------- teacher: correction modals ---------- */
+function markTxt(v){ return v === true ? '✓' : v === false ? '✕' : '—'; }
+function fixRow(k, i, text, m){
+  var b = ' data-act="fix" data-k="' + k + '" data-i="' + i + '"';
+  return '<div class="fix-row"><span class="fl">' + text + '</span><span class="fs">Оқушы белгісі: ' + markTxt(m.self) + '</span>' +
+    '<button class="fixb ok' + (m.fin === true ? ' on' : '') + '"' + b + ' data-v="1" aria-pressed="' + (m.fin === true) + '">✓ 1 балл</button>' +
+    '<button class="fixb bad' + (m.fin === false ? ' on' : '') + '"' + b + ' data-v="0" aria-pressed="' + (m.fin === false) + '">✕ 0 балл</button>' +
+    '<button class="fixb' + (m.fin === undefined ? ' on' : '') + '"' + b + ' data-v="" aria-pressed="' + (m.fin === undefined) + '">ОҚУШЫ БЕЛГІСІ</button></div>';
+}
+function fixModalHTML(){
+  var s = findStudent(MODAL.id); if (!s) return null;
+  var sc = score(s), Gr = GROUPS[s.g];
+  var sec = function(title, k, texts){ return '<h3>' + title + '</h3>' + texts.map(function(t, i){ return fixRow(k, i, t, markInfo(s, k, i)); }).join(''); };
+  var t4 = []; TASKS.forEach(function(T){ T.items.forEach(function(it){ t4.push('<b>' + T.title + ':</b> ' + it[0]); }); });
+  return '<div class="modal-box fix-box" role="dialog" aria-modal="true" aria-labelledby="fixT"><h2 id="fixT">ТҮЗЕТУ · ' + esc(up(s.name)) + '</h2>' +
+    '<p class="hint">' + Gr.n + '-ТОП · ' + Gr.name + '. Сіз қойған белгі қорытынды балл болады, оқушылар оны өзгерте алмайды. «Оқушы белгісі» — оқушының өзін-өзі бағалауына қайтару.</p>' +
+    '<div class="fix-sum"><span>Қорытынды: ' + sc.total + '/23 · ' + fmt1(sc.ten) + '/10</span><span>Өзін-өзі бағалау: ' + selfTotal(s) + '/23</span><span>Топтық жұмыс: ' + sc.s3 + '/9</span></div>' +
+    sec('1-кезең · Үй тапсырмасын қайталау', 's1', S1.map(function(x){ return x[1]; })) +
+    sec('2-кезең · Эксперименттен кейін', 's2', S2.map(function(x){ return x[1]; })) +
+    sec('4-кезең · Жеке жұмыс', 's4', t4) +
+    '<p class="note">Топтық жұмыс (3-кезең) топ бойынша түзетіледі.</p>' +
+    '<div class="actions"><button class="btn btn-ghost" data-act="fix3-open" data-g="' + s.g + '">ТОПТЫҚ ЖҰМЫСТЫ ТҮЗЕТУ</button><button class="btn btn-primary" data-act="modal-no">ДАЙЫН</button></div></div>';
+}
+function fix3ModalHTML(){
+  var g = MODAL.g, Gr = GROUPS[g];
+  var rows = range(9).map(function(q){
+    var x = s3info(g, q), b = ' data-act="fix3" data-q="' + q + '"';
+    return '<div class="fix-row"><span class="fl"><b>' + (q + 1) + '-сұрақ.</b> ' + Gr.q[q][0] + '</span><span class="fs">Топ белгісі: ' + (x.self === 'ok' ? '✓' : x.self === 'bad' ? '✕' : '—') + '</span>' +
+      '<button class="fixb ok' + (x.fin === 'ok' ? ' on' : '') + '"' + b + ' data-v="ok">ДҰРЫС</button>' +
+      '<button class="fixb bad' + (x.fin === 'bad' ? ' on' : '') + '"' + b + ' data-v="bad">ҚАТЕ</button>' +
+      '<button class="fixb' + (!x.fin ? ' on' : '') + '"' + b + ' data-v="">ТОП БЕЛГІСІ</button></div>';
+  }).join('');
+  return '<div class="modal-box fix-box" role="dialog" aria-modal="true" aria-labelledby="fixT"><h2 id="fixT">ТОПТЫҚ ЖҰМЫС · ' + Gr.n + '-ТОП · ' + Gr.name + '</h2>' +
+    '<div class="fix-sum"><span>Қорытынды: ' + groupScore(g) + '/9</span><span>Топтың өзі белгілегені: ' + groupSelfScore(g) + '/9</span></div>' + rows +
+    '<div class="actions"><button class="btn btn-primary" data-act="modal-no">ДАЙЫН</button></div></div>';
+}
+function renderModal(){
+  if (!MODAL) return;
+  var html = MODAL.kind === 'fix' ? fixModalHTML() : fix3ModalHTML();
+  if (!html) { closeModal(); return; }
+  var box = modal.querySelector('.modal-box'), top = box ? box.scrollTop : 0;
+  var ae = document.activeElement, key = ae && modal.contains(ae) ? ae.getAttribute('data-act') + ae.getAttribute('data-k') + ae.getAttribute('data-i') + ae.getAttribute('data-q') + ae.getAttribute('data-v') : null;
+  modal.innerHTML = html; modal.hidden = false;
+  box = modal.querySelector('.modal-box'); if (box) box.scrollTop = top;
+  if (key) modal.querySelectorAll('button').forEach(function(b){ if (b.getAttribute('data-act') + b.getAttribute('data-k') + b.getAttribute('data-i') + b.getAttribute('data-q') + b.getAttribute('data-v') === key) b.focus({ preventScroll:true }); });
+}
+
+/* ---------- CSV ---------- */
+function csvExport(){
+  var rs = scoredList();
+  if (!rs.length) { toast('Жүктейтін нәтиже жоқ'); return; }
+  var head = ['Топ', 'Топ атауы', 'Оқушының аты-жөні', 'Үй тапсырмасын қайталау (0–3)', 'Эксперименттен кейінгі жұмыс (0–2)', 'Топтық жұмыс (0–9)', 'Жеке жұмыс (0–9)', 'Жалпы нәтиже (0–23)', '10 балдық жүйе', 'Өзін-өзі бағалау (0–23)', 'Мұғалім түзеткен', '8.3.2.15', '8.3.2.16'];
+  var rows = rs.map(function(r){
+    var s = r.s, sc = r.a.sc, Gr = GROUPS[s.g];
+    return [Gr.n + '-топ', Gr.name, s.name, sc.e1 ? sc.s1 : '', sc.e2 ? sc.s2 : '', sc.e3 ? sc.s3 : '', sc.e4 ? sc.s4 : '',
+      sc.any ? sc.total : '', sc.any ? fmt1(sc.ten) : '', sc.any ? selfTotal(s) : '', anyCorrected(s) ? 'иә' : '', r.a.m15 ? 'иә' : '', r.a.m16 ? 'иә' : ''];
+  });
+  var q = function(v){ var x = String(v); if (/^[=+\-@]/.test(x)) x = "'" + x; return /[";\r\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
+  var text = [head].concat(rows).map(function(r){ return r.map(q).join(';'); }).join('\r\n');
+  var a = document.createElement('a');
+  /* UTF-8 BOM bytes first, so Excel shows Kazakh letters correctly */
+  a.href = URL.createObjectURL(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), text], { type:'text/csv;charset=utf-8' }));
+  a.download = 'qainau-' + CODE + '-natizheler.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  toast('CSV файлы жүктелді');
+}
+
+/* ================= NEW LESSON ================= */
+var LSECS = [
+  ['ҚАЙНАУ', 'Анықтама'],
+  ['МЕНШІКТІ БУЛАНУ ЖЫЛУЫ', 'r = Q / m'],
+  ['ЖЫЛУ МӨЛШЕРІН ЕСЕПТЕУ', 'Q = rm'],
+  ['ҚЫСЫМ ЖӘНЕ ҚАЙНАУ', 'Биіктік'],
+  ['ЗЕРТХАНАЛЫҚ ЖҰМЫС', 'T = f(t) графигі'],
+  ['ЖАУАБЫ ҚАНДАЙ?', 'Сұрақтар']
+];
+var LAB_SLOTS = range(15).map(function(i){ var m = i * 0.5; return { m:m, label: Math.floor(m) + ':' + (i % 2 ? '30' : '00') }; });
+var LAB_QS = [
+  'Су қызған кезде температура қалай өзгерді?',
+  'Қай уақыттан бастап қайнау белгілері байқалды?',
+  'Қайнау кезінде температура қалай өзгерді?',
+  'Тәжірибеңіз бойынша судың қайнау температурасын анықтаңыз.',
+  'Графиктің қай бөлігі қайнау процесіне сәйкес келеді?',
+  'Неліктен қайнау кезінде берілген энергияға қарамастан температура айтарлықтай өспейді?'
+];
+var EX_STEPS = [
+  'Берілгені: m = 3 кг; t₁ = 20°C; t₂ = 100°C; c = 4200 Дж/(кг·°C); r = 2,3·10⁶ Дж/кг',
+  '1) Суды қайнау температурасына дейін қыздыру: Q₁ = cm(t₂ − t₁) = 4200 · 3 · 80 = 1 008 000 Дж',
+  '2) Қайнап тұрған суды буға айналдыру: Q₂ = rm = 2,3·10⁶ · 3 = 6 900 000 Дж',
+  '3) Жалпы жылу мөлшері: Q = Q₁ + Q₂ = 1 008 000 + 6 900 000 = 7 908 000 Дж ≈ 7,9 МДж'
+];
+var PLACES = [
+  ['Қарақия ойысы', -132],
+  ['Теңіз деңгейі', 0],
+  ['Алматы', 800],
+  ['Шымбұлақ', 2200],
+  ['Хан Тәңірі', 7010]
+];
+var lab = { running:false, sec:0, timer:null };
+
+function pAt(h){ return 101.325 * Math.exp(-h / 8400); }
+function tBoil(p){ return 1 / (1 / 373.15 - 8.314 / 40660 * Math.log(p / 101.325)) - 273.15; }
+function fmtN(x, d){ return x.toFixed(d).replace('.', ','); }
+function mmss(s){ return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+
+function frac(a, b){ return '<span class="frac"><span>' + a + '</span><span>' + b + '</span></span>'; }
+function callout(kind, title, text){
+  return '<div class="callout ' + kind + '"><h3><span class="ic">' + (kind === 'mem' ? '✓' : '!') + '</span>' + title + '</h3><p>' + text + '</p></div>';
+}
+function rule(html){ return '<div class="rule"><span class="mark">!</span><p>' + html + '</p></div>'; }
+
+function boilFigSVG(){
+  var b = '';
+  var pts = [[150,250,7],[190,232,5],[230,258,8],[270,238,6],[310,252,7],[350,236,5],[175,200,6],[215,182,8],[255,206,5],[295,188,7],[335,204,6],[200,150,5],[240,135,7],[285,150,6],[320,160,5]];
+  pts.forEach(function(p, i){ b += '<circle class="bub demo-bub" cx="' + p[0] + '" cy="' + p[1] + '" r="' + p[2] + '" style="animation-delay:-' + (i * 0.17).toFixed(2) + 's"/>'; });
+  return '<svg viewBox="0 0 500 360" role="img" aria-label="Қайнап жатқан колба: бу көпіршіктері сұйықтың бүкіл көлемінде пайда болады">' +
+    '<path d="M215 20 H285 V95 Q385 140 380 230 Q372 300 250 302 Q128 300 120 230 Q115 140 215 95 Z" fill="#F4FAFD" stroke="#5A7084" stroke-width="4"/>' +
+    '<path d="M131 128 Q250 118 369 128 Q382 160 380 230 Q372 300 250 302 Q128 300 120 230 Q118 160 131 128 Z" fill="#BDE7F5"/>' +
+    '<path d="M131 128 Q190 138 250 128 Q310 118 369 128" fill="none" stroke="#0EA5E9" stroke-width="3"/>' + b +
+    '<g class="steam"><path d="M232 18 q-10 -14 2 -26 t-2 -26"/><path d="M262 18 q10 -14 -2 -26 t2 -26"/></g>' +
+    '<path d="M150 302 L130 345 M350 302 L370 345 M110 345 H390" stroke="#334155" stroke-width="6" stroke-linecap="round"/>' +
+    '<g transform="translate(250 330)"><path class="flame on" d="M0 12 Q-16 -12 0 -34 Q16 -12 0 12 Z" fill="#FF8C00"/><path class="flame on" d="M0 12 Q-8 -4 0 -18 Q8 -4 0 12 Z" fill="#FFD43B"/></g>' +
+    '<text x="395" y="210" class="g-title">бу көпіршіктері</text><path d="M390 205 L345 205" stroke="#5A7084" stroke-width="2"/>' +
+    '</svg>';
+}
+
+function substTable(){
+  var rows = [
+    ['Су', '', '100', '2,3·10⁶'],
+    ['Спирт', '', '78', '0,9·10⁶'],
+    ['Эфир', '', '35', '0,4·10⁶'],
+    ['Сынап', '', '357', '0,3·10⁶'],
+    ['Сұйық май', 'күнбағыс майы', '300*', '–']
+  ];
+  return '<div class="tbl-wrap"><table class="vals subst"><thead><tr><th style="text-align:left">Зат</th><th>Қайнау температурасы, °C</th><th><span class="unit"><i class="r">r</i>, Дж/кг</span></th></tr></thead><tbody>' +
+    rows.map(function(r){ return '<tr><td>' + r[0] + (r[1] ? '<small>(' + r[1] + ')</small>' : '') + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td></tr>'; }).join('') +
+    '</tbody></table></div><p class="hint">*300 °C — шартты мән: май қыздырғанда ыдырайды.<br>Қайнау температуралары қалыпты атмосфералық қысымда берілген.</p>';
+}
+
+function lessonSec0(){
+  return '<div class="lsec">' +
+    rule('Сұйық қайнайтын температураны <em>қайнау температурасы</em> деп атайды.') +
+    rule('Қайнау – <em>қайнау температурасында</em> сұйықтың тұтас көлеміндегі булану процесі.') +
+    '<div class="lgrid"><div class="lcol">' +
+      '<p class="lead">Әр сұйықтың қайнау температурасы әртүрлі болады. Бұл әртүрлі заттардың молекулаларының өзара әрекеттесу күштерінің айырмашылығымен түсіндіріледі. Молекулалардың өзара күшті әрекеттесуін жеңіп шығу үшін молекулалардың кинетикалық энергиясы үлкен мәнге ие болуы және температуралары да жоғары болуы керек.</p>' +
+      callout('attn', 'Назар аударыңдар!', 'Сұйық қайнаған кезде буға айналу процесі сұйық көлемін тұтас қамтиды.') +
+      '<div class="tbl-wrap"><table class="cmp"><thead><tr><th></th><th>Булану</th><th>Қайнау</th></tr></thead><tbody>' +
+        '<tr><td>Қай жерден?</td><td>Тек сұйықтың бетінен</td><td>Сұйықтың бүкіл көлемінде</td></tr>' +
+        '<tr><td>Қандай температурада?</td><td>Кез келген температурада</td><td>Тек қайнау температурасында</td></tr>' +
+        '<tr><td>Температура</td><td>Сұйық суиды</td><td>Тұрақты болып қалады</td></tr>' +
+      '</tbody></table></div></div>' +
+      '<div class="lcol"><figure class="fig" style="margin:0">' + boilFigSVG() + '<figcaption>Сұйықтың қайнауы</figcaption></figure>' +
+      substTable() + '</div>' +
+    '</div></div>';
+}
+
+function lessonSec1(){
+  return '<div class="lsec">' +
+    rule('Меншікті булану жылуы – қайнау температурасындағы 1 кг сұйықты буға айналдыру үшін қажет жылу мөлшеріне тең физикалық шама.') +
+    '<div class="fcards">' +
+      '<div class="fcard"><span>Белгіленуі</span><div class="fx">r</div></div>' +
+      '<div class="fcard"><span>Формуласы</span><div class="fx main">r = ' + frac('Q', 'm') + '</div></div>' +
+      '<div class="fcard"><span>Өлшем бірлігі</span><div class="fx">[r] = ' + frac('Дж', 'кг') + '</div></div>' +
+    '</div>' +
+    '<div class="lgrid"><div class="lcol">' +
+      callout('attn', 'Назар аударыңдар!', 'Су үшін r = 2,3·10⁶ Дж/кг. Бұл 100°C-тағы 1 кг суды буға айналдыру үшін 2 300 000 Дж жылу қажет екенін білдіреді.') +
+      callout('mem', 'Есте сақтаңдар!', 'Газ күйіндегі заттың ішкі энергиясы қайнау температурасы кезінде оның сұйық күйіндегі ішкі энергиясынан көбірек болады.') +
+      '<p class="lead">Қалыпты атмосфералық қысымдағы әртүрлі заттардың меншікті булану жылуы тәжірибелік жолмен анықталған. Олардың кейбіреулері 2-қосымшадағы 11-кестеде берілген.</p>' +
+    '</div><div class="lcol">' +
+      substTable() +
+    '</div></div></div>';
+}
+
+function lessonSec2(){
+  var n = Math.max(0, Math.min(EX_STEPS.length, S.ui.ex | 0));
+  var steps = EX_STEPS.slice(0, n).map(function(t, i){ return '<li' + (i === EX_STEPS.length - 1 ? ' class="last"' : '') + '>' + t + '</li>'; }).join('');
+  return '<div class="lsec">' +
+    '<div class="formula-big"><p>Қайнау температурасында тұрған сұйықты буға айналдыру үшін қажет жылу мөлшері меншікті булану жылуы мен сұйықтың массасының көбейтіндісіне тең:</p><div class="fx">Q = rm</div>' +
+      '<p>Бу конденсацияланғанда (сұйыққа айналғанда) дәл сондай жылу мөлшері бөлініп шығады.</p></div>' +
+    '<div class="formula-big"><p>Егер сұйықтың температурасы қайнау температурасынан төмен болса, оны алдымен қыздыру керек. Онда қыздыруға және буландыруға кеткен энергиялар қосылады:</p>' +
+      '<div class="fx">Q = cm(t₂ − t₁) + rm</div>' +
+      '<div class="terms"><span><b>cm(t₂ − t₁)</b> — қайнау температурасына дейін қыздыру</span><span><b>rm</b> — буға айналдыру</span></div></div>' +
+    '<section class="example"><h3>ЕСЕПТЕУ МЫСАЛЫ</h3><p class="task-q">3 кг суды 20°C-тан бастап толық буға айналдыру үшін қанша жылу қажет?</p>' +
+      (steps ? '<ol class="ex-steps">' + steps + '</ol>' : '') +
+      '<div class="actions">' + (n < EX_STEPS.length ? '<button class="btn btn-primary" data-act="ex-next" data-k="exnext">КЕЛЕСІ ҚАДАМ ▶</button>' : '') +
+      (n > 0 ? '<button class="btn btn-ghost" data-act="ex-reset">ҚАЙТА БАСТАУ</button>' : '') + '</div></section>' +
+    '</div>';
+}
+
+function altFigSVG(h){
+  var y = function(v){ return 190 - Math.max(-200, v) / 7500 * 168; };
+  var x = h <= 0 ? 52 : 70 + Math.min(h, 7500) / 7500 * 280;
+  return '<svg viewBox="0 0 640 220" role="img" aria-label="Биіктік сызбасы">' +
+    '<line x1="0" y1="190" x2="640" y2="190" stroke="#0EA5E9" stroke-width="2" stroke-dasharray="6 5"/>' +
+    '<text x="560" y="210" class="g-t">теңіз деңгейі</text>' +
+    '<path d="M0 190 L30 190 L52 196 L70 190 L150 150 L210 120 L270 70 L350 ' + y(7010).toFixed(0) + ' L420 80 L470 110 L540 150 L640 170 L640 220 L0 220 Z" fill="#CFE8F2" stroke="#04709E" stroke-width="2.5"/>' +
+    '<path d="M330 45 L350 ' + y(7010).toFixed(0) + ' L372 46 L360 42 L350 50 L340 42 Z" fill="#fff"/>' +
+    '<text x="362" y="' + (y(7010) - 6).toFixed(0) + '" class="g-title">Хан Тәңірі</text>' +
+    '<text x="12" y="214" class="g-t">Қарақия</text>' +
+    '<circle cx="' + x.toFixed(1) + '" cy="' + y(h).toFixed(1) + '" r="10" fill="#C62828" stroke="#fff" stroke-width="3"/>' +
+    '</svg>';
+}
+function altValues(h){ var p = pAt(h); return { p:p, t:tBoil(p) }; }
+function lessonSec3(){
+  var h = S.ui.alt, v = altValues(h);
+  var pre = PLACES.map(function(pl){ return '<button class="btn btn-ghost' + (pl[1] === h ? ' cur' : '') + '" data-act="alt" data-h="' + pl[1] + '">' + pl[0] + ' · ' + pl[1] + ' м</button>'; }).join('');
+  return '<div class="lsec">' +
+    '<div class="chain"><span>Биіктік ↑</span><i>→</i><span>Атмосфералық қысым ↓</span><i>→</i><span>Қайнау температурасы ↓</span></div>' +
+    '<div class="alt">' +
+      '<div class="alt-read"><div><span>Биіктік</span><b id="altH">' + h + '<small> м</small></b></div>' +
+      '<div><span>Атмосфералық қысым</span><b id="altP">≈ ' + fmtN(v.p, 1) + '<small> кПа</small></b></div>' +
+      '<div class="hot"><span>Судың қайнау температурасы</span><b id="altT">≈ ' + fmtN(v.t, 1) + '<small> °C</small></b></div></div>' +
+      '<label class="hint" for="altRange">Биіктікті өзгертіңіз (−200 м … 7500 м)</label>' +
+      '<input id="altRange" class="alt-range" type="range" min="-200" max="7500" step="10" value="' + h + '">' +
+      '<div class="presets">' + pre + '</div>' +
+      '<div class="fig alt-fig" id="altFig">' + altFigSVG(h) + '</div>' +
+    '</div>' +
+    '<div class="lgrid"><div class="lcol">' +
+      callout('attn', 'Таулы жерде', 'Қысым төмен болғандықтан су 100°C-тан төмен температурада қайнайды. Сондықтан тауда тағам баяу піседі.') +
+    '</div><div class="lcol">' +
+      callout('mem', 'Қысым артса', 'Қайнау температурасы жоғарылайды. Теңіз деңгейінен төмен жерде (Қарақия) және қысымды қазанда су 100°C-тан жоғары температурада қайнайды.') +
+    '</div></div>' +
+    '<p class="hint">Мәндер шамамен алынған: қысым биіктікке қарай экспоненциалды заңмен, қайнау температурасы Клапейрон–Клаузиус теңдеуімен есептелді.</p>' +
+    '</div>';
+}
+
+function lessonSec5(){
+  var qs = [
+    'Неліктен заттың меншікті булану жылуы меншікті балқу жылуынан көбірек болады?',
+    'Не себепті қайнау кезінде сұйыққа берілген жылу мөлшері мен конденсация кезінде бөлінген жылу мөлшерінің мәндері бірдей болады?',
+    'Қайнау кезінде неге шуыл мен бүлкілдеу болады? Сұйықтағы қандай процестер осындай дыбыстар шығарады?',
+    'Әртүрлі заттардың қайнау температурасы неге әртүрлі болады?'
+  ];
+  return '<div class="lsec"><ol class="lq">' + qs.map(function(q){ return '<li>' + q + '</li>'; }).join('') + '</ol></div>';
+}
+
+/* ---- lab: each group's table, graph and answers live in its own group document ---- */
+function labTemps(g){
+  var m = G(g).lab && G(g).lab.temps;
+  return range(15).map(function(i){ var v = dget('g' + g, 'lab.temps.' + i, pick(m, String(i))); return typeof v === 'number' ? v : null; });
+}
+function labAns(g){
+  var m = G(g).lab && G(g).lab.ans;
+  return range(6).map(function(i){ var v = dget('g' + g, 'lab.ans.' + i, pick(m, String(i))); return typeof v === 'string' ? v : ''; });
+}
+function labApparatusSVG(){
+  return '<svg viewBox="0 0 320 340" role="img" aria-label="Зертханалық қондырғы: штатив, колба, термометр, отын таблеткасы">' +
+    '<rect x="40" y="300" width="170" height="12" rx="3" fill="#334155"/>' +
+    '<rect x="60" y="30" width="8" height="270" rx="1" fill="#64748B"/>' +
+    '<path d="M68 150 H125 M125 142 V158" stroke="#334155" stroke-width="5" stroke-linecap="round"/><circle cx="68" cy="150" r="6" fill="#1E293B"/>' +
+    '<path d="M68 70 H165 M165 64 V76" stroke="#334155" stroke-width="4" stroke-linecap="round"/><circle cx="68" cy="70" r="5" fill="#1E293B"/>' +
+    '<rect x="110" y="290" width="60" height="10" rx="2" fill="#94A3B8"/><rect x="122" y="280" width="36" height="10" rx="2" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>' +
+    '<g id="labFlame" class="flame' + (lab.running ? ' on' : '') + '"><path d="M140 280 Q128 255 140 236 Q152 255 140 280 Z" fill="#FF8C00"/><path d="M140 280 Q132 262 140 246 Q148 262 140 280 Z" fill="#FFD43B"/><path d="M140 280 Q136 270 140 260 Q144 270 140 280 Z" fill="#fff"/></g>' +
+    '<rect x="128" y="110" width="24" height="45" fill="#F4FAFD" stroke="#94A3B8" stroke-width="2"/>' +
+    '<ellipse cx="140" cy="110" rx="15" ry="3" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2"/>' +
+    '<path d="M128 155 Q95 200 100 240 Q105 270 140 270 Q175 270 180 240 Q185 200 152 155 Z" fill="#F4FAFD" stroke="#94A3B8" stroke-width="2.5"/>' +
+    '<path d="M112 210 Q140 212 168 210 Q178 240 174 255 Q165 268 140 268 Q115 268 106 255 Q102 240 112 210 Z" fill="#BDE7F5" stroke="#0EA5E9" stroke-width="1.5"/>' +
+    '<g id="labBubbles"></g><g id="labSteam" class="steam"></g>' +
+    '<rect x="162" y="50" width="6" height="180" rx="3" fill="#fff" stroke="#64748B" stroke-width="1.5"/>' +
+    '<path d="M162 70 H158 M162 90 H158 M162 110 H158 M162 130 H158 M162 150 H158 M162 170 H158 M162 190 H158 M162 210 H158" stroke="#475569" stroke-width="1"/>' +
+    '<circle cx="165" cy="230" r="6" fill="#EF4444" stroke="#B91C1C" stroke-width="1.5"/>' +
+    '<line id="labFluid" x1="165" y1="230" x2="165" y2="210" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>' +
+    '</svg>';
+}
+function labGraphSVG(temps){
+  var W = 640, H = 380, m = { t:24, r:24, b:56, l:62 }, w = W - m.l - m.r, h = H - m.t - m.b;
+  var X = function(v){ return m.l + v / 7 * w; }, Y = function(v){ return m.t + h - v / 110 * h; };
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Температураның уақытқа тәуелділік графигі">';
+  [0, 20, 40, 60, 80].forEach(function(v){ s += '<line class="g-grid" x1="' + m.l + '" x2="' + (m.l + w) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text class="g-t" x="' + (m.l - 10) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + v + '</text>'; });
+  s += '<line class="g-100" x1="' + m.l + '" x2="' + (m.l + w) + '" y1="' + Y(100) + '" y2="' + Y(100) + '"/><text class="g-100t" x="' + (m.l - 10) + '" y="' + (Y(100) + 4) + '" text-anchor="end">100</text>';
+  for (var i = 0; i <= 7; i++) s += '<line class="g-grid" x1="' + X(i) + '" x2="' + X(i) + '" y1="' + m.t + '" y2="' + (m.t + h) + '"/><text class="g-t" x="' + X(i) + '" y="' + (m.t + h + 20) + '" text-anchor="middle">' + i + ':00</text>';
+  s += '<line class="g-axis" x1="' + m.l + '" x2="' + (m.l + w) + '" y1="' + (m.t + h) + '" y2="' + (m.t + h) + '"/><line class="g-axis" x1="' + m.l + '" x2="' + m.l + '" y1="' + m.t + '" y2="' + (m.t + h) + '"/>';
+  s += '<text class="g-title" x="' + (m.l + w / 2) + '" y="' + (H - 10) + '" text-anchor="middle">Уақыт, мин</text>';
+  s += '<text class="g-title" transform="rotate(-90)" x="' + (-(m.t + h / 2)) + '" y="18" text-anchor="middle">Температура, °C</text>';
+  var pts = [];
+  temps.forEach(function(v, i){ if (v !== null) pts.push([X(LAB_SLOTS[i].m), Y(Math.min(v, 110)), v]); });
+  if (pts.length > 1) s += '<path class="g-line" d="M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + '"/>';
+  pts.forEach(function(p){ s += '<circle class="g-pt" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="6"/><text class="g-val" x="' + p[0].toFixed(1) + '" y="' + (p[1] - 12).toFixed(1) + '" text-anchor="middle">' + fmtN(p[2], p[2] % 1 ? 1 : 0) + '°</text>'; });
+  return s + '</svg>';
+}
+function labLast(temps){ for (var i = temps.length - 1; i >= 0; i--) if (temps[i] !== null) return temps[i]; return null; }
+function labPlateau(temps){
+  var v = temps.filter(function(x){ return x !== null; });
+  if (v.length < 3) return false;
+  var l = v.slice(-3);
+  return Math.max.apply(null, l) - Math.min.apply(null, l) <= 1 && l[2] >= 80;
+}
+function labUpdate(){
+  var g = document.getElementById('labGraph'); if (!g || ROLE !== 'group') return;
+  var temps = labTemps(MYG);
+  g.innerHTML = labGraphSVG(temps);
+  var t = labLast(temps), cur = t === null ? 20 : t;
+  var fluid = document.getElementById('labFluid');
+  if (fluid) fluid.setAttribute('y2', (225 - Math.min(cur, 110) / 110 * 150).toFixed(1));
+  var now = document.getElementById('labNow'); if (now) now.textContent = t === null ? '— °C' : fmtN(t, t % 1 ? 1 : 0) + ' °C';
+  var bub = document.getElementById('labBubbles'), stm = document.getElementById('labSteam'), b = '';
+  if (bub) {
+    if (cur >= 40) {
+      var n = Math.min(Math.floor((cur - 30) / 5), 16), boil = cur >= 95;
+      for (var i = 0; i < n; i++) {
+        var bx = 114 + (i * 37) % 52, by = boil ? 220 + (i * 23) % 44 : 252 + (i * 11) % 14, r = boil ? 2.5 + (i % 3) * 1.5 : 1.5 + (i % 2);
+        b += '<circle class="bub' + (boil ? ' rise' : '') + '" cx="' + bx + '" cy="' + by + '" r="' + r + '" style="animation-delay:-' + (i * 0.13).toFixed(2) + 's"/>';
+      }
+    }
+    bub.innerHTML = b;
+  }
+  if (stm) stm.innerHTML = cur >= 80 ? '<path d="M135 105 Q130 90 138 75 T132 60"/><path d="M142 105 Q148 90 140 75 T146 60"/><path d="M148 105 Q144 92 150 78 T144 62"/>' : '';
+  var ban = document.getElementById('labBanner'); if (ban) ban.hidden = !labPlateau(temps);
+}
+function labTickUI(){
+  var idx = Math.min(14, Math.floor(lab.sec / 30));
+  var cd = document.getElementById('labCountdown'), tot = document.getElementById('labTotal');
+  if (cd) cd.textContent = lab.sec >= 420 ? '00:00' : mmss(30 - lab.sec % 30);
+  if (tot) tot.textContent = mmss(lab.sec) + ' / 07:00';
+  document.querySelectorAll('.lab-cell').forEach(function(c, i){ c.classList.toggle('now', (lab.running || lab.sec > 0) && i === idx && lab.sec < 420); });
+  var fl = document.getElementById('labFlame'); if (fl) fl.classList.toggle('on', lab.running);
+  var badge = document.getElementById('labBadge'); if (badge) { badge.textContent = lab.running ? 'Қыздырғыш жанып тұр' : 'Қыздырғыш сөндірулі'; badge.classList.toggle('on', lab.running); }
+  var sb = document.getElementById('labStart'); if (sb) sb.textContent = lab.running ? '❚❚ ТОҚТАТА ТҰРУ' : (lab.sec > 0 && lab.sec < 420 ? '▶ ЖАЛҒАСТЫРУ' : '▶ ТӘЖІРИБЕНІ БАСТАУ');
+}
+function labToggle(){
+  if (lab.running) { clearInterval(lab.timer); lab.running = false; labTickUI(); return; }
+  if (lab.sec >= 420) lab.sec = 0;
+  lab.running = true;
+  lab.timer = setInterval(function(){
+    lab.sec++;
+    if (lab.sec >= 420) { clearInterval(lab.timer); lab.running = false; toast('Тәжірибе уақыты аяқталды (7 мин)', 3000); }
+    labTickUI();
+  }, 1000);
+  labTickUI();
+}
+function labStop(){ clearInterval(lab.timer); lab.running = false; lab.sec = 0; }
+function labCellState(v, raw){
+  if (v !== null) return ['ok', 'Енгізілді'];
+  if (raw) return ['err', 'Қате мән'];
+  return ['', 'Күтуде'];
+}
+function lessonSec4(){
+  if (ROLE !== 'group') return '<div class="lsec"><p class="lead">Әр топ өз ноутбугінде температура кестесін, графикті және талдау жауаптарын толтырады. Төменде төрт топтың нәтижесі нақты уақытта жиналады.</p>' + labsAll() + '</div>';
+  var temps = labTemps(MYG), answers = labAns(MYG), rd = ro();
+  var cells = LAB_SLOTS.map(function(sl, i){
+    var v = temps[i], st0 = labCellState(v, '');
+    return '<div class="lab-cell' + (v !== null ? ' has' : '') + '"><span class="tm">' + sl.label + '</span><span class="stt ' + st0[0] + '" id="labSt' + i + '">' + st0[1] + '</span>' +
+      '<label for="labT' + i + '"><input id="labT' + i + '" class="lab-in" data-i="' + i + '" type="number" inputmode="decimal" min="0" max="110" step="0.1" placeholder="—"' + rd + ' value="' + (v === null ? '' : v) + '">°C</label></div>';
+  }).join('');
+  var qs = LAB_QS.map(function(q, i){ return '<label for="labQ' + i + '">' + (i + 1) + '. ' + q + '<textarea id="labQ' + i + '" class="lab-ans" data-i="' + i + '" rows="2" maxlength="2000" placeholder="Жауабыңызды жазыңыз…"' + rd + '>' + esc(answers[i]) + '</textarea></label>'; }).join('');
+  return '<div class="lsec">' +
+    '<p class="lead">Қалыпты атмосфералық қысымда (p₀ = 101,3 кПа) судың температурасының уақытқа тәуелділік графигін саламыз. Әр 30 секунд сайын термометрдің көрсеткішін кестеге жазыңыз.</p>' +
+    '<div class="lab-ctrl"><div class="lab-clock"><span>Келесі өлшеуге</span><b id="labCountdown">00:30</b></div>' +
+      '<div class="lab-clock tot"><span>Тәжірибе уақыты</span><b id="labTotal">00:00 / 07:00</b></div>' +
+      '<button class="btn btn-primary" id="labStart" data-act="lab-start">▶ ТӘЖІРИБЕНІ БАСТАУ</button>' +
+      '<button class="btn btn-ghost" data-act="lab-clear">ГРАФИКТІ ТАЗАЛАУ</button>' +
+      '<button class="btn btn-danger" data-act="lab-reset">ҚАЙТА БАСТАУ</button></div>' +
+    '<div class="lab-grid">' +
+      '<section class="lab-card"><h3>Зертханалық қондырғы<span class="badge" id="labBadge">Қыздырғыш сөндірулі</span></h3>' +
+        '<p class="hint">Штативтегі колба, термометр және отын таблеткасы. Термометр колбаның түбіне де, қабырғасына да тимейді.</p>' + labApparatusSVG() +
+        '<div class="lab-now"><span>Соңғы температура:</span><b id="labNow">— °C</b></div></section>' +
+      '<section class="lab-card"><h3>Эксперименттік график T = f(t)</h3><p class="hint">Температура енгізілген сайын график өздігінен салынады.</p><div id="labGraph"></div>' +
+        '<div class="lab-banner" id="labBanner" hidden><span class="mark" aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--navy);display:grid;place-items:center;font:900 20px/1 var(--f-display)">?</span><div><b>Зерттеушілік бақылау</b><p>Температура өзгермей тұр. Температураның өзгерісіне назар аударыңыз. Не байқадыңыз?</p></div></div></section>' +
+    '</div>' +
+    '<section class="panel"><h3 class="section-title">ЭКСПЕРИМЕНТТІК ДЕРЕКТЕР</h3><p class="hint">15 өлшеу нүктесі: 0:00 … 7:00, әр 30 секунд сайын. Мәндер тек ' + GROUPS[MYG].n + '-топтың деректеріне сақталады.</p><div class="lab-cells">' + cells + '</div></section>' +
+    '<section class="panel"><h3 class="section-title">ТӘЖІРИБЕ СОҢЫНДАҒЫ ТАЛДАУ</h3><p class="hint">График пен бақылау нәтижелеріне сүйеніп жауап беріңіз.</p><div class="lab-qs">' + qs + '</div></section>' +
+    '</div>';
+}
+function labsAll(){
+  return '<div class="labs-all">' + GROUPS.map(function(Gr, g){
+    var t = labTemps(g), a = labAns(g), n = t.filter(function(v){ return v !== null; }).length;
+    return '<article class="lab-card" data-lab="' + g + '"><h3>' + Gr.n + '-ТОП · ' + Gr.name + '<span class="badge' + (n ? ' on' : '') + '">' + n + ' / 15 өлшеу</span></h3>' +
+      labGraphSVG(t) +
+      '<div class="mini-temps">' + LAB_SLOTS.map(function(sl, i){ return '<span' + (t[i] === null ? ' class="na"' : '') + '><b>' + sl.label + '</b> ' + (t[i] === null ? '—' : fmtN(t[i], t[i] % 1 ? 1 : 0) + '°') + '</span>'; }).join('') + '</div>' +
+      '<ol class="lab-ans-list">' + LAB_QS.map(function(q, i){ return '<li><b>' + q + '</b><p>' + (a[i].trim() ? esc(a[i]) : '<span class="na">Жауап жоқ</span>') + '</p></li>'; }).join('') + '</ol></article>';
+  }).join('') + '</div>';
+}
+function viewLabs(){
+  return '<main class="page wrap"><h1 class="page-title">ТОПТАРДЫҢ ТӘЖІРИБЕ НӘТИЖЕЛЕРІ</h1><p class="section-sub">Әр топтың температура кестесі, графигі және талдау жауаптары бөлек сақталады және бетті жаңартпай жаңарады.</p>' + labsAll() + '</main>';
+}
+
+function viewLesson(){
+  var k = S.ui.lsec;
+  var nav = '<nav class="lsecs" aria-label="Сабақ бөлімдері">' + LSECS.map(function(s, i){
+    return '<button class="step' + (i === k ? ' cur' : '') + '" data-act="lsec" data-s="' + i + '"' + (i === k ? ' aria-current="page"' : '') + '><b>' + s[0] + '</b><span>' + s[1] + '</span></button>';
+  }).join('') + '</nav>';
+  var body = [lessonSec0, lessonSec1, lessonSec2, lessonSec3, lessonSec4, lessonSec5][k]();
+  var back = k > 0 ? '<button class="btn btn-ghost" data-act="lsec" data-s="' + (k - 1) + '">← ' + LSECS[k - 1][0] + '</button>' : '<span></span>';
+  var fwd = k < LSECS.length - 1 ? '<button class="btn btn-primary" data-act="lsec" data-s="' + (k + 1) + '">' + LSECS[k + 1][0] + ' →</button>'
+                                 : '<button class="btn btn-gold" data-act="go" data-view="' + (ROLE === 'group' ? 'group' : 'monitor') + '">БАҒАЛАУҒА ӨТУ →</button>';
+  return '<main class="page wrap"><section class="ghead">' + ornV() + '<span class="gnum">ЖАҢА САБАҚ</span><div class="ghead-title"><h1>' + LSECS[k][0] + '</h1><p>Қайнау, меншікті булану жылуы. Қайнау температурасының атмосфералық қысымға байланыстылығы</p></div>' + icon('flask') + '</section>' +
+    nav + '<section class="panel">' + body + '</section><div class="nav-row">' + back + fwd + '</div></main>';
+}
+function afterLessonRender(){
+  if (ROLE === 'group' && S.ui.view === 'lesson' && S.ui.lsec === 4) { labUpdate(); labTickUI(); }
+}
+
+/* ================= RESULT SHEET ================= */
+function sheetHTML(s){
+  var a = analyze(s), sc = a.sc, Gr = GROUPS[s.g];
+  var now = new Date();
+  var date = now.getFullYear() + ' ж. ' + now.getDate() + ' ' + MONTHS[now.getMonth()];
+  return '<article class="sheet">' +
+    '<header class="sheet-head">' + sunSVG('sun') + '<p class="topic">' + TOPIC + '</p><p>8-сынып | Физика<br>' + esc(date) + '</p></header>' + band() +
+    '<div class="sheet-main">' +
+      '<h2 class="sheet-name">' + esc(up(s.name)) + '</h2>' +
+      '<p class="sheet-group">' + Gr.n + '-ТОП — ' + Gr.name + '</p>' +
+      '<div class="sheet-scores"><div class="score-box"><div class="n">' + sc.total + ' <span>/ 23</span></div><small>балл</small></div>' +
+      '<div class="score-box ten"><div class="n">' + fmt1(sc.ten) + ' <span>/ 10</span></div><small>10 балдық жүйе</small></div></div>' +
+      '<div class="parts"><div class="part"><span>Үй тапсырмасын қайталау</span><b>' + (sc.e1 ? sc.s1 + '/3' : '—') + '</b></div><div class="part"><span>Эксперименттен кейін</span><b>' + (sc.e2 ? sc.s2 + '/2' : '—') + '</b></div><div class="part"><span>Топтық жұмыс</span><b>' + (sc.e3 ? sc.s3 + '/9' : '—') + '</b></div><div class="part"><span>Жеке жұмыс</span><b>' + (sc.e4 ? sc.s4 + '/9' : '—') + '</b></div></div>' +
+      '<div class="fb-grid">' +
+        '<section class="fb good"><h3>✓ ЖЕТІСТІГІҢ</h3><ul>' + a.good.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></section>' +
+        '<section class="fb need"><h3>△ ҚАЙТАЛАУ ҚАЖЕТ</h3><ul>' + a.need.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' + (a.gnote ? '<p class="gnote">' + esc(a.gnote) + '</p>' : '') + '</section>' +
+        '<section class="fb next"><h3>→ КЕЛЕСІ ҚАДАМ</h3><ul><li>' + esc(a.next) + '</li></ul></section>' +
+      '</div>' +
+      '<p class="motto"><span class="star">★</span> ' + esc(a.motto) + '</p>' +
+      '<footer class="sheet-foot"><span>Пән мұғалімі: <b>' + TEACHER + '</b></span><span>«Ел-жұртымның бақыты аталатын, сөнбесін мәңгі сенің, Отан, атың!»</span></footer>' +
+    '</div></article>';
+}
+
+function renderOverlay(){
+  var s = S.ui.result ? findStudent(S.ui.result) : null;
+  if (!s) { overlay.hidden = true; overlay.innerHTML = ''; document.body.classList.remove('locked'); return; }
+  var list = allStudents(), i = list.map(function(x){ return x.id; }).indexOf(s.id);
+  var top = overlay.scrollTop;
+  overlay.innerHTML = '<div class="ov-bar"><div class="wrap">' +
+    '<button class="btn btn-ghost" data-act="close">← ЖАБУ</button>' +
+    '<button class="btn btn-ghost btn-sm" data-act="res-move" data-d="-1"' + (i <= 0 ? ' disabled' : '') + '>◀</button>' +
+    '<span class="count">' + (i+1) + ' / ' + list.length + '</span>' +
+    '<button class="btn btn-ghost btn-sm" data-act="res-move" data-d="1"' + (i >= list.length-1 ? ' disabled' : '') + '>▶</button>' +
+    '<button class="btn btn-gold" data-act="print-one">БАСЫП ШЫҒАРУ / PDF</button></div></div>' +
+    '<div class="ov-body wrap">' + sheetHTML(s) + '</div>';
+  overlay.hidden = false; overlay.scrollTop = top;
+  document.body.classList.add('locked');
+}
+
+/* ================= RENDER ================= */
+function render(){
+  var ae = document.activeElement, key = ae && ae.getAttribute && ae.getAttribute('data-k');
+  var v = S.ui.view, html;
+  if (!CONFIGURED) html = viewSetup();
+  else if (v === 'loading') html = loadingMain('Жүктелуде…');
+  else if (v === 'start') html = viewStart();
+  else if (v === 'join') html = viewJoin();
+  else if (v === 'login') html = viewLogin();
+  else if (v === 'sessions') html = viewSessions();
+  else if (ROLE === 'group') html = v === 'home' ? viewGroupHome() : navBar() + endedBanner() + (v === 'lesson' ? viewLesson() : viewGroup());
+  else html = navBar() + endedBanner() + (v === 'lesson' ? viewLesson() : v === 'lab' ? viewLabs() : v === 'class' ? viewClass() : viewMonitor());
+  app.innerHTML = html;
+  lastNetHTML = netBadge();
+  if (key) { var el = app.querySelector('[data-k="' + key + '"]'); if (el) el.focus({ preventScroll:true }); }
+  afterLessonRender();
+  renderOverlay();
+  renderModal();
+}
+function isTyping(){
+  var ae = document.activeElement;
+  return !!(ae && app.contains(ae) && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));
+}
+var renderPending = false;
+function scheduleRender(){
+  if (isTyping()) {
+    renderPending = true; netTouch();
+    if (S.ui.view === 'lesson' && S.ui.lsec === 4) labUpdate();
+    renderOverlay(); renderModal();
+    return;
+  }
+  render();
+}
+document.addEventListener('focusout', function(){
+  setTimeout(function(){ if (renderPending && !isTyping()) { renderPending = false; render(); } }, 300);
+});
+
+function go(view){ S.ui.view = view; saveUI(); render(); window.scrollTo(0, 0); }
+
+var toastTimer;
+function toast(msg, ms){
+  toastEl.textContent = msg; toastEl.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(function(){ toastEl.hidden = true; }, ms || 1800);
+}
+
+var printFired = false;
+window.addEventListener('beforeprint', function(){ printFired = true; });
+function printSheets(list){
+  if (!list.length) { toast('Басып шығаратын оқушы жоқ'); return; }
+  printRoot.innerHTML = list.map(sheetHTML).join('');
+  printFired = false;
+  try { window.print(); } catch(e) {}
+  setTimeout(function(){
+    if (!printFired) toast('Бұл терезеде басып шығару ашылмады. Бетті браузердің жеке қойындысында ашып, қайта басыңыз.', 6000);
+  }, 500);
+}
+
+function openModal(msg, yes, label, extra){
+  MODAL = null;
+  modal.innerHTML = '<div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="mq"><p id="mq">' + msg + '</p>' +
+    '<div class="actions"><button class="btn btn-ghost" data-act="modal-no">БАС ТАРТУ</button><button class="btn btn-red" data-act="' + yes + '"' + (extra || '') + '>' + (label || 'ИӘ, ӨШІРУ') + '</button></div></div>';
+  modal.hidden = false;
+  var b = modal.querySelector('[data-act="modal-no"]'); if (b) b.focus();
+}
+function closeModal(){ MODAL = null; modal.hidden = true; modal.innerHTML = ''; }
+
+/* ================= QR ================= */
+function qrSVG(text){
+  if (typeof window.qrcode !== 'function') return '';
+  try { var q = window.qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 8, margin: 2, scalable: true }); } catch(e) { return ''; }
+}
+function openQR(){
+  if (!CODE) return;
+  var link = joinLink(CODE), svg = qrSVG(link);
+  MODAL = null;
+  modal.innerHTML = '<div class="modal-box qr-box" role="dialog" aria-modal="true" aria-labelledby="qrT">' +
+    '<h2 id="qrT">ТОПТАРДЫ ҚОСУ · КОД ' + esc(CODE) + '</h2>' +
+    (svg ? '<div class="qr-img">' + svg + '</div>' : '<p class="hint">QR суреті жүктелмеді. Төмендегі сілтемені пайдаланыңыз.</p>') +
+    '<p class="qr-url" id="qrUrl">' + esc(link) + '</p>' +
+    '<ol class="qr-steps"><li>Топ ноутбугінде сілтемені ашыңыз немесе QR кодты сканерлеңіз.</li>' +
+    '<li><b>«ТОП»</b> батырмасын басып, сабақ кодын (<b>' + esc(CODE) + '</b>) енгізіңіз және өз тобыңызды таңдаңыз.</li>' +
+    '<li>Жоғарыда <b>«Сақталды»</b> жазуы шықса, деректер мұғалімге жетті.</li></ol>' +
+    '<p class="note">Тіркелу қажет емес. Бір топ — бір ноутбук: басқа құрылғыдан сол топқа кіру үшін «Бақылау» бетінде «Құрылғыны босату» батырмасын басыңыз.</p>' +
+    '<div class="actions"><button class="btn btn-ghost" data-act="qr-copy">СІЛТЕМЕНІ КӨШІРУ</button><button class="btn btn-primary" data-act="modal-no">ЖАБУ</button></div></div>';
+  modal.hidden = false;
+}
+
+/* ================= ROLES: TEACHER ================= */
+function setJoin(o){ if (o) lsSet(LS_JOIN, o); else lsDel(LS_JOIN); }
+function formErr(msg){ FORM.err = msg; FORM.busy = false; render(); }
+
+function doLogin(){
+  var email = (document.getElementById('tEmail') || {}).value || '', pass = (document.getElementById('tPass') || {}).value || '';
+  FORM.email = email.trim();
+  if (!FORM.email || !pass) { formErr('Email мен құпия сөзді енгізіңіз.'); return; }
+  FORM.busy = true; FORM.err = ''; render();
+  (auth.currentUser ? signOut(auth) : Promise.resolve())
+    .then(function(){ return withTimeout(signInWithEmailAndPassword(auth, FORM.email, pass), 20000); })
+    .then(function(cred){
+      return withTimeout(getDoc(doc(db, 'teachers', cred.user.uid)), 15000).then(function(t){
+        if (!t.exists()) {
+          var uid = cred.user.uid;
+          return signOut(auth).then(function(){ formErr('Бұл аккаунт мұғалім ретінде тіркелмеген. Firestore-та teachers жинағына осы UID-пен құжат қосыңыз: ' + uid); });
+        }
+        FORM.busy = false; FORM.err = '';
+        ROLE = 'teacher'; USER = cred.user;
+        setJoin({ role:'teacher', code:null });
+        showSessions();
+      });
+    })
+    .catch(function(e){
+      var c = e && e.code;
+      if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-email') formErr('Email немесе құпия сөз қате.');
+      else if (c === 'auth/too-many-requests') formErr('Тым көп сәтсіз әрекет. Бірнеше минуттан кейін қайталаңыз.');
+      else if (c === 'auth/network-request-failed' || c === 'timeout' || c === 'unavailable') formErr('Серверге қосылу мүмкін болмады. Интернетті тексеріңіз.');
+      else if (c === 'auth/operation-not-allowed') formErr('Firebase-те Email/Password кіру тәсілі қосылмаған.');
+      else formErr('Кіру сәтсіз аяқталды: ' + (c || e));
+    });
+}
+function showSessions(){
+  stopListeners(); closeModal();
+  CODE = null; MYG = null; D = blankData(); S.ui = blankUI(); S.ui.view = 'sessions';
+  FORM.err = ''; FORM.busy = false;
+  setJoin({ role:'teacher', code:null });
+  render();
+  withTimeout(getDocs(query(collection(db, 'sessions'), where('teacherUid', '==', auth.currentUser.uid))), 20000).then(function(snap){
+    var l = []; snap.forEach(function(d){ var x = d.data(); x.id = d.id; l.push(x); });
+    l.sort(function(a, b){ return tsMs(b.createdAt) - tsMs(a.createdAt); });
+    D.sessions = l; if (S.ui.view === 'sessions') render();
+  }).catch(function(){ D.sessions = []; FORM.err = 'Сабақтар тізімін алу мүмкін болмады. Интернетті тексеріңіз.'; if (S.ui.view === 'sessions') render(); });
+}
+var CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function genCode(){
+  var a = new Uint32Array(6), s = '';
+  crypto.getRandomValues(a);
+  for (var i=0;i<6;i++) s += CODE_CHARS[a[i] % CODE_CHARS.length];
+  return s;
+}
+function createSession(){
+  var title = ((document.getElementById('newTitle') || {}).value || '').trim().slice(0, 60);
+  FORM.busy = true; FORM.err = ''; render();
+  var uid = auth.currentUser.uid, tries = 0;
+  var attempt = function(){
+    var code = genCode(), ref = sRef(code);
+    return withTimeout(getDoc(ref), 15000).then(function(ex){
+      if (ex.exists()) { if (++tries < 5) return attempt(); throw { code:'exists' }; }
+      var b = writeBatch(db);
+      b.set(ref, { teacherUid: uid, status: 'open', title: title, createdAt: serverTimestamp(), endedAt: null });
+      for (var g=0; g<4; g++) b.set(gRef(code, g), { g: g, ownerUid: null, claimedAt: null, names: {}, s3: {}, s3Final: {}, done: {}, lab: { temps: {}, ans: {} }, updatedAt: null });
+      return withTimeout(b.commit(), 20000).then(function(){ return code; });
+    });
+  };
+  attempt().then(function(code){ FORM.busy = false; openTeacherSession(code, 'monitor'); toast('Сабақ ашылды. Кодты топтарға көрсетіңіз.', 3500); })
+    .catch(function(e){ formErr(e && e.code === 'permission-denied' ? 'Рұқсат жоқ: бұл аккаунт мұғалім ретінде тіркелмеген.' : 'Сабақ ашылмады. Интернетті тексеріп, қайталаңыз.'); });
+}
+function openTeacherSession(code, view){
+  stopListeners(); closeModal();
+  ROLE = 'teacher'; CODE = code; MYG = null; D = blankData();
+  loadUI(['monitor', 'class', 'lab', 'lesson'], 'monitor');
+  if (view) S.ui.view = view;
+  setJoin({ role:'teacher', code:code });
+  NET.lastSaved = 0;
+  listenSession(); listenTeacher();
+  render(); window.scrollTo(0, 0);
+}
+
+/* ================= ROLES: GROUP DEVICE ================= */
+function doJoin(){
+  var code = normCode(FORM.joinCode), g = FORM.joinG;
+  if (code.length !== 6) { formErr('Сабақ кодын толық енгізіңіз (6 таңба).'); return; }
+  if (g === null) { formErr('Тобыңызды таңдаңыз.'); return; }
+  FORM.busy = true; FORM.err = ''; render();
+  var start = auth.currentUser && auth.currentUser.isAnonymous ? Promise.resolve({ user: auth.currentUser })
+    : (auth.currentUser ? signOut(auth) : Promise.resolve()).then(function(){ return withTimeout(signInAnonymously(auth), 15000); });
+  start.then(function(cred){
+    var uid = cred.user.uid;
+    return withTimeout(getDoc(sRef(code)), 15000).then(function(ss){
+      if (!ss.exists()) throw { code:'no-session' };
+      if (ss.data().status !== 'open') throw { code:'ended' };
+      return withTimeout(updateDoc(gRef(code, g), { ownerUid: uid, claimedAt: serverTimestamp() }), 15000);
+    });
+  }).then(function(){
+    FORM.busy = false;
+    setJoin({ role:'group', code:code, g:g });
+    enterGroup(code, g, 'group');
+    toast(GROUPS[g].n + '-топ ретінде қосылдыңыз', 2500);
+  }).catch(function(e){
+    var c = e && e.code;
+    if (c === 'no-session') formErr('Мұндай сабақ коды табылмады. Кодты мұғалімнен қайта сұраңыз.');
+    else if (c === 'ended') formErr('Бұл сабақ аяқталған.');
+    else if (c === 'permission-denied') formErr(GROUPS[g].n + '-топ басқа құрылғыда ашылған. Мұғалімнен осы топ үшін «Құрылғыны босату» батырмасын басуын сұраңыз.');
+    else if (c === 'auth/operation-not-allowed') formErr('Firebase-те Anonymous кіру тәсілі қосылмаған. Мұғалімге хабарлаңыз.');
+    else if (c === 'timeout' || c === 'unavailable' || c === 'auth/network-request-failed') formErr('Серверге қосылу мүмкін болмады. Интернетті тексеріңіз.');
+    else formErr('Қосылу сәтсіз аяқталды: ' + (c || e));
+  });
+}
+function enterGroup(code, g, view){
+  stopListeners(); closeModal();
+  ROLE = 'group'; CODE = code; MYG = g; D = blankData();
+  loadUI(['home', 'lesson', 'group'], 'group');
+  if (view) S.ui.view = view;
+  S.ui.g = g;
+  NET.lastSaved = 0;
+  listenSession(); listenGroupDevice(); startHeartbeat();
+  render(); window.scrollTo(0, 0);
+}
+function leaveGroup(){
+  flushDrafts(); stopHeartbeat(true); stopListeners(); labStop(); closeModal();
+  setJoin(null);
+  ROLE = null; CODE = null; MYG = null; D = blankData(); S.ui = blankUI();
+  FORM.joinCode = ''; FORM.joinG = null; FORM.err = '';
+  render();
+}
+function kickGroup(msg){
+  var code = CODE, g = MYG;
+  stopHeartbeat(false); stopListeners(); labStop(); closeModal();
+  setJoin(null);
+  ROLE = null; CODE = null; MYG = null; D = blankData(); S.ui = blankUI(); S.ui.view = 'join';
+  FORM.joinCode = code || ''; FORM.joinG = g; FORM.err = msg; FORM.busy = false;
+  render();
+}
+function canEdit(){
+  if (ROLE !== 'group') return false;
+  if (ended()) { toast('Сабақ аяқталды: деректерді өзгертуге болмайды.', 3500); return false; }
+  return true;
+}
+
+/* ---- group writes: only the changed field is sent ---- */
+function setSelf(s, k, i, v){
+  var self = {}; self[k] = {}; self[k][String(i)] = v;
+  write(setDoc(stRef(CODE, s.g, s.slot), { self: self, updatedAt: serverTimestamp() }, { merge:true }));
+}
+function setS3(g, q, v){
+  var o = { updatedAt: serverTimestamp() }; o['s3.' + q] = v ? v : deleteField();
+  write(updateDoc(gRef(CODE, g), o));
+}
+function markDone(g, step){
+  var k = STAGE_KEYS[step - 1]; if (!k || doneFlag(g, k) || ended()) return;
+  var o = { updatedAt: serverTimestamp() }; o['done.' + k] = true;
+  write(updateDoc(gRef(CODE, g), o));
+}
+function clearSelf(g, slot){
+  if (!D.studs[g][String(slot)] || ended()) return;
+  write(updateDoc(stRef(CODE, g, slot), { self: {}, updatedAt: serverTimestamp() }));
+}
+
+/* ---- teacher writes ---- */
+function setFinal(s, k, i, v){
+  var ref = stRef(CODE, s.g, s.slot);
+  if (v === null) {
+    if (!D.studs[s.g][String(s.slot)]) return;
+    var o = { finalAt: serverTimestamp() }; o['final.' + k + '.' + i] = deleteField();
+    write(updateDoc(ref, o));
+  } else {
+    var fin = {}; fin[k] = {}; fin[k][String(i)] = v;
+    write(setDoc(ref, { final: fin, finalAt: serverTimestamp() }, { merge:true }));
+  }
+}
+function setS3Final(g, q, v){
+  var o = { finalAt: serverTimestamp() }; o['s3Final.' + q] = v ? v : deleteField();
+  write(updateDoc(gRef(CODE, g), o));
+}
+
+/* ================= EVENTS ================= */
+document.addEventListener('submit', function(e){
+  if (e.target && e.target.getAttribute('data-form') === 'login') { e.preventDefault(); doLogin(); }
+});
+document.addEventListener('click', function(e){
+  var b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+  var a = b.getAttribute('data-act'), d = b.dataset, g = ROLE === 'group' ? MYG : S.ui.g, x, s;
+  switch (a) {
+    case 'role-teacher':
+      FORM.err = '';
+      if (auth && auth.currentUser && !auth.currentUser.isAnonymous) { ROLE = 'teacher'; showSessions(); }
+      else { S.ui.view = 'login'; render(); }
+      break;
+    case 'role-group': FORM.err = ''; S.ui.view = 'join'; render(); break;
+    case 'back-start': if (!ROLE) { FORM.err = ''; S.ui.view = 'start'; render(); } break;
+    case 'join-g': FORM.joinG = +d.g; FORM.err = ''; render(); break;
+    case 'join': doJoin(); break;
+    case 'sessions': showSessions(); break;
+    case 'open-session': openTeacherSession(d.code); break;
+    case 'new-session': createSession(); break;
+    case 'logout': openModal('Мұғалім аккаунтынан шығасыз ба?', 'logout-yes', 'ИӘ, ШЫҒУ'); break;
+    case 'logout-yes': closeModal(); stopListeners(); setJoin(null); signOut(auth).catch(function(){}); ROLE = null; CODE = null; D = blankData(); S.ui = blankUI(); render(); break;
+    case 'leave': openModal('Бұл ноутбук топтан шығады. Енгізілген деректер серверде сақталып қалады. Шығасыз ба?', 'leave-yes', 'ИӘ, ШЫҒУ'); break;
+    case 'leave-yes': leaveGroup(); break;
+    case 'go':
+      S.ui.view = d.view;
+      if (ROLE === 'group' && d.view === 'group') { if (!students(g).length) S.ui.gstep[g] = 0; else if (S.ui.gstep[g] === 0) S.ui.gstep[g] = 1; }
+      saveUI(); render(); window.scrollTo(0, 0); break;
+    case 'step': S.ui.gstep[g] = +d.step; saveUI(); render(); window.scrollTo(0, 0); break;
+    case 'next': {
+      var stepNow = S.ui.gstep[g];
+      if (stepNow >= 1 && stepNow <= 4) markDone(g, stepNow);
+      S.ui.gstep[g] = Math.min(5, stepNow + 1); saveUI(); render(); window.scrollTo(0, 0);
+      break;
+    }
+    case 's1': case 's2': case 's4': {
+      if (!canEdit()) break;
+      s = findStudent(d.id); if (!s) break;
+      x = markInfo(s, a, +d.i);
+      if (x.fin !== undefined) { toast('Бұл белгіні мұғалім түзеткен: өзгертуге болмайды.', 3000); break; }
+      setSelf(s, a, +d.i, x.self !== true);
+      break;
+    }
+    case 's3': {
+      if (!canEdit()) break;
+      x = s3info(g, +d.q);
+      if (x.fin) { toast('Бұл жауапты мұғалім түзеткен: өзгертуге болмайды.', 3000); break; }
+      setS3(g, +d.q, x.self === d.v ? null : d.v);
+      break;
+    }
+    case 'sel': S.ui.sel[g] = +d.slot; saveUI(); render(); break;
+    case 'selmove': {
+      var l = students(g), cur = l.filter(function(z){ return z.slot === S.ui.sel[g]; })[0] || l[0], k = l.indexOf(cur) + (+d.d);
+      if (l[k]) { S.ui.sel[g] = l[k].slot; saveUI(); render(); }
+      break;
+    }
+    case 'show': S.ui.result = d.id; overlay.scrollTop = 0; renderOverlay(); overlay.scrollTop = 0; break;
+    case 'close': S.ui.result = null; renderOverlay(); break;
+    case 'res-move': {
+      var al = allStudents(), j = al.map(function(z){ return z.id; }).indexOf(S.ui.result) + (+d.d);
+      if (al[j]) { S.ui.result = al[j].id; renderOverlay(); overlay.scrollTop = 0; }
+      break;
+    }
+    case 'print-one': { var one = findStudent(S.ui.result); printSheets(one ? [one] : []); break; }
+    case 'print-group': printSheets(students(g)); break;
+    case 'print-all': printSheets(allStudents()); break;
+    case 'csv': csvExport(); break;
+    case 'copy': {
+      var pre = document.getElementById('briefText'), txt = pre ? pre.textContent : '';
+      var fallback = function(){ toast('Көшіру мүмкін болмады. Мәтінді экраннан көшіріңіз.', 3500); };
+      try { navigator.clipboard.writeText(txt).then(function(){ toast('Қорытынды көшірілді'); }, fallback); } catch(err) { fallback(); }
+      break;
+    }
+    case 'end-session': openModal('Сабақ аяқталады. Топтар деректерді енді өзгерте алмайды. Жалғастырасыз ба?', 'end-yes', 'ИӘ, АЯҚТАУ'); break;
+    case 'end-yes': closeModal(); write(updateDoc(sRef(CODE), { status:'ended', endedAt: serverTimestamp() })); break;
+    case 'reopen': write(updateDoc(sRef(CODE), { status:'open', endedAt: null })); break;
+    case 'release': openModal(GROUPS[+d.g].n + '-топтың ноутбугі ажыратылады. Енгізілген деректер өшпейді, топ басқа құрылғыдан қайта кіре алады. Жалғастырасыз ба?', 'release-yes', 'ИӘ, БОСАТУ', ' data-g="' + (+d.g) + '"'); break;
+    case 'release-yes': closeModal(); write(updateDoc(gRef(CODE, +d.g), { ownerUid: null })); break;
+    case 'fix-open': MODAL = { kind:'fix', id:d.id }; renderModal(); break;
+    case 'fix3-open': MODAL = { kind:'fix3', g:+d.g }; renderModal(); break;
+    case 'fix': {
+      s = MODAL && findStudent(MODAL.id); if (!s || ROLE !== 'teacher') break;
+      setFinal(s, d.k, +d.i, d.v === '' ? null : d.v === '1');
+      break;
+    }
+    case 'fix3': if (MODAL && ROLE === 'teacher') setS3Final(MODAL.g, +d.q, d.v || null); break;
+    case 'modal-no': closeModal(); break;
+    case 'qr': openQR(); break;
+    case 'qr-copy': {
+      var link = joinLink(CODE);
+      var qfail = function(){ var el = document.getElementById('qrUrl') || document.querySelector('.qr-url'); if (el) { var r = document.createRange(); r.selectNodeContents(el); var sl = window.getSelection(); sl.removeAllRanges(); sl.addRange(r); } toast('Сілтеме белгіленді: көшіріп алыңыз', 3000); };
+      try { navigator.clipboard.writeText(link).then(function(){ toast('Сілтеме көшірілді'); }, qfail); } catch(err) { qfail(); }
+      break;
+    }
+    case 'lsec': S.ui.lsec = +d.s; saveUI(); render(); window.scrollTo(0, 0); break;
+    case 'ex-next': S.ui.ex = Math.min(EX_STEPS.length, S.ui.ex + 1); saveUI(); render(); break;
+    case 'ex-reset': S.ui.ex = 0; saveUI(); render(); break;
+    case 'alt': S.ui.alt = +d.h; saveUI(); render(); break;
+    case 'lab-start': labToggle(); break;
+    case 'lab-clear': if (canEdit()) openModal('Тек ' + GROUPS[MYG].n + '-топтың кестесіндегі температура мәндері өшіріледі. Жалғастырасыз ба?', 'lab-clear-yes'); break;
+    case 'lab-reset': if (canEdit()) openModal('Таймер тоқтап, ' + GROUPS[MYG].n + '-топтың кестесіндегі мәндер мен талдау жауаптары өшіріледі. Жалғастырасыз ба?', 'lab-reset-yes'); break;
+    case 'lab-clear-yes':
+      closeModal(); if (!canEdit()) break;
+      dropDrafts('g' + MYG + '|lab.temps.');
+      write(updateDoc(gRef(CODE, MYG), { 'lab.temps': {}, updatedAt: serverTimestamp() }));
+      toast('График тазаланды'); break;
+    case 'lab-reset-yes':
+      closeModal(); if (!canEdit()) break;
+      labStop(); dropDrafts('g' + MYG + '|lab.');
+      write(updateDoc(gRef(CODE, MYG), { lab: { temps: {}, ans: {} }, updatedAt: serverTimestamp() }));
+      toast('Тәжірибе қайта басталды'); break;
+  }
+});
+document.addEventListener('input', function(e){
+  var t = e.target;
+  if (t.id === 'joinCode') { var c = normCode(t.value); if (c !== t.value) t.value = c; FORM.joinCode = c; return; }
+  if (!t.classList) return;
+  if (t.classList.contains('name-input')) {
+    var gi = +t.dataset.g, ni = +t.dataset.i;
+    if (ROLE !== 'group' || ended()) { t.value = names(gi)[ni]; return; }
+    queueField(gRef(CODE, gi), 'g' + gi, 'names.' + ni, t.value.slice(0, 40), 600);
+    var p = document.getElementById('namePreview'); if (p) p.innerHTML = previewChips(gi);
+  }
+  if (t.classList.contains('lab-in')) {
+    if (ROLE !== 'group' || ended()) return;
+    var li = +t.dataset.i, raw = t.value.trim(), num = parseFloat(raw.replace(',', '.'));
+    var val = (raw !== '' && !isNaN(num) && num >= 0 && num <= 110) ? num : null;
+    queueField(gRef(CODE, MYG), 'g' + MYG, 'lab.temps.' + li, val, 500);
+    var cs = labCellState(val, raw), tag = document.getElementById('labSt' + li);
+    if (tag) { tag.textContent = cs[1]; tag.className = 'stt ' + cs[0]; }
+    t.closest('.lab-cell').classList.toggle('has', val !== null);
+    labUpdate();
+  }
+  if (t.classList.contains('lab-ans')) {
+    if (ROLE !== 'group' || ended()) return;
+    queueField(gRef(CODE, MYG), 'g' + MYG, 'lab.ans.' + (+t.dataset.i), t.value.slice(0, 2000), 700);
+  }
+  if (t.id === 'altRange') {
+    var hv = +t.value, av = altValues(hv); S.ui.alt = hv; saveUI();
+    document.getElementById('altH').innerHTML = hv + '<small> м</small>';
+    document.getElementById('altP').innerHTML = '≈ ' + fmtN(av.p, 1) + '<small> кПа</small>';
+    document.getElementById('altT').innerHTML = '≈ ' + fmtN(av.t, 1) + '<small> °C</small>';
+    document.getElementById('altFig').innerHTML = altFigSVG(hv);
+    document.querySelectorAll('.presets .btn').forEach(function(b){ b.classList.toggle('cur', +b.dataset.h === hv); });
+  }
+});
+document.addEventListener('change', function(e){
+  var t = e.target;
+  if (t.id === 's4sel') { S.ui.sel[MYG] = +t.value; saveUI(); render(); }
+  if (t.classList && t.classList.contains('name-input') && ROLE === 'group' && !t.value.trim()) clearSelf(+t.dataset.g, +t.dataset.i);
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && e.target && e.target.id === 'joinCode') { doJoin(); return; }
+  if (e.key !== 'Escape') return;
+  if (!modal.hidden) closeModal();
+  else if (S.ui.result) { S.ui.result = null; renderOverlay(); }
+});
+
+/* ================= BOOT ================= */
+function resume(){
+  var j = lsGet(LS_JOIN), url = normCode(new URLSearchParams(location.search).get('code'));
+  if (j && j.role === 'group' && USER && USER.isAnonymous && /^[A-Z0-9]{6}$/.test(j.code || '') && j.g >= 0 && j.g <= 3 && (!url || url === j.code)) { enterGroup(j.code, j.g | 0); return; }
+  if (j && j.role === 'teacher' && USER && !USER.isAnonymous) {
+    ROLE = 'teacher';
+    if (j.code && /^[A-Z0-9]{6}$/.test(j.code)) openTeacherSession(j.code); else showSessions();
+    return;
+  }
+  ROLE = null;
+  if (url) { FORM.joinCode = url; S.ui.view = 'join'; } else S.ui.view = 'start';
+  render();
+}
+if (!CONFIGURED) render();
+else {
+  S.ui.view = 'loading'; render();
+  var booted = false;
+  onAuthStateChanged(auth, function(user){
+    USER = user;
+    if (!booted) { booted = true; resume(); }
+  });
+}
+</script>
+</body>
+</html>
