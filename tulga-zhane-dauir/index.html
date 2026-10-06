@@ -1,0 +1,439 @@
+<title>Қазыкен Құсағамбетова: Мариновка мектебі</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=PT+Mono&display=swap">
+<style>
+/* Layout: a school chronicle on squared notebook paper. A red teacher's margin runs down the left;
+   the person's life and the country's history run side by side on a double timeline. */
+:root{
+  --paper:#f5f6f1;
+  --grid:rgba(60,90,150,.09);
+  --ink:#1d2433;
+  --ink-soft:#4b5468;
+  --blue:#24418f;
+  --red:#b02a2a;
+  --card:#ffffff;
+  --line:#d6dae3;
+  --fill-bg:#fff3c4;
+  --fill-ink:#6b5200;
+  --photo-frame:#ffffff;
+  --serif:"PT Serif",Georgia,"Times New Roman",serif;
+  --sans:"PT Sans","Segoe UI",Arial,sans-serif;
+  --mono:"PT Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#141922;--grid:rgba(140,170,230,.07);--ink:#e6e9f0;--ink-soft:#a9b1c3;
+    --blue:#8fa9ec;--red:#e07a6f;--card:#1c2330;--line:#2e3747;
+    --fill-bg:#4a3d10;--fill-ink:#ffe08a;--photo-frame:#232b39;color-scheme:dark}
+}
+:root[data-theme="dark"]{
+  --paper:#141922;--grid:rgba(140,170,230,.07);--ink:#e6e9f0;--ink-soft:#a9b1c3;
+  --blue:#8fa9ec;--red:#e07a6f;--card:#1c2330;--line:#2e3747;
+  --fill-bg:#4a3d10;--fill-ink:#ffe08a;--photo-frame:#232b39;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;
+}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:0 64px;position:relative}
+@media (min-width:760px){
+  .wrap{padding-inline:64px 32px}
+  .wrap::before{content:"";position:absolute;top:0;bottom:0;left:40px;width:2px;background:var(--red);opacity:.55}
+}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.2;margin:0}
+h2{font-size:clamp(26px,4vw,34px);margin-bottom:8px}
+h3{font-size:20px}
+p{margin:0}
+.prose{max-width:66ch;display:grid;gap:14px}
+section{padding-block:56px 8px;display:grid;gap:22px}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--red)}
+.lede{color:var(--ink-soft);max-width:62ch}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* Work-in-progress markers */
+.fill{background:var(--fill-bg);color:var(--fill-ink);padding:0 .3em;border-radius:3px;font-style:italic}
+.draft-note{margin-top:20px;border:1px dashed var(--fill-ink);background:var(--fill-bg);color:var(--fill-ink);
+  padding:10px 14px;border-radius:6px;font-size:15px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.draft-note button{font:inherit;font-size:14px;border:1px solid currentColor;background:transparent;color:inherit;border-radius:4px;padding:4px 10px;cursor:pointer}
+body.clean .fill{background:transparent;color:inherit;font-style:normal;padding:0}
+body.clean .draft-note{display:none}
+
+/* Hero */
+.hero{padding-block:40px 8px;display:grid;gap:28px;grid-template-columns:1fr}
+@media (min-width:860px){.hero{grid-template-columns:1.05fr .95fr;align-items:end}}
+.hero h1{font-size:clamp(34px,6vw,58px);font-weight:700;letter-spacing:-.01em}
+.hero h1 span{display:block;font-weight:400;font-style:italic;font-size:.5em;color:var(--blue);margin-top:10px;letter-spacing:0}
+.hero .quote{font-family:var(--serif);font-size:19px;border-left:3px solid var(--blue);padding-left:14px;color:var(--ink-soft);max-width:52ch}
+.hero-text{display:grid;gap:18px;min-width:0}
+
+figure{margin:0}
+.photo{background:var(--photo-frame);padding:10px 10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.12),0 8px 24px rgba(20,30,60,.10);border-radius:2px}
+.photo img{display:block;width:100%;height:auto;cursor:zoom-in}
+.photo figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.45}
+.photo figcaption b{color:var(--ink)}
+.tilt-l{transform:rotate(-1.2deg)}.tilt-r{transform:rotate(1deg)}
+@media (prefers-reduced-motion:no-preference){.photo{transition:transform .25s}.photo:hover{transform:rotate(0) scale(1.01)}}
+
+/* Personnel card */
+.card-file{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--blue);padding:22px;max-width:760px}
+.card-file h3{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.card-file h3 small{font-family:var(--mono);font-size:13px;color:var(--ink-soft);font-weight:400}
+.rows{display:grid;grid-template-columns:minmax(0,1fr);margin:0}
+.rows div{display:grid;grid-template-columns:1fr;gap:2px;padding:10px 0;border-bottom:1px dotted var(--line)}
+@media (min-width:600px){.rows div{grid-template-columns:200px 1fr;gap:16px}}
+.rows dt{font-family:var(--mono);font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);padding-top:3px}
+.rows dd{margin:0;min-width:0}
+
+/* Double timeline */
+.tl-controls{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--paper)}
+.tl-head{display:none}
+.timeline{display:grid;gap:0;border-top:2px solid var(--ink)}
+.tl-row{display:grid;grid-template-columns:72px 1fr;gap:6px 16px;padding:16px 0;border-bottom:1px solid var(--line)}
+.tl-year{font-family:var(--mono);font-size:20px;font-variant-numeric:tabular-nums;color:var(--ink);grid-row:span 2}
+.tl-cell{min-width:0;font-size:16px}
+.tl-cell:empty{display:none}
+.tl-cell .tag{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;display:block}
+.tl-cell.me .tag{color:var(--red)}
+.tl-cell.era .tag{color:var(--blue)}
+@media (min-width:760px){
+  .tl-head{display:grid;grid-template-columns:72px 1fr 1fr;gap:24px;font-family:var(--mono);font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding-bottom:6px}
+  .tl-head .me{color:var(--red)}.tl-head .era{color:var(--blue)}
+  .tl-row{grid-template-columns:72px 1fr 1fr;gap:24px}
+  .tl-year{grid-row:auto}
+  .tl-cell:empty{display:block}
+  .tl-cell .tag{display:none}
+}
+.tl-row.key{background:linear-gradient(90deg,color-mix(in srgb,var(--red) 10%,transparent),transparent 70%)}
+body.only-me .tl-cell.era,body.only-era .tl-cell.me{visibility:hidden}
+@media (max-width:759px){body.only-me .tl-cell.era,body.only-era .tl-cell.me{display:none}}
+
+/* Photo essay */
+.essay{display:grid;gap:28px;grid-template-columns:1fr}
+@media (min-width:760px){.essay{grid-template-columns:1fr 1fr}.essay .wide{grid-column:1/-1}}
+.archive-quote{font-family:var(--serif);font-size:20px;line-height:1.5;padding:18px 22px;background:var(--card);border:1px solid var(--line);max-width:760px}
+.archive-quote cite{display:block;font-family:var(--mono);font-size:13px;font-style:normal;color:var(--ink-soft);margin-top:10px}
+
+/* Graduates */
+.grads{display:grid;gap:28px;grid-template-columns:1fr}
+@media (min-width:760px){.grads{grid-template-columns:.9fr 1.1fr;align-items:start}}
+.strip{display:flex;flex-wrap:wrap;gap:6px;background:#15171c;padding:14px 10px;border-radius:3px;position:relative}
+.strip::before,.strip::after{content:"";position:absolute;left:8px;right:8px;height:5px;background:repeating-linear-gradient(90deg,#f1f1ee 0 8px,transparent 8px 16px);opacity:.85}
+.strip::before{top:4px}.strip::after{bottom:4px}
+.frame{font-family:var(--mono);font-size:15px;color:#f1f1ee;border:1px solid #3d424d;padding:10px 0;width:calc(25% - 5px);text-align:center;font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:6px}
+.stat b{display:block;font-family:var(--serif);font-size:40px;line-height:1;color:var(--blue)}
+.stat span{font-size:14px;color:var(--ink-soft)}
+
+/* Memories */
+.voices{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:760px){.voices{grid-template-columns:1fr 1fr}}
+.voice{background:var(--card);border:1px solid var(--line);padding:18px 20px;display:grid;gap:10px;align-content:start}
+.voice p{font-family:var(--serif);font-size:18px}
+.voice small{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+.qs{counter-reset:q;display:grid;gap:8px;padding:0;margin:0;list-style:none;max-width:66ch}
+.qs li{counter-increment:q;padding-left:36px;position:relative}
+.qs li::before{content:counter(q);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;border:1px solid var(--red);color:var(--red);font-family:var(--mono);font-size:13px;display:grid;place-items:center}
+
+/* Quiz */
+.quiz{display:grid;gap:18px;max-width:760px}
+.q{background:var(--card);border:1px solid var(--line);padding:16px 18px;display:grid;gap:10px}
+.q legend{font-weight:700;padding:0;margin-bottom:8px}
+.q fieldset{border:0;margin:0;padding:0;display:grid;gap:6px}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:4px;cursor:pointer}
+.q label:hover{background:color-mix(in srgb,var(--blue) 8%,transparent)}
+.q .res{font-size:15px;min-height:1.4em}
+.q .res.ok{color:#2f7d3a}.q .res.no{color:var(--red)}
+.score{font-family:var(--mono);font-size:15px}
+
+/* Sources */
+.sources{display:grid;gap:8px;padding-left:22px;margin:0;max-width:72ch}
+.sources li{padding-left:4px}
+footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--ink);display:grid;gap:6px;font-size:15px;color:var(--ink-soft)}
+
+/* Lightbox */
+.lb{position:fixed;inset:0;background:rgba(10,12,18,.92);display:grid;place-items:center;padding:24px;z-index:10;cursor:zoom-out}
+.lb img{max-width:100%;max-height:82vh;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.lb p{color:#eef0f5;font-size:15px;max-width:70ch;text-align:center;margin-top:12px}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px;padding-top:18px}
+nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line)}
+nav.toc a:hover{color:var(--blue);border-color:var(--blue)}
+</style>
+
+<div class="wrap">
+
+  <div class="draft-note" role="note">
+    <span>Жұмыс нұсқасы. <span class="fill">Сары белгіленген</span> жерлерді оқушы өз зерттеуі бойынша толтырады.</span>
+    <button type="button" id="toggle-clean">Қазыларға арналған көрініс</button>
+  </div>
+
+  <header class="hero">
+    <div class="hero-text">
+      <p class="eyebrow">«Менің кіші Отаным» · Тұлға және дәуір · цифрлық тарихи портрет</p>
+      <h1>Қазыкен Сембайқызы Құсағамбетова<span>Мариновка ауылы мектебінің тұңғыш директоры</span></h1>
+      <p class="quote">1993 жылғы 1 қыркүйекте ауылдағы жаңа мектептің есігін ашқан адам. Тәуелсіздіктің ең ауыр жылдарында ол мектеп ұжымын құрып, балаларға білім берудің жолын салды.</p>
+      <nav class="toc" aria-label="Бөлімдер">
+        <a href="#portret">Жеке іс</a><a href="#dauir">Тұлға және дәуір</a><a href="#ashylu">1993 жылғы 1 қыркүйек</a>
+        <a href="#ujym">Ұжым</a><a href="#tulekter">Түлектер</a><a href="#estelik">Естеліктер</a><a href="#viktorina">Викторина</a><a href="#derekkoz">Дереккөздер</a>
+      </nav>
+    </div>
+    <figure class="photo tilt-r">
+      <img src="img/saltanatty-rasim.jpg" alt="Мектептің ашылу салтанатында ауыл тұрғындары мен қонақтар мектеп кіреберісінде тұр" data-cap="Мектептің ашылу салтанаты, 1993 жылғы 1 қыркүйек. Мектеп мұражайындағы стендтен.">
+      <figcaption><b>1993 жылғы 1 қыркүйек.</b> Мектептің ашылу салтанаты. Мектеп мұражайындағы стендтен.</figcaption>
+    </figure>
+  </header>
+
+  <section id="portret" aria-labelledby="h-portret">
+    <div>
+      <p class="eyebrow">I · Тұлға</p>
+      <h2 id="h-portret">Жеке іс парағы</h2>
+      <p class="lede">Мектеп мұрағатындағы мұғалімнің жеке іс парағы үлгісімен жасалды. Мұражай стендінде расталған деректер қарапайым мәтінмен, әлі тексерілетін деректер сары түспен берілген.</p>
+    </div>
+    <div class="card-file">
+      <h3>Құсағамбетова Қазыкен Сембайқызы <small>№ 1 · тұңғыш директор</small></h3>
+      <dl class="rows">
+        <div><dt>Туған жылы, жері</dt><dd><span class="fill">19__ ж., __________ ауылы</span></dd></div>
+        <div><dt>Білімі</dt><dd><span class="fill">қай оқу орнын, қай жылы, қандай мамандық бойынша бітірді</span></dd></div>
+        <div><dt>Пәні</dt><dd><span class="fill">қай пәннен сабақ берді</span></dd></div>
+        <div><dt>Лауазымы</dt><dd>Мариновка ауылы мектебінің тұңғыш директоры</dd></div>
+        <div><dt>Басты оқиға</dt><dd>1993 жылғы 1 қыркүйекте мектептің ашылу салтанатын ашып берді</dd></div>
+        <div><dt>Директор болған жылдары</dt><dd><span class="fill">1993 – ____</span></dd></div>
+        <div><dt>Марапаттары</dt><dd><span class="fill">мысалы: «Қазақстан Республикасы білім беру ісінің құрметті қызметкері», т.б.</span></dd></div>
+        <div><dt>Кейінгі өмірі</dt><dd><span class="fill">зейнеткер / ауылда тұрады / есімі мектеп мұражайында сақталған, т.б.</span></dd></div>
+      </dl>
+    </div>
+    <div class="prose">
+      <p>Қазыкен Сембайқызының есімі Мариновка ауылының тарихында мектеппен бірге аталады. Мектеп мұражайындағы стендте былай жазылған: «Салтанатты рәсімді мектептің тұңғыш директоры Құсағамбетова Қазыкен Сембайқызы ашып берді». Бұл бір ғана сөйлем, бірақ оның артында жаңа ұжымды құру, ғимаратты оқуға дайындау және ауыл балаларын алғашқы сабаққа жинау еңбегі тұр.</p>
+      <p><span class="fill">Мұнда тұлғаның өмірбаяны 2–3 абзацпен жазылады: балалық шағы, оқуы, ұстаздық жолы, мектепті басқарған жылдардағы ең маңызды істері. Деректер туыстарымен, әріптестерімен жүргізілген сұхбаттан және мектеп құжаттарынан алынады.</span></p>
+    </div>
+  </section>
+
+  <section id="dauir" aria-labelledby="h-dauir">
+    <div>
+      <p class="eyebrow">II · Тұлға және дәуір</p>
+      <h2 id="h-dauir">Бір мектеп пен бір елдің уақыт сызығы</h2>
+      <p class="lede">Сол жақта мектеп пен оның директорының тарихы, оң жақта сол жылдары Қазақстанда болған оқиғалар. Қатар оқысаңыз, мектептің қандай жағдайда ашылғаны көрінеді.</p>
+    </div>
+    <div class="tl-controls" role="group" aria-label="Уақыт сызығын сүзу">
+      <button type="button" class="chip" data-f="all" aria-pressed="true">Барлығы</button>
+      <button type="button" class="chip" data-f="me" aria-pressed="false">Тұлға мен мектеп</button>
+      <button type="button" class="chip" data-f="era" aria-pressed="false">Ел тарихы</button>
+    </div>
+    <div>
+      <div class="tl-head" aria-hidden="true"><span>Жыл</span><span class="me">Тұлға мен мектеп</span><span class="era">Ел мен дәуір</span></div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+    <div class="prose">
+      <h3>Дәуірдің тұлғаға әсері</h3>
+      <p>Мектеп 1993 жылы ашылды. Бұл тәуелсіз Қазақстанның алғашқы Конституциясы қабылданған және ұлттық валюта теңге енгізілген жыл. Сонымен қатар бұл экономикалық дағдарыстың ең ауыр кезеңі еді: бағалар күн сайын өсті, көп ауылда жалақы мен зейнетақы айлап кешікті. Осындай уақытта ауылда жаңа мектеп ашып, оған ұжым жинау үшін басшыдан табандылық пен ауыл адамдарының сенімі қажет болды.</p>
+      <p>Тұлғаның мектепке қосқан үлесі де дәуірге әсер етті: тоқсаныншы жылдары оқыған балалар 1997–2010 жылдары мектепті бітіріп, тәуелсіз елдің алғашқы буынын құрады.</p>
+      <p><span class="fill">Оқушының өз ойы: Қазыкен Сембайқызының өмірі дәуірдің қандай қиындықтарын көрсетеді? Ол бүгінгі ұрпаққа қандай үлгі қалдырды?</span></p>
+    </div>
+  </section>
+
+  <section id="ashylu" aria-labelledby="h-ashylu">
+    <div>
+      <p class="eyebrow">III · Фотоқұжаттар</p>
+      <h2 id="h-ashylu">1993 жылғы 1 қыркүйек</h2>
+    </div>
+    <blockquote class="archive-quote">«Салтанатты рәсімді мектептің тұңғыш директоры Құсағамбетова Қазыкен Сембайқызы ашып берді. Бұл Мариновка ауыл тұрғындары үшін үлкен қуаныш болса, мектептің ашылуы ауыл тарихындағы ерекше оқиға еді.»
+      <cite>Мектеп мұражайындағы стенд мәтіні</cite></blockquote>
+    <div class="essay">
+      <figure class="photo tilt-l">
+        <img src="img/ashylu-sozi.jpg" alt="Мектеп кіреберісінде қонақ микрофон алдында сөйлеп тұр, қасында ауыл тұрғындары мен балалар" data-cap="Ашылу салтанатында құттықтау сөз. Мектеп фотоальбомынан.">
+        <figcaption><b>Құттықтау сөз.</b> Мектеп табалдырығында ауыл тұрғындары мен қонақтар. <span class="fill">Суреттегі адамдардың аты-жөні</span></figcaption>
+      </figure>
+      <figure class="photo tilt-r">
+        <img src="img/balalar-1993.jpg" alt="Ашылу салтанатында алғашқы оқушылар гүл ұстап тұр, артында мұғалімдер мен ақсақалдар" data-cap="Мектептің алғашқы оқушылары ашылу салтанатында. Мұражай стендінен.">
+        <figcaption><b>Алғашқы оқушылар.</b> Мұғалімдер мен ақсақалдар ортасында. Мұражай стендінен.</figcaption>
+      </figure>
+      <figure class="photo wide">
+        <img src="img/mektep-gimaraty.jpg" alt="Мектептің екі қабатты ғимараты, алдында жүк көлігі мен ауыл тұрғындары" data-cap="Мектеп ғимараты. Мектеп фотоальбомынан.">
+        <figcaption><b>Мектеп ғимараты.</b> Мектеп фотоальбомынан. <span class="fill">Түсірілген жылы</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="ujym" aria-labelledby="h-ujym">
+    <div>
+      <p class="eyebrow">IV · Ұжым</p>
+      <h2 id="h-ujym">Ұстаздар мен шәкірттер</h2>
+      <p class="lede">Директор жалғыз мектеп ашпайды. Төмендегі суреттерде алғашқы ұстаздар ұжымы мен оқушылар бар.</p>
+    </div>
+    <div class="essay">
+      <figure class="photo tilt-r">
+        <img src="img/ustazdar-ujymy.jpg" alt="Мектеп баспалдағында мұғалімдер ұжымы тұр" data-cap="Мектептің ұстаздар ұжымы. Мұражай стендінен.">
+        <figcaption><b>Ұстаздар ұжымы.</b> Мұражай стендінен. <span class="fill">Жылы, Қазыкен Сембайқызы суретте қай жерде тұр</span></figcaption>
+      </figure>
+      <figure class="photo tilt-l">
+        <img src="img/alghashqy-synyp.jpg" alt="Мектеп алдында оқушылар мен мұғалімдердің топтық суреті" data-cap="Оқушылар мен мұғалімдер. Мұражай стендінен.">
+        <figcaption><b>Оқушылар мен ұстаздар.</b> Мұражай стендінен. <span class="fill">Қай сынып, қай жыл</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="tulekter" aria-labelledby="h-tulekter">
+    <div>
+      <p class="eyebrow">V · Мұра</p>
+      <h2 id="h-tulekter">Түлектер шежіресі</h2>
+      <p class="lede">Мектеп дәлізіндегі «кинотаспа» стендінде 1993 жылғы ашылу күнінен бастап түлектердің суреттері жыл сайын жалғасып келеді.</p>
+    </div>
+    <div class="grads">
+      <figure class="photo tilt-l">
+        <img src="img/tulekter-qabyrgasy.jpg" alt="Мектеп дәлізіндегі кинотаспа түріндегі стенд: 1993 жылғы ашылу және 1997–2010 жылдардағы түлектер суреттері" data-cap="Мектеп дәлізіндегі түлектер стенді: 1993 жылғы 1 қыркүйек және 1997–2010 жылдардағы түлектер.">
+        <figcaption><b>«Түлек» стенді.</b> Мектеп дәлізі.</figcaption>
+      </figure>
+      <div style="display:grid;gap:18px;min-width:0">
+        <div class="strip" id="strip" aria-label="Стендте суреті бар түлектер жылдары"></div>
+        <div class="stats">
+          <div class="stat"><b id="n-years">14</b><span>түлек легі стендте</span></div>
+          <div class="stat"><b>1993</b><span>мектеп ашылған жыл</span></div>
+          <div class="stat"><b><span class="fill">___</span></b><span>барлық түлек саны</span></div>
+        </div>
+        <div class="prose">
+          <p>Тоқсаныншы жылдары мектеп табалдырығын аттаған балалар 2000-жылдары мектепті бітіріп, ауылдан ел ішіне тарады. Стендтегі «Самғатқан сан қыранды алтын ұя» деген жазу мектеп туралы ауыл адамдарының ойын дәл жеткізеді.</p>
+          <p><span class="fill">Белгілі түлектер: кім, қай жылғы түлек, бүгін қай салада еңбек етеді.</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="estelik" aria-labelledby="h-estelik">
+    <div>
+      <p class="eyebrow">VI · Ауызша тарих</p>
+      <h2 id="h-estelik">Естеліктер</h2>
+      <p class="lede">Бұл бөлім оқушының өз зерттеуі. Тұлғаны білетін адамдармен сұхбат жазып, ең жақсы үзінділерді осында қойыңыз.</p>
+    </div>
+    <div class="voices">
+      <div class="voice"><p><span class="fill">«Естелік мәтіні…»</span></p><small><span class="fill">Аты-жөні, кім болып істейді, тұлғаға кім болады · сұхбат күні</span></small></div>
+      <div class="voice"><p><span class="fill">«Естелік мәтіні…»</span></p><small><span class="fill">Аты-жөні, 1997 жылғы түлек · сұхбат күні</span></small></div>
+    </div>
+    <div class="prose">
+      <h3>Сұхбатқа арналған сұрақтар</h3>
+      <ol class="qs">
+        <li>Мектеп ашылған күн есіңізде ме? Сол күні не болды?</li>
+        <li>1993 жылы ауылда өмір қандай еді? Мектепке не жетпеді?</li>
+        <li>Қазыкен Сембайқызы қандай басшы, қандай адам еді?</li>
+        <li>Ол туралы есте қалған бір оқиғаны айтып беріңізші.</li>
+        <li>Оның мектепке және ауылға қалдырған ең үлкен мұрасы не деп ойлайсыз?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="viktorina" aria-labelledby="h-quiz">
+    <div>
+      <p class="eyebrow">VII · Өзіңді тексер</p>
+      <h2 id="h-quiz">Викторина</h2>
+    </div>
+    <form class="quiz" id="quiz"></form>
+  </section>
+
+  <section id="derekkoz" aria-labelledby="h-src">
+    <div>
+      <p class="eyebrow">VIII · Дереккөздер</p>
+      <h2 id="h-src">Пайдаланылған дереккөздер</h2>
+    </div>
+    <ol class="sources">
+      <li>Мариновка ауылы мектебінің мұражайы: «1993 жылғы 1 қыркүйек» стенді, мәтін және фотосуреттер.</li>
+      <li>Мектеп дәлізіндегі «Түлек» стенді (1997–2010 жылдардағы түлектер суреттері).</li>
+      <li>Мектептің фотоальбомы: ашылу салтанаты мен мектеп ғимаратының суреттері.</li>
+      <li>Қазақстан Республикасының 1993 жылғы 28 қаңтардағы Конституциясы.</li>
+      <li>«Қазақстан Республикасындағы тілдер туралы» 1997 жылғы 11 шілдедегі Заң.</li>
+      <li>«Білім туралы» Қазақстан Республикасының 1999 жылғы 7 маусымдағы Заңы.</li>
+      <li>Қазақстан Республикасы халқының 1999 жылғы санағының қорытындылары.</li>
+      <li><span class="fill">Сұхбаттар: аты-жөні, күні, орны.</span></li>
+      <li><span class="fill">Аудандық газет мақалалары, мұрағат құжаттары (болса).</span></li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>Жұмыс авторы: <span class="fill">оқушының аты-жөні, __ сынып</span></span>
+    <span>Жетекшісі: <span class="fill">мұғалімнің аты-жөні</span></span>
+    <span><span class="fill">Мектептің толық атауы</span>, Мариновка ауылы, <span class="fill">аудан, облыс</span> · 2026</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // Double timeline. "me" = the person and the school; "era" = Kazakhstan.
+  var T=[
+    {y:"1989",era:"22 қыркүйек: «Тіл туралы» заң қабылданып, қазақ тілі мемлекеттік тіл деп жарияланды."},
+    {y:"1991",me:'<span class="fill">Бұл жылдары Қазыкен Сембайқызы қайда, кім болып жұмыс істеді?</span>',era:"16 желтоқсан: Қазақстан Республикасының тәуелсіздігі жарияланды."},
+    {y:"1992",era:"4 маусым: мемлекеттік рәміздер, Ту мен Елтаңба қабылданды."},
+    {y:"1993",key:true,me:"1 қыркүйек: Мариновка ауылында мектеп ашылды. Салтанатты рәсімді тұңғыш директор Қазыкен Сембайқызы Құсағамбетова ашып берді.",era:"28 қаңтар: тәуелсіз Қазақстанның алғашқы Конституциясы қабылданды. 15 қараша: ұлттық валюта теңге айналымға енгізілді. Экономикалық дағдарыс, жоғары инфляция."},
+    {y:"1995",era:"30 тамыз: бүкілхалықтық референдумда қазіргі Конституция қабылданды."},
+    {y:"1997",me:"Стендтегі алғашқы түлектер суреті: «Түлек-1997».",era:"11 шілде: «Тілдер туралы» заң. 10 желтоқсан: елорда Ақмола қаласына көшірілді."},
+    {y:"1998",me:"«Түлек-1998».",era:"6 мамыр: Ақмола Астана болып өзгертілді."},
+    {y:"1999",me:"«Түлек-1999».",era:"7 маусым: «Білім туралы» заң. Халық санағы: ел халқы 1989 жылмен салыстырғанда 1,5 миллионға жуық азайды."},
+    {y:"2000",me:"«Түлек-2000». Мектеп жаңа ғасырға аяқ басты.",era:"Экономика тұрақтанып, өсу кезеңі басталды."},
+    {y:"2004",me:"«Түлек-2004».",era:"Ұлттық бірыңғай тестілеу (ҰБТ) енгізілді: түлектер мектеп бітіру мен ЖОО-ға түсу емтиханын бір мезгілде тапсырады."},
+    {y:"2010",me:"«Түлек-2010». Стендтегі соңғы кадр.",era:"Қазақстан Еуропадағы қауіпсіздік және ынтымақтастық ұйымына (ЕҚЫҰ) төрағалық етті."},
+    {y:"____",me:'<span class="fill">Қазыкен Сембайқызы директорлық қызметін аяқтады / марапатталды / мектептің мерейтойы</span>',era:""}
+  ];
+  var tl=document.getElementById("timeline");
+  tl.innerHTML=T.map(function(r){
+    return '<div class="tl-row'+(r.key?' key':'')+'"><div class="tl-year">'+r.y+'</div>'+
+      '<div class="tl-cell me">'+(r.me?'<span class="tag">Тұлға мен мектеп</span>'+r.me:'')+'</div>'+
+      '<div class="tl-cell era">'+(r.era?'<span class="tag">Ел мен дәуір</span>'+r.era:'')+'</div></div>';
+  }).join("");
+  var chips=document.querySelectorAll(".chip");
+  chips.forEach(function(c){c.addEventListener("click",function(){
+    chips.forEach(function(x){x.setAttribute("aria-pressed",String(x===c))});
+    document.body.classList.toggle("only-me",c.dataset.f==="me");
+    document.body.classList.toggle("only-era",c.dataset.f==="era");
+  })});
+
+  // Film strip of graduate years on the school wall
+  var years=[1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010];
+  document.getElementById("strip").innerHTML=years.map(function(y){return '<span class="frame">'+y+'</span>'}).join("");
+  document.getElementById("n-years").textContent=years.length;
+
+  // Quiz built only from facts on this page
+  var Q=[
+    {q:"Мариновка ауылындағы мектеп қашан ашылды?",a:["1991 жылғы 16 желтоқсан","1993 жылғы 1 қыркүйек","1997 жылғы 1 қыркүйек"],c:1},
+    {q:"Мектептің ашылу салтанатын кім ашып берді?",a:["Аудан әкімі","Мектептің тұңғыш директоры Қазыкен Сембайқызы Құсағамбетова","Алғашқы түлектер"],c:1},
+    {q:"Мектеп ашылған жылы елде қандай маңызды оқиға болды?",a:["Ұлттық валюта теңге енгізілді","ҰБТ енгізілді","Елорда Астанаға көшті"],c:0},
+    {q:"Стендтегі «Түлек» суреттері қай жылдарды қамтиды?",a:["1993–2000","1997–2010","2004–2020"],c:1}
+  ];
+  var form=document.getElementById("quiz");
+  form.innerHTML=Q.map(function(it,i){
+    return '<div class="q"><fieldset><legend>'+(i+1)+'. '+it.q+'</legend>'+
+      it.a.map(function(t,j){return '<label><input type="radio" id="q'+i+'a'+j+'" name="q'+i+'" value="'+j+'"> <span>'+t+'</span></label>'}).join("")+
+      '</fieldset><div class="res" id="r'+i+'" aria-live="polite"></div></div>';
+  }).join("")+'<p class="score" id="score" aria-live="polite">Жауап беріңіз: 0 / '+Q.length+'</p>';
+  form.addEventListener("submit",function(e){e.preventDefault()});
+  form.addEventListener("change",function(e){
+    var m=/^q(\d+)$/.exec(e.target.name); if(!m) return;
+    var i=+m[1], ok=+e.target.value===Q[i].c, r=document.getElementById("r"+i);
+    r.className="res "+(ok?"ok":"no");
+    r.textContent=ok?"Дұрыс!":"Қате. Дұрыс жауап: "+Q[i].a[Q[i].c];
+    var n=0; Q.forEach(function(it,k){var s=form.querySelector('input[name="q'+k+'"]:checked'); if(s&&+s.value===it.c) n++});
+    document.getElementById("score").textContent="Дұрыс жауап: "+n+" / "+Q.length;
+  });
+
+  // Click a photo to see it large
+  document.querySelectorAll(".photo img").forEach(function(img){
+    img.addEventListener("click",function(){
+      var lb=document.createElement("div"); lb.className="lb"; lb.setAttribute("role","dialog"); lb.tabIndex=-1;
+      var inner=document.createElement("div");
+      var big=document.createElement("img"); big.src=img.src; big.alt=img.alt;
+      var p=document.createElement("p"); p.textContent=img.dataset.cap||img.alt;
+      inner.appendChild(big); inner.appendChild(p); lb.appendChild(inner);
+      function close(){lb.remove()}
+      lb.addEventListener("click",close);
+      lb.addEventListener("keydown",function(e){if(e.key==="Escape")close()});
+      document.body.appendChild(lb); lb.focus();
+    });
+  });
+
+  // Hide work-in-progress markers for the jury view
+  var btn=document.getElementById("toggle-clean");
+  btn.addEventListener("click",function(){document.body.classList.add("clean")});
+})();
+</script>
