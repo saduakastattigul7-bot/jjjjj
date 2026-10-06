@@ -13,6 +13,7 @@
 | `ZhI_deklaratsiyasy.docx` | ЖИ пайдалану туралы декларация (4-қосымша) |
 | `Etika_paragy.docx` | Этика және қауіпсіздік бақылау парағы (5-қосымша) |
 | `Zhetekshi_pikiri.docx` | Жетекші пікірі |
+| `Qorgau_prezentatsiyasy.pptx` | Қорғау презентациясы (14 слайд, баяндама мәтіні мен ықтимал сұрақтар «Заметки» бөлігінде) |
 | `Test_paraqtary.docx` | Әлі сұралмаған қатысушыларға арналған тест парақтары (әр адамға бір бет) |
 
 ## Зерттеу әдісі
@@ -36,3 +37,5 @@
 cd source && npm install && ./build.sh
 # толтырылған кестемен: python3 make_xlsx.py ../Zertteu_kestesi.xlsx толтырылған.xlsx && ./build.sh
 ```
+
+Презентацияны қайта жасау: `cd source/deck && npm install && PPTX_SKILL=<pptx skill> node deck.js ../../Qorgau_prezentatsiyasy.pptx` (алдымен `./build.sh`).
