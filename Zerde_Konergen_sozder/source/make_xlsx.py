@@ -40,7 +40,8 @@ def put(ws, r, j, v=None, fill=False, center=False):
 
 
 def dv_list(ws, items):
-    dv = DataValidation(type="list", formula1='"' + ",".join(items) + '"', allow_blank=True)
+    dv = DataValidation(type="list", formula1='"' + ",".join(items) + '"', allow_blank=True, showErrorMessage=True,
+                        errorTitle="Қате мән", error="Тек мына мәндердің бірін жазыңыз: " + ", ".join(items))
     ws.add_data_validation(dv)
     return dv
 
@@ -177,6 +178,21 @@ if len(sys.argv) > 2:
             for c in cols:
                 v = src[name].cell(r, c).value
                 wb[name].cell(r, c).value = v.strip() if isinstance(v, str) else v
+
+# Тестегі рұқсат етілмеген мәндерді қызылмен белгілеу (оларды қатысушыдан қайта сұрау керек)
+from openpyxl.comments import Comment
+RED = PatternFill("solid", fgColor="F4B6B6")
+bad = 0
+for r in range(2, T_LAST + 1):
+    for k in range(len(TEST_WORDS)):
+        for c, ok in ((3 + 2 * k, (0, 1, 2)), (4 + 2 * k, (0, 1))):
+            v = wt.cell(r, c).value
+            if v not in (None, "") and v not in ok:
+                wt.cell(r, c).fill = RED
+                wt.cell(r, c).comment = Comment(f"Бұл бағанға тек {' не '.join(map(str, ok))} жазылады. Қатысушыдан қайта сұраңыз.", "Тексеру")
+                bad += 1
+if bad:
+    print("Тестте рұқсат етілмеген мән:", bad)
 
 if os.path.exists("tuzetuler.json"):  # жетекшімен келісілген түзетулер: {"парақ!ұяшық": мән}
     for ref, val in json.load(open("tuzetuler.json", encoding="utf8")).items():

@@ -85,30 +85,6 @@ save(fig, "mertebe")
 W = D["words"]
 if N:
     words = N["words"]
-    # 4-сурет: мәртебе топтар бойынша
-    fig, ax = plt.subplots(figsize=(9.5, 4.4))
-    groups = [g for g, _ in D["groups"]][::-1]
-    left = [0] * len(groups)
-    for c, n, _ in D["status"]:
-        vals = [N["by_group_status"][g][c] for g in groups]
-        ax.barh([GNAME[g] for g in groups], vals, left=left, color=ST_COL[c], label=f"{c} – {n}", height=0.62, edgecolor="white", linewidth=1.5)
-        for y, (l, v) in enumerate(zip(left, vals)):
-            if v:
-                ax.text(l + v / 2, y, str(v), ha="center", va="center", color="white", fontsize=10.5, fontweight="bold")
-        left = [a + b for a, b in zip(left, vals)]
-    ax.set_xlabel("Сөз саны"); ax.set_xlim(0, 6); ax.xaxis.grid(True, color=GRID); ax.set_axisbelow(True)
-    ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0)
-    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.45, -0.13), ncol=4, fontsize=10)
-    save(fig, "e_status")
-    # 5-сурет: БАҚ-тағы жиілік (ең жиі 15 сөз)
-    top = sorted([x for x in words if x["h1"] is not None], key=lambda x: x["hits"])[-15:]
-    fig, ax = plt.subplots(figsize=(9, 0.9 + 0.36 * len(top)))
-    ax.barh([x["word"] for x in top], [x["hits"] for x in top], color=[ST_COL.get(x["status"], S[0]) for x in top], height=0.62)
-    for y, x in enumerate(top):
-        ax.text(x["hits"] + max(t["hits"] for t in top) * 0.01 + 0.1, y, str(x["hits"]), va="center", fontsize=10, color=INK)
-    ax.set_xlabel("egemen.kz: соңғы жылдағы іздеу нәтижесі (шамамен)"); ax.xaxis.grid(True, color=GRID); ax.set_axisbelow(True)
-    ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0)
-    save(fig, "e_hits")
     # Сөздіктегі белгілер
     fig, ax = plt.subplots(figsize=(9, 2.8))
     marks = ["көн.", "тар.", "белгі жоқ", "сөздікте жоқ"]; mc = [S[3], S[1], S[0], "#a3a29c"]
@@ -126,8 +102,6 @@ if N:
     ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.3), ncol=4, fontsize=10, title="Сөздіктегі белгі", title_fontsize=10)
     save(fig, "e_marks")
 else:
-    placeholder("e_status", "Сурет осы жерде болады.\nБАҚ мониторингі енгізілгеннен кейін\nсөздердің мәртебесі көрсетіледі.")
-    placeholder("e_hits", "Сурет осы жерде болады.\nБАҚ мониторингі енгізілгеннен кейін\nсөздердің жиілігі көрсетіледі.")
     placeholder("e_marks", "Сурет осы жерде болады.\nСөздікпен тексеру нәтижесі енгізілгеннен кейін\nдиаграмма салынады.")
 
 if N and N.get("n_people"):
@@ -144,7 +118,7 @@ else:
     placeholder("e_test", "Сурет осы жерде болады.\nТест нәтижелері енгізілгеннен кейін\nүш буын салыстырылады.")
 
 # 8-сурет: «Сөз паспорты» үлгісі
-pick = "сарбаз"
+pick = "дулыға"
 info = next(x for x in W if x[0] == pick)
 wd = next((x for x in N.get("words", []) if x["word"] == pick), None) if N else None
 ST_NAME = {c: n for c, n, _ in D["status"]}
@@ -154,14 +128,15 @@ ax.add_patch(FancyBboxPatch((0.1, 0.1), 7.8, 4.8, boxstyle="round,pad=0.02,round
 ax.add_patch(FancyBboxPatch((0.1, 3.85), 7.8, 1.05, boxstyle="round,pad=0.02,rounding_size=0.25", fc=TEAL, ec=TEAL, lw=0))
 ax.text(0.5, 4.38, pick.upper(), fontsize=24, fontweight="bold", color="white", va="center")
 ax.text(7.5, 4.38, "Сөз паспорты", fontsize=12, color="#ffe9a8", va="center", ha="right")
-rows = [("Мағынасы", info[3]), ("Түрі", "архаизм" if info[2] == "А" else "тарихи сөз"),
+rows = [("Мағынасы", (wd["meaning"] if wd else info[3])), ("Түрі", ("архаизм" if info[2] == "А" else "тарихи сөз") + (f", сөздікте «{wd['mark']}»" if wd and wd["mark"] else "")),
         ("Бүгінгі мәртебесі", f"{wd['status']} – {ST_NAME[wd['status']]}" if wd and wd["status"] else "[мониторингтен кейін]"),
         ("Бүгінгі мысал", (wd["example"] if wd and wd["example"] else "[БАҚ-тан алынған сөйлем]"))]
 y = 3.45
 for k, v in rows:
     ax.text(0.5, y, k, fontsize=11.5, fontweight="bold", color=TEAL, va="top")
-    lines = textwrap.wrap(v, 46)[:3]
+    lines = textwrap.wrap(v, 38)
+    lines = lines[:3] if len(lines) <= 3 else lines[:2] + [lines[2] + "…"]
     ax.text(2.75, y, "\n".join(lines), fontsize=11, color=INK, va="top", linespacing=1.35, style="italic" if k == "Бүгінгі мысал" else "normal")
-    y -= 0.42 + 0.33 * len(lines)
+    y -= 0.2 + 0.3 * len(lines)
 save(fig, "pasport")
 print("figs done", "with data" if N else "placeholders")

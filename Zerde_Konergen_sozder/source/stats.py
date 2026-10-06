@@ -58,6 +58,9 @@ for r in range(2, 2 + len(GENS) * N_PER_GEN):
     people.append({"code": code, "gen": code[:1], "know": [num(vals[2 * k]) for k in range(len(TEST_WORDS))],
                    "use": [num(vals[2 * k + 1]) for k in range(len(TEST_WORDS))]})
 R["n_people"] = len(people)
+R["n_complete"] = sum(all(x is not None for x in p["know"]) for p in people)
+R["incomplete"] = [s(wt.cell(r, 1).value) for r in range(2, 2 + len(GENS) * N_PER_GEN)
+                   if any(num(wt.cell(r, 3 + 2 * k).value) is None for k in range(len(TEST_WORDS)))]
 R["n_by_gen"] = {g: sum(p["gen"] == g for p in people) for g, _ in GENS}
 pct = lambda a, cond: round(sum(cond(x) for x in a) / len(a) * 100, 1) if a else None
 test = {}
