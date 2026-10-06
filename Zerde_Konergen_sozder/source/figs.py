@@ -58,21 +58,21 @@ save(fig, "turleri")
 fig, ax = plt.subplots(figsize=(11, 2.6))
 ax.set_xlim(0, 11.2); ax.set_ylim(0, 2.6); ax.axis("off")
 steps = ["1-кезең\nТақырып,\nәдебиет", "2-кезең\n36 сөз,\nсөздікпен\nтексеру", "3-кезең\nБАҚ\nмониторингі",
-         "4-кезең\nЛингвис-\nтикалық\nсеруен", "5-кезең\nҮш буын\nтесті", "6-кезең\nТалдау,\nмини-сөздік"]
+         "4-кезең\nҮш буын\nтесті", "5-кезең\nТалдау,\nмини-сөздік"]
 for i, t in enumerate(steps):
-    fc, ec = (TEAL_L, TEAL) if i < 2 else ((GOLD_L, GOLD) if i < 5 else (GREEN_L, "#1a7f4b"))
-    box(ax, 0.1 + i * 1.86, 0.3, 1.6, 2.0, t, fc, ec, fs=10.5)
-    if i < 5:
-        arrow(ax, (1.72 + i * 1.86, 1.3), (1.94 + i * 1.86, 1.3))
+    fc, ec = (TEAL_L, TEAL) if i < 2 else ((GOLD_L, GOLD) if i < 4 else (GREEN_L, "#1a7f4b"))
+    box(ax, 0.1 + i * 2.22, 0.3, 1.9, 2.0, t, fc, ec, fs=10.5)
+    if i < 4:
+        arrow(ax, (2.02 + i * 2.22, 1.3), (2.30 + i * 2.22, 1.3))
 save(fig, "kezender")
 
 # 3-сурет: мәртебе ережесі
 RARE = D["rare"]
 fig, ax = plt.subplots(figsize=(11, 4.4))
 ax.set_xlim(0, 11); ax.set_ylim(0, 4.6); ax.axis("off")
-q = [(f"Екі сайтта {RARE}-тен аз\nжәне көшеде жоқ па?", "Ұ", "Ұмыт болып\nбарады"),
+q = [(f"egemen.kz-те соңғы\nжылы {RARE}-тен аз ба?", "Ұ", "Ұмыт болып\nбарады"),
      ("Мысал жаңа мағынада\n(«Ж») ма?", "Ж", "Қайта\nжанданған"),
-     ("Мысал атауда («А»)\nнемесе көшеде бар ма?", "А", "Атауда\nсақталған")]
+     ("Мысал атау ішінде\n(«А») ме?", "А", "Атауда\nсақталған")]
 for i, (t, c, n) in enumerate(q):
     x = 0.1 + i * 3.0
     box(ax, x, 2.75, 2.55, 1.3, t, "white", TEAL, fs=10.5)
@@ -101,32 +101,34 @@ if N:
     ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.45, -0.13), ncol=4, fontsize=10)
     save(fig, "e_status")
     # 5-сурет: БАҚ-тағы жиілік (ең жиі 15 сөз)
-    top = sorted(words, key=lambda x: x["hits"])[-15:]
-    fig, ax = plt.subplots(figsize=(9, 5.4))
-    a = [x["h1"] or 0 for x in top]; b = [x["h2"] or 0 for x in top]
-    ax.barh([x["word"] for x in top], a, color=S[0], height=0.62, label=D["sources"][0][0], edgecolor="white", linewidth=1.2)
-    ax.barh([x["word"] for x in top], b, left=a, color=S[1], height=0.62, label=D["sources"][1][0], edgecolor="white", linewidth=1.2)
+    top = sorted([x for x in words if x["h1"] is not None], key=lambda x: x["hits"])[-15:]
+    fig, ax = plt.subplots(figsize=(9, 0.9 + 0.36 * len(top)))
+    ax.barh([x["word"] for x in top], [x["hits"] for x in top], color=[ST_COL.get(x["status"], S[0]) for x in top], height=0.62)
     for y, x in enumerate(top):
-        ax.text(x["hits"] * 1.01 + 0.5, y, str(x["hits"]), va="center", fontsize=10, color=INK)
-    ax.set_xlabel("Соңғы жылдағы іздеу нәтижесі (шамамен)"); ax.xaxis.grid(True, color=GRID); ax.set_axisbelow(True)
-    ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0); ax.legend(frameon=False, loc="lower right")
+        ax.text(x["hits"] + max(t["hits"] for t in top) * 0.01 + 0.1, y, str(x["hits"]), va="center", fontsize=10, color=INK)
+    ax.set_xlabel("egemen.kz: соңғы жылдағы іздеу нәтижесі (шамамен)"); ax.xaxis.grid(True, color=GRID); ax.set_axisbelow(True)
+    ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0)
     save(fig, "e_hits")
-    # 6-сурет: серуен
-    if N["n_signs"]:
-        fig, ax = plt.subplots(figsize=(9, 3.6))
-        st = sorted(N["sign_by_type"].items(), key=lambda kv: kv[1])
-        ax.barh([k for k, _ in st], [v for _, v in st], color=S[0], height=0.6)
-        for y, (_, v) in enumerate(st):
-            ax.text(v + 0.1, y, str(v), va="center", fontsize=10.5)
-        ax.set_xlabel("Жазу саны"); ax.xaxis.grid(True, color=GRID); ax.set_axisbelow(True)
-        ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0)
-        save(fig, "e_signs")
-    else:
-        placeholder("e_signs", "Сурет осы жерде болады.\nЛингвистикалық серуен деректері енгізілгеннен кейін\nдиаграмма салынады.")
+    # Сөздіктегі белгілер
+    fig, ax = plt.subplots(figsize=(9, 2.8))
+    marks = ["көн.", "тар.", "белгі жоқ", "сөздікте жоқ"]; mc = [S[3], S[1], S[0], "#a3a29c"]
+    kinds = [("А", "Архаизмдер"), ("Т", "Тарихи сөздер")]
+    left = [0, 0]
+    for m, col in zip(marks, mc):
+        vals = [N["marks_by_kind"][k].get(m, 0) for k, _ in kinds]
+        ax.barh([n for _, n in kinds], vals, left=left, color=col, label=m, height=0.55, edgecolor="white", linewidth=1.5)
+        for y, (l, v) in enumerate(zip(left, vals)):
+            if v:
+                ax.text(l + v / 2, y, str(v), ha="center", va="center", color="white", fontsize=11, fontweight="bold")
+        left = [a + b for a, b in zip(left, vals)]
+    ax.set_xlabel("Сөз саны"); ax.xaxis.grid(True, color=GRID); ax.set_axisbelow(True)
+    ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0)
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.3), ncol=4, fontsize=10, title="Сөздіктегі белгі", title_fontsize=10)
+    save(fig, "e_marks")
 else:
     placeholder("e_status", "Сурет осы жерде болады.\nБАҚ мониторингі енгізілгеннен кейін\nсөздердің мәртебесі көрсетіледі.")
     placeholder("e_hits", "Сурет осы жерде болады.\nБАҚ мониторингі енгізілгеннен кейін\nсөздердің жиілігі көрсетіледі.")
-    placeholder("e_signs", "Сурет осы жерде болады.\nЛингвистикалық серуен деректері енгізілгеннен кейін\nдиаграмма салынады.")
+    placeholder("e_marks", "Сурет осы жерде болады.\nСөздікпен тексеру нәтижесі енгізілгеннен кейін\nдиаграмма салынады.")
 
 if N and N.get("n_people"):
     fig, ax = plt.subplots(figsize=(10, 4.4))

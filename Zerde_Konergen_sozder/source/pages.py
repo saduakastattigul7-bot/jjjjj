@@ -2,7 +2,7 @@
 import pymupdf, json, re, sys
 d = pymupdf.open(sys.argv[1] if len(sys.argv) > 1 else "out.pdf")
 heads = ["АННОТАЦИЯ"] + [re.sub(r"^#\*? |^## ", "", l) for l in open("content.txt", encoding="utf8").read().split("\n") if re.match(r"^#\*? |^## ", l)]
-heads += [f"{a} ҚОСЫМШАСЫ" for a in "АӘБВГ"]
+heads += [f"{a} ҚОСЫМШАСЫ" for a in "АӘБВ"]
 norm = lambda s: re.sub(r"\s+", " ", s)
 res, start = {}, 1
 for h in heads:

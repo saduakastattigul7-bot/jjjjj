@@ -6,8 +6,8 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.chart import BarChart, Reference
 from openpyxl.utils import get_column_letter
-from zertteu import (GROUPS, KINDS, WORDS, DICT_MARKS, CONTEXTS, STATUS, RARE, SOURCES, OBJ_TYPES,
-                     TEST_WORDS, GENS, N_PER_GEN, KNOW, N_SIGNS)
+from zertteu import (GROUPS, KINDS, WORDS, DICT_MARKS, CONTEXTS, STATUS, RARE, SOURCE,
+                     TEST_WORDS, GENS, N_PER_GEN, KNOW)
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else "Zertteu_kestesi.xlsx"
 thin = Side(style="thin", color="999999")
@@ -51,30 +51,25 @@ ws.title = "Нұсқау"
 ws.column_dimensions["A"].width = 120
 lines = [
     ("ЗЕРТТЕУ КЕСТЕСІН ТОЛТЫРУ НҰСҚАУЫ", True),
-    ("Сары ұяшықтарды ғана толтырыңыз. «Мәртебе» бағаны мен «Қорытынды» парағы өздігінен есептеледі.", False),
+    ("Сары ұяшықтарды ғана толтырыңыз. «Мәртебе» бағаны мен «Қорытынды» парағы өздігінен есептеледі. Парақтарды, бағандарды өшірмеңіз.", False),
     ("", False),
     ("1-КЕЗЕҢ. Сөздікпен тексеру («Сөздер» парағы)", True),
     ("1. Әр сөзді «Қазақ әдеби тілінің сөздігінен» (15 томдық) тауып, оның жанындағы белгіні жазыңыз: «көн.» (көнерген), «тар.» (тарихи), белгі жоқ немесе сөздікте жоқ.", False),
-    ("2. Томы мен бетін көрсетіңіз. Сөздікті кітапханадан немесе sozdikqor.kz сайтынан қарауға болады.", False),
+    ("2. Томын көрсетіңіз. Сөздікте берілген анықтаманы «Мағынасы» бағанына көшіріп алуға болады.", False),
     ("", False),
     ("2-КЕЗЕҢ. БАҚ мониторингі («БАҚ мониторингі» парағы)", True),
     ("3. Google іздеу жолына: site:egemen.kz \"сауыт\" деп жазыңыз. «Құралдар» → «Кез келген уақыт» → «Соңғы жыл» таңдаңыз. Шыққан нәтиже санын жазыңыз (мысалы, «Шамамен 45 нәтиже» болса – 45). Нәтиже жоқ болса – 0.", False),
-    ("4. Дәл солай site:kaz.tengrinews.kz үшін де іздеңіз. Барлық сөзді бір-екі күн ішінде тексеріңіз, күнін жазыңыз.", False),
-    ("5. Ең жаңа мақаланы ашып, сөз тұрған сөйлемді көшіріп алыңыз және сілтемесін жазыңыз. Сөйлемнің мәнмәтінін бір кодпен белгілеңіз:", False),
+    ("4. Барлық сөзді бір-екі күн ішінде тексеріңіз, күнін жазыңыз.", False),
+    ("5. Ең жаңа мақаланы ашып, сөз ТҰРҒАН сөйлемді көшіріп алыңыз (мақаланың бірінші сөйлемін емес) және сілтемесін жазыңыз. Сөйлемнің мәнмәтінін бір кодпен белгілеңіз:", False),
     *[(f"     {a} – {b}: {c}", False) for a, b, c in CONTEXTS],
     ("", False),
-    ("3-КЕЗЕҢ. Лингвистикалық серуен («Серуен» парағы)", True),
-    ("6. Ересек адаммен бірге қаланың (ауылдың) 2–3 көшесін, базарды не сауда орталығын аралаңыз. Маңдайшаларды, көше атауларын, жарнамаларды қараңыз.", False),
-    ("7. Көне сөз кездескен әр жазуды суретке түсіріңіз (тек жазуды, адамдардың бетін және көлік нөмірлерін түсірмеңіз) және кестеге бір жол етіп жазыңыз.", False),
-    ("8. Тізімде жоқ көне сөз кездессе, «басқа» деп таңдап, сөзді келесі бағанға жазыңыз.", False),
-    ("", False),
-    ("4-КЕЗЕҢ. Үш буынға сөз тану тесті («Тест» парағы)", True),
-    (f"9. Әр буыннан {N_PER_GEN} адам: оқушылар, ата-аналар, ата-әжелер. Келісімін алыңыз (оқушылар үшін – ата-анасының келісімі). Есімдерін жазбаңыз – тек код.", False),
-    ("10. Әр сөзді атап: «Бұл сөздің мағынасы қандай?» деп сұраңыз. 2 – дұрыс түсіндірді, 1 – шамамен түсіндірді, 0 – білмейді. Сөздің мағынасын айтып, көмектеспеңіз.", False),
-    ("11. Сосын: «Бұл сөзді соңғы бір жылда естідіңіз бе немесе өзіңіз қолдандыңыз ба?» деп сұраңыз: 1 – иә, 0 – жоқ.", False),
+    ("3-КЕЗЕҢ. Үш буынға сөз тану тесті («Тест» парағы)", True),
+    (f"6. Әр буыннан {N_PER_GEN} адам: оқушылар, ата-аналар, ата-әжелер. Келісімін алыңыз (оқушылар үшін – ата-анасының келісімі). Есімдерін жазбаңыз – тек код.", False),
+    ("7. Әр сөзді атап: «Бұл сөздің мағынасы қандай?» деп сұраңыз. 2 – дұрыс түсіндірді, 1 – шамамен түсіндірді, 0 – білмейді. Сөздің мағынасын айтып, көмектеспеңіз.", False),
+    ("8. Сосын: «Бұл сөзді соңғы бір жылда естідіңіз бе немесе өзіңіз қолдандыңыз ба?» деп сұраңыз: 1 – иә, 0 – жоқ.", False),
     ("", False),
     ("МӘРТЕБЕ ЕРЕЖЕСІ (жетекшіммен келісілген)", True),
-    (f"Ұ – екі сайттағы нәтиже саны {RARE}-тен аз және көшеде кездеспесе; Ж – әйтпесе, мысалдың біреуі «Ж» болса; А – мысал «А» болса немесе көшеде кездессе; Т – қалған жағдайда.", False),
+    (f"Ұ – нәтиже саны {RARE}-тен аз болса; Ж – әйтпесе, мысал «Ж» болса; А – мысал «А» болса; Т – қалған жағдайда («Т» не «Б»).", False),
 ]
 for i, (t, b) in enumerate(lines, 1):
     c = ws.cell(i, 1, t)
@@ -83,7 +78,7 @@ for i, (t, b) in enumerate(lines, 1):
 
 # ---- Сөздер ----
 wsz = wb.create_sheet("Сөздер")
-header(wsz, 1, ["№", "Сөз", "Тақырыптық топ", "Түрі (алдын ала)", "Мағынасы", "Сөздіктегі белгі", "Томы, беті"], [5, 14, 26, 14, 52, 14, 12])
+header(wsz, 1, ["№", "Сөз", "Тақырыптық топ", "Түрі (алдын ала)", "Мағынасы", "Сөздіктегі белгі", "Томы"], [5, 14, 26, 14, 52, 14, 12])
 wsz.freeze_panes = "C2"
 dv_mark = dv_list(wsz, DICT_MARKS)
 for i, (w, g, k, m) in enumerate(WORDS, 1):
@@ -94,42 +89,19 @@ for i, (w, g, k, m) in enumerate(WORDS, 1):
     put(wsz, r, 7, fill=True, center=True)
 W_LAST = len(WORDS) + 1
 
-# ---- Серуен ----
-wsr = wb.create_sheet("Серуен")
-header(wsr, 1, ["№", "Орны (көше, аудан)", "Нысан түрі", "Жазуы (толық)", "Көне сөз", "Басқа көне сөз", "Фото №", "Күні"], [5, 26, 20, 34, 14, 16, 9, 12])
-wsr.freeze_panes = "B2"
-dv_obj = dv_list(wsr, OBJ_TYPES)
-dv_word = DataValidation(type="list", formula1=f"=Сөздер!$B$2:$B${W_LAST + 1}", allow_blank=True)
-wsr.add_data_validation(dv_word)
-put(wsz, W_LAST + 1, 2, "басқа")  # тізімнің соңғы жолы – «басқа»
-for i in range(1, N_SIGNS + 1):
-    r = i + 1
-    put(wsr, r, 1, i, center=True)
-    put(wsr, r, 2, fill=True)
-    dv_obj.add(put(wsr, r, 3, fill=True))
-    put(wsr, r, 4, fill=True)
-    dv_word.add(put(wsr, r, 5, fill=True))
-    for j in (6, 7, 8):
-        put(wsr, r, j, fill=True, center=j > 6)
-S_LAST = N_SIGNS + 1
-
 # ---- БАҚ мониторингі ----
 wm = wb.create_sheet("БАҚ мониторингі")
-(s1, _), (s2, _) = SOURCES
-header(wm, 1, ["№", "Сөз", f"{s1}: нәтиже саны", f"{s1}: мәнмәтін (код)", f"{s2}: нәтиже саны", f"{s2}: мәнмәтін (код)",
-               "Ең жаңа мысал (сөйлем)", "Сілтеме", "Тексерген күні", "Көшеде (саны)", "Мәртебе"],
-       [5, 13, 12, 12, 12, 12, 50, 28, 12, 10, 10])
+s1 = SOURCE[0]
+header(wm, 1, ["№", "Сөз", f"{s1}: нәтиже саны", f"{s1}: мәнмәтін (код)", "Ең жаңа мысал (сөйлем)", "Сілтеме", "Тексерген күні", "Мәртебе"],
+       [5, 13, 12, 12, 55, 30, 12, 10])
 wm.freeze_panes = "C2"
 dv_ctx = dv_list(wm, [c for c, _, _ in CONTEXTS])
 for i, (w, _, _, _) in enumerate(WORDS, 1):
     r = i + 1
     put(wm, r, 1, i, center=True); put(wm, r, 2, w)
     put(wm, r, 3, fill=True, center=True); dv_ctx.add(put(wm, r, 4, fill=True, center=True))
-    put(wm, r, 5, fill=True, center=True); dv_ctx.add(put(wm, r, 6, fill=True, center=True))
-    put(wm, r, 7, fill=True); put(wm, r, 8, fill=True); put(wm, r, 9, fill=True, center=True)
-    put(wm, r, 10, f"=COUNTIF(Серуен!$E$2:$E${S_LAST},B{r})", center=True)
-    put(wm, r, 11, f'=IF(COUNT(C{r},E{r})=0,"",IF(AND(N(C{r})+N(E{r})<{RARE},J{r}=0),"Ұ",IF(OR(D{r}="Ж",F{r}="Ж"),"Ж",'
-                   f'IF(OR(D{r}="А",F{r}="А",J{r}>0),"А","Т"))))', center=True).font = BOLD
+    put(wm, r, 5, fill=True); put(wm, r, 6, fill=True); put(wm, r, 7, fill=True, center=True)
+    put(wm, r, 8, f'=IF(C{r}="","",IF(N(C{r})<{RARE},"Ұ",IF(D{r}="Ж","Ж",IF(D{r}="А","А","Т"))))', center=True).font = BOLD
 
 # ---- Тест ----
 wt = wb.create_sheet("Тест")
@@ -164,7 +136,7 @@ for gi, (g, gname) in enumerate(GROUPS):
     put(wq, row, 1, gname)
     idx = [i + 2 for i, w in enumerate(WORDS) if w[1] == g]
     for j, (code, _, _) in enumerate(STATUS, 2):
-        put(wq, row, j, "=" + "+".join(f'(\'БАҚ мониторингі\'!K{x}="{code}")' for x in idx), center=True)
+        put(wq, row, j, "=" + "+".join(f'(\'БАҚ мониторингі\'!H{x}="{code}")' for x in idx), center=True)
     put(wq, row, 6, f"=SUM(B{row}:E{row})", center=True)
 row += 1
 put(wq, row, 1, "Барлығы").font = BOLD
@@ -193,20 +165,11 @@ ch.add_data(Reference(wq, min_col=2, max_col=4, min_row=t_first, max_row=row), t
 ch.set_categories(Reference(wq, min_col=1, min_row=t_first + 1, max_row=row)); ch.height = 8; ch.width = 18
 wq.add_chart(ch, "I18")
 
-row += 2
-wq.cell(row, 1, "Лингвистикалық серуен: нысан түрлері").font = BOLD
-row += 1
-header(wq, row, ["Нысан түрі", "Жазу саны"], [None] * 2)
-for o in OBJ_TYPES:
-    row += 1
-    put(wq, row, 1, o); put(wq, row, 2, f'=COUNTIF(Серуен!$C$2:$C${S_LAST},A{row})', center=True)
-
 # ---- Ескі кестеден көшіру ----
 if len(sys.argv) > 2:
     src = load_workbook(sys.argv[2], data_only=True)
-    for name, rows, cols in [("Сөздер", range(2, W_LAST + 1), (6, 7)),
-                             ("Серуен", range(2, S_LAST + 1), range(2, 9)),
-                             ("БАҚ мониторингі", range(2, W_LAST + 1), range(3, 10)),
+    for name, rows, cols in [("Сөздер", range(2, W_LAST + 1), (5, 6, 7)),
+                             ("БАҚ мониторингі", range(2, W_LAST + 1), range(3, 8)),
                              ("Тест", range(2, T_LAST + 1), range(3, 3 + 2 * len(TEST_WORDS)))]:
         if name not in src.sheetnames:
             continue
