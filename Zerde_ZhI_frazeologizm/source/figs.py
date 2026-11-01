@@ -149,3 +149,15 @@ for i, (n, h, t) in enumerate(items):
 ax.text(4.5, 0.42, "Шешімді адам қабылдайды – ЖИ тек көмектеседі", ha="center", fontsize=12, style="italic", color=MUTED)
 save(fig, "zhadynama")
 print("figs done", "with data" if N else "placeholders for e1/e3")
+
+# Фразеостикерлер: жалпы көрініс (2.7) және қосымшаға 3×4 тор
+from PIL import Image
+SD = os.path.join("..", "Fraze_stikerler")
+if os.path.exists(os.path.join(SD, "01.png")):
+    Image.open(os.path.join(SD, "Barlygy.png")).convert("RGB").save(os.path.join(OUT, "stikerler.png"))
+    cell = 420
+    grid = Image.new("RGB", (3 * cell + 40, 4 * cell + 40), "white")
+    for i in range(12):
+        st = Image.open(os.path.join(SD, f"{i + 1:02d}.png")).resize((cell, cell), Image.LANCZOS)
+        grid.paste(st, (20 + (i % 3) * cell, 20 + (i // 3) * cell), st)
+    grid.save(os.path.join(OUT, "stikerler_A.png"))
