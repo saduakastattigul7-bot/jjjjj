@@ -150,14 +150,23 @@ ax.text(4.5, 0.42, "Шешімді адам қабылдайды – ЖИ тек
 save(fig, "zhadynama")
 print("figs done", "with data" if N else "placeholders for e1/e3")
 
-# Фразеостикерлер: жалпы көрініс (2.7) және қосымшаға 3×4 тор
-from PIL import Image
-SD = os.path.join("..", "Fraze_stikerler")
-if os.path.exists(os.path.join(SD, "01.png")):
-    Image.open(os.path.join(SD, "Barlygy.png")).convert("RGB").save(os.path.join(OUT, "stikerler.png"))
-    cell = 420
-    grid = Image.new("RGB", (3 * cell + 40, 4 * cell + 40), "white")
-    for i in range(12):
-        st = Image.open(os.path.join(SD, f"{i + 1:02d}.png")).resize((cell, cell), Image.LANCZOS)
-        grid.paste(st, (20 + (i % 3) * cell, 20 + (i // 3) * cell), st)
+# Фразеостикерлер (оқушы жасаған): жалпы көрініс (2.7) және қосымшаға мағынасы жазылған 3×3 тор
+from PIL import Image, ImageDraw, ImageFont
+import textwrap as tw
+SD = "stikerler_oqushy"
+if os.path.exists(os.path.join(SD, "grid.png")):
+    Image.open(os.path.join(SD, "grid.png")).convert("RGB").save(os.path.join(OUT, "stikerler.png"))
+    MEAN = ["үнсіз қалды, не айтарын білмей қалды", "тез, лезде", "қатты қызықты, қатты қалады", "қатты қорықты, толқыды",
+            "қатты қуанды", "қатты қуанды", "мейірімі түсті, көңілі жібіді", "зерікті", "кенет құлады; қатты шаршап, ұйқыға кетті"]
+    cw, ch, th = 430, 460, 110
+    grid = Image.new("RGB", (3 * cw, 3 * (ch + th)), "white")
+    d = ImageDraw.Draw(grid)
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 26)
+    for k in range(9):
+        st = Image.open(os.path.join(SD, f"s{k + 1}.png")).convert("RGB")
+        st = st.resize((round(st.width * ch / st.height), ch), Image.LANCZOS)
+        x, y = (k % 3) * cw, (k // 3) * (ch + th)
+        grid.paste(st, (x + (cw - st.width) // 2, y))
+        for n, line in enumerate(tw.wrap(MEAN[k], 26)[:3]):
+            d.text((x + cw // 2, y + ch + 8 + n * 32), line, font=font, fill="#333333", anchor="ma")
     grid.save(os.path.join(OUT, "stikerler_A.png"))
