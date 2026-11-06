@@ -23,3 +23,8 @@ if [ -f docs.js ]; then
     soffice --headless --convert-to pdf --outdir "$OUT" "$OUT/$N.docx" >/dev/null 2>&1
   done
 fi
+# Қорғау презентациясы (deck/node_modules орнатылған болса)
+if [ -d deck/node_modules ] && [ -f natije.json ]; then
+  PPTX_SKILL=${PPTX_SKILL:-$(ls -d /root/.claude/skills/synced/*/pptx 2>/dev/null | head -1)}
+  [ -n "$PPTX_SKILL" ] && PPTX_SKILL=$PPTX_SKILL NODE_PATH=$PWD/deck/node_modules node deck/deck.js "$OUT/Qorgau_prezentatsiyasy.pptx"
+fi

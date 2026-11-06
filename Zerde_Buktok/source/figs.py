@@ -70,7 +70,7 @@ if N.get("n_resp"):
     ax.barh([k for k, _ in src], [v or 0 for _, v in src], color=[S[1] if k == "Әлеуметтік желі" else S[0] for k, _ in src], height=0.6)
     for y, (_, v) in enumerate(src):
         ax.text((v or 0) + 1, y, f"{(v or 0):.0f}%", va="center", fontsize=10.5)
-    ax.set_xlim(0, 100); ax.set_xlabel("Оқушылар үлесі, % (бірнеше жауап)"); ax.xaxis.grid(True, color=GRID); ax.set_axisbelow(True)
+    ax.set_xlim(0, 100); ax.set_xlabel(f"Жауап берген {N.get('n_src', N['n_resp'])} оқушының үлесі, % (бірнеше жауап)"); ax.xaxis.grid(True, color=GRID); ax.set_axisbelow(True)
     ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0)
     save(fig, "e_src")
     sv = N["survey"]

@@ -41,18 +41,31 @@ for code, q, opts in SURVEY:
     if code == "FINISH":  # тек блогер ұсынған кітапты оқығандар
         base = [a[code] for a in resp if a[code] and a["TRIED"] == "Иә"]
     R["survey"][code] = {"n": len(base), **{o: pct(sum(x == o for x in base), len(base)) for o in opts}}
-R["src"] = {sname: pct(sum(a["SRC"][j] for a in resp), len(resp)) for j, sname in enumerate(SOURCES)}
+# «Қайдан білесің?» – тек кемінде бір нұсқа белгілеген оқушылар бойынша
+src_base = [a for a in resp if any(a["SRC"])]
+R["n_src"] = len(src_base)
+R["src"] = {sname: pct(sum(a["SRC"][j] for a in src_base), len(src_base)) for j, sname in enumerate(SOURCES)}
+R["src_n"] = {sname: sum(a["SRC"][j] for a in src_base) for j, sname in enumerate(SOURCES)}
 R["by_class"] = {c: sum(a["SYN"] == c for a in resp) for c in ("7", "8", "9")}
 R["why"] = [a["WHY"] for a in resp if a["WHY"]][:40]
 R["blog_names"] = [a["BLOG"] for a in resp if a["BLOG"]][:60]
 
 # ---- Блогерлер, сұхбат ----
 wbl = wb["Блогерлер"]
-R["bloggers"] = [{"name": s(wbl.cell(r, 2).value), "net": s(wbl.cell(r, 3).value), "subs": s(wbl.cell(r, 4).value),
-                  "topic": s(wbl.cell(r, 5).value), "kaz_lit": s(wbl.cell(r, 6).value)}
+def one(v):  # көп жолды мәтінді бір жолға: «Бұл арнада сіз:\n– А\n– Б» → «А; Б»
+    ls = [" ".join(x.strip(" –-•").split()) for x in s(v).split("\n")]
+    ls = [x for x in ls if x and not x.endswith(":")]
+    return "; ".join(ls)
+R["bloggers"] = [{"name": one(wbl.cell(r, 2).value), "net": s(wbl.cell(r, 3).value), "subs": num(wbl.cell(r, 4).value),
+                  "topic": one(wbl.cell(r, 5).value), "kaz_lit": s(wbl.cell(r, 6).value)}
                  for r in range(2, N_BLOGGERS + 2) if s(wbl.cell(r, 2).value)]
 wi = wb["Сұхбат"]
-R["interviews"] = [{"code": s(wi.cell(r, 1).value), "who": s(wi.cell(r, 2).value), "idea": s(wi.cell(r, 3).value), "quote": s(wi.cell(r, 4).value)}
+def unq(v):  # сыртқы тырнақшаны алып, ішкі "…" тырнақшаны „…“ етеді
+    q = s(v).strip().rstrip(".").strip("«»\"“” ")
+    while q.count('"') >= 2:
+        q = q.replace('"', "„", 1).replace('"', "“", 1)
+    return q
+R["interviews"] = [{"code": s(wi.cell(r, 1).value), "who": s(wi.cell(r, 2).value), "idea": s(wi.cell(r, 3).value), "quote": unq(wi.cell(r, 4).value)}
                    for r in range(2, N_INTERVIEWS + 2) if s(wi.cell(r, 3).value) or s(wi.cell(r, 4).value)]
 
 if not (resp or R["bloggers"] or R["interviews"]):
