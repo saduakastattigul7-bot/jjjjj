@@ -37,7 +37,7 @@ def placeholder(name, text):
 # Зерттеудің кезеңдері
 fig, ax = plt.subplots(figsize=(11, 2.6))
 ax.set_xlim(0, 11.2); ax.set_ylim(0, 2.6); ax.axis("off")
-steps = ["1-кезең\nТақырып,\nтеория", "2-кезең\nСауалнама", "3-кезең\nБуктрейлер\nтүсіру", "4-кезең\n4 апталық\nтәжірибе", "5-кезең\nСұхбат,\nталдау"]
+steps = ["1-кезең\nТақырып,\nтеория", "2-кезең\nСауалнама", "3-кезең\nБлогерлерді\nталдау", "4-кезең\nСұхбат", "5-кезең\nТалдау,\nмодель"]
 for i, t in enumerate(steps):
     fc, ec = (TEAL_L, TEAL) if i < 1 else ((GOLD_L, GOLD) if i < 4 else (GREEN_L, "#1a7f4b"))
     box(ax, 0.1 + i * 2.22, 0.3, 1.9, 2.0, t, fc, ec, fs=10.5)
@@ -88,22 +88,4 @@ else:
     placeholder("e_src", "Сурет осы жерде болады.\nСауалнама нәтижесі енгізілгеннен кейін\nдиаграмма салынады.")
     placeholder("e_survey", "Сурет осы жерде болады.\nСауалнама нәтижесі енгізілгеннен кейін\nдиаграмма салынады.")
 
-# Тәжірибе
-if N.get("exp_filled"):
-    E = N["exp"]
-    fig, ax = plt.subplots(figsize=(9, 4))
-    labels = ["Алынған кітап", "Соңына дейін оқылған", "Пікір / бейне"]
-    keys = [("e_take", "c_take"), ("e_fin", "c_fin"), ("e_rev", "c_rev")]
-    w = 0.19
-    for k, (lab, col) in enumerate([(f"{N['exp_name']}: дейін", "#a9c8f0"), (f"{N['exp_name']}: кезінде", S[0]),
-                                     (f"{N['ctrl_name']}: дейін", "#f6c3a6"), (f"{N['ctrl_name']}: кезінде", S[1])]):
-        vals = [E[ke if k < 2 else kc]["before" if k % 2 == 0 else "during"] for ke, kc in keys]
-        bs = ax.bar([i + (k - 1.5) * (w + 0.01) for i in range(3)], vals, width=w, color=col, label=lab)
-        for b, v in zip(bs, vals):
-            ax.text(b.get_x() + w / 2, v + 0.3, str(v), ha="center", fontsize=9.5)
-    ax.set_xticks(range(3)); ax.set_xticklabels(labels); ax.set_ylabel("Саны (4 апта)"); ax.yaxis.grid(True, color=GRID); ax.set_axisbelow(True)
-    ax.legend(frameon=False, ncol=2, fontsize=9.5, loc="upper right")
-    save(fig, "e_exp")
-else:
-    placeholder("e_exp", "Сурет осы жерде болады.\nТәжірибе деректері енгізілгеннен кейін\nдиаграмма салынады.")
 print("figs done", "with data" if N else "placeholders")

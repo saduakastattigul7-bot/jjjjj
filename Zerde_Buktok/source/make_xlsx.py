@@ -6,8 +6,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.chart import BarChart, Reference
 from openpyxl.utils import get_column_letter
-from zertteu import (SURVEY, SRC_Q, SOURCES, TEXT_Q, N_RESP, WEEKS, EXP_DEFAULT, CTRL_DEFAULT,
-                     N_TRAILERS, N_BLOGGERS, N_INTERVIEWS, NETS)
+from zertteu import SURVEY, SRC_Q, SOURCES, TEXT_Q, N_RESP, N_BLOGGERS, N_INTERVIEWS, NETS
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else "Zertteu_kestesi.xlsx"
 thin = Side(style="thin", color="999999")
@@ -63,13 +62,7 @@ lines = [
     ("Google Forms жауаптарын Файл → Жүктеп алу → .xlsx арқылы жүктеп жіберсеңіз, кестеге өздігінен аударылады. Қолмен толтырсаңыз: бір оқушы – бір жол, есім жазылмайды.", False),
     ("«Қайдан білесің?» сұрағында оқушы таңдаған әр нұсқаға 1 қойыңыз, таңдамағанына 0.", False),
     ("", False),
-    ("2. «Буктрейлер» тәжірибесі («Тәжірибе» парағы)", True),
-    ("Кітапханашыдан формулярлар бойынша әр аптада сыныптың кітапханадан алған кітап санын, соңына дейін оқып қайтарған кітап санын сұраңыз.", False),
-    ("«Дейін» – тәжірибеге дейінгі 4 апта (салыстыру үшін), «Кезінде» – буктрейлер көрсетілген 4 апта. Екі сынып та бірдей есептеледі.", False),
-    ("«Пікір / бейне» – сол аптада оқыған кітабы туралы пікір жазған немесе бейне түсірген оқушылар саны.", False),
-    ("", False),
-    ("3. Буктрейлерлер, блогерлер, сұхбат", True),
-    ("«Буктрейлерлер» – өзіңіз түсірген әр бейне: кітап, автор, көрсетілген күні, ұзақтығы және сол кітапты эксперименттік сыныптан неше оқушы сұрағаны.", False),
+    ("2. Блогерлер мен сұхбат", True),
     ("«Блогерлер» – TikTok, Instagram, YouTube-тен тапқан қазақ тіліндегі кітап блогерлері (кемінде 10).", False),
     ("«Сұхбат» – кітапханашы мен оқушылардың негізгі ойы; есім жазылмайды, тек код (К01, О01 …).", False),
 ]
@@ -100,31 +93,6 @@ for i in range(1, N_RESP + 1):
 SV_LAST = N_RESP + 1
 COL = {code: get_column_letter(2 + k if k < 5 else 2 + len(SOURCES) + k) for k, (code, _, _) in enumerate(SURVEY)}
 SRC_COL = [get_column_letter(7 + j) for j in range(len(SOURCES))]
-
-# ---- Тәжірибе ----
-wt = wb.create_sheet("Тәжірибе")
-for col, w in zip("ABCDEFGH", [10, 12, 14, 14, 14, 14, 14, 14]):
-    wt.column_dimensions[col].width = w
-put(wt, 1, 1, "Эксперименттік сынып").font = BOLD; put(wt, 1, 3, EXP_DEFAULT[0], fill=True, center=True); put(wt, 1, 4, "оқушы саны"); put(wt, 1, 5, EXP_DEFAULT[1], fill=True, center=True)
-put(wt, 2, 1, "Бақылау сыныбы").font = BOLD; put(wt, 2, 3, CTRL_DEFAULT[0], fill=True, center=True); put(wt, 2, 4, "оқушы саны"); put(wt, 2, 5, CTRL_DEFAULT[1], fill=True, center=True)
-header(wt, 4, ["Апта", "Кезең", "Эксп.: алынған кітап", "Бақ.: алынған кітап", "Эксп.: соңына дейін оқылған", "Бақ.: соңына дейін оқылған", "Эксп.: пікір / бейне", "Бақ.: пікір / бейне"], [None] * 8, height=60)
-dvn = dv_int(wt)
-for i, (w, ph) in enumerate(WEEKS):
-    r = 5 + i
-    put(wt, r, 1, w, center=True); put(wt, r, 2, ph, center=True)
-    for j in range(3, 9):
-        dvn.add(put(wt, r, j, fill=True, center=True))
-EX_FIRST, EX_LAST = 5, 4 + len(WEEKS)
-
-# ---- Буктрейлерлер ----
-wtr = wb.create_sheet("Буктрейлерлер")
-header(wtr, 1, ["№", "Кітап", "Автор", "Көрсетілген күні", "Ұзақтығы, секунд", "Эксп. сыныптан сұрағандар саны"], [5, 30, 24, 14, 12, 16])
-dvs2 = dv_int(wtr, 0, 600)
-for i in range(1, N_TRAILERS + 1):
-    put(wtr, i + 1, 1, i, center=True)
-    for j in (2, 3, 4):
-        put(wtr, i + 1, j, fill=True)
-    dvs2.add(put(wtr, i + 1, 5, fill=True, center=True)); dvs2.add(put(wtr, i + 1, 6, fill=True, center=True))
 
 # ---- Блогерлер ----
 wbl = wb.create_sheet("Блогерлер")
@@ -170,24 +138,16 @@ for code, q, opts in SURVEY[1:]:
         put(wq, row, 1, f"{q} – {o}")
         put(wq, row, 2, f'=IFERROR(ROUND(COUNTIF(Сауалнама!${cl}$2:${cl}${SV_LAST},"{o}")/COUNTA(Сауалнама!${cl}$2:${cl}${SV_LAST})*100,1),"")', center=True)
 row += 2
-wq.cell(row, 1, "Тәжірибе: 4 апталық қосынды").font = BOLD
+wq.cell(row, 1, "Қазақ тіліндегі кітап блогерлері").font = BOLD
 row += 1
-header(wq, row, ["Көрсеткіш", "Эксп. дейін", "Эксп. кезінде", "Бақ. дейін", "Бақ. кезінде"], [None] * 5)
-e_first = row
-for name, ce, cc in [("Алынған кітап", "C", "D"), ("Соңына дейін оқылған", "E", "F"), ("Пікір / бейне", "G", "H")]:
-    row += 1
-    put(wq, row, 1, name)
-    for j, (cl, ph) in enumerate([(ce, "Дейін"), (ce, "Кезінде"), (cc, "Дейін"), (cc, "Кезінде")], 2):
-        put(wq, row, j, f'=SUMIF(Тәжірибе!$B${EX_FIRST}:$B${EX_LAST},"{ph}",Тәжірибе!${cl}${EX_FIRST}:${cl}${EX_LAST})', center=True)
-ch = BarChart(); ch.type = "col"; ch.title = "Тәжірибе: алынған кітап"
-ch.add_data(Reference(wq, min_col=2, max_col=5, min_row=e_first, max_row=e_first + 1), titles_from_data=True)
-ch.set_categories(Reference(wq, min_col=1, min_row=e_first + 1, max_row=e_first + 1)); ch.height = 7; ch.width = 16
-wq.add_chart(ch, "G18")
+put(wq, row, 1, "Табылған блогерлер саны"); put(wq, row, 2, f"=COUNTA(Блогерлер!$B$2:$B${N_BLOGGERS + 1})", center=True)
+row += 1
+put(wq, row, 1, "Оның ішінде ұлттық әдебиет туралы жазатындары"); put(wq, row, 2, f'=COUNTIF(Блогерлер!$F$2:$F${N_BLOGGERS + 1},"Иә")', center=True)
 
 # ---- Ескі кестеден көшіру ----
 if len(sys.argv) > 2 and os.path.exists(sys.argv[2]):
     src = load_workbook(sys.argv[2], data_only=True)
-    for sh in ["Сауалнама", "Тәжірибе", "Буктрейлерлер", "Блогерлер", "Сұхбат"]:
+    for sh in ["Сауалнама", "Блогерлер", "Сұхбат"]:
         if sh not in src.sheetnames:
             continue
         for r in range(1, wb[sh].max_row + 1):
