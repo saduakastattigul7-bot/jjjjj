@@ -391,7 +391,7 @@ const doc = new Document({
       default: new Footer({ children: [new Paragraph({ alignment: C, children: [new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 24 })] })] }),
       first: new Footer({ children: [] }),
     },
-    children: [...front, ...annot, ...toc, ...body, ...app],
+    children: [...front, ...toc, ...annot, ...body, ...app],
   }],
 });
 Packer.toBuffer(doc).then(b => { fs.writeFileSync(OUT, b); console.log("written", OUT); });
