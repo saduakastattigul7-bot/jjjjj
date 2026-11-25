@@ -305,7 +305,11 @@ const ANNOT = "Мақсаты: жасанды интеллект (ЖИ) чат-�
 const annotWords = fill(ANNOT).split(/\s+/).filter(w => /[\p{L}\d]/u.test(w)).length;
 if (annotWords > 200) throw new Error("Аннотация 200 сөзден асты: " + annotWords);
 console.log("Аннотация сөз саны:", annotWords);
-const annot = [h1("АННОТАЦИЯ"), para(ANNOT), para(`Кілт сөздер: тұрақты тіркес, фразеологизм, жасанды интеллект, чат-бот, ойдан шығару, ұлттық-мәдени мағына.`, { before: 120 })];
+// Ереже 4.7: мақсат, өзектілік, зерттеу сұрағы/болжамы, әдістер, негізгі нәтиже, қорытынды – әрқайсысы жеке абзац, атауы қалың әріппен
+const ANNOT_LABELS = ["Мақсаты", "Өзектілігі", "Зерттеу сұрағы", "Болжам", "Әдістер", "Негізгі нәтиже", "Қорытынды"];
+const annotParts = ANNOT.split(new RegExp(`(?=(?:${ANNOT_LABELS.join("|")}): )`)).map(s => s.trim()).filter(Boolean);
+if (annotParts.length !== ANNOT_LABELS.length) throw new Error("Аннотация бөліктері толық емес: " + annotParts.length);
+const annot = [h1("АННОТАЦИЯ"), ...annotParts.map(s => para(s.replace(/^([^:]+): /, "**$1:** "), { after: 60 })), para(`Кілт сөздер: тұрақты тіркес, фразеологизм, жасанды интеллект, чат-бот, ойдан шығару, ұлттық-мәдени мағына.`, { before: 120 })];
 
 // ---------- Қосымшалар ----------
 const APPX = [
